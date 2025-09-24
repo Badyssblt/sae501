@@ -1,0 +1,23 @@
+[Libraries]
+[Librarie]/
+[Libraries]/
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+MemoryCaptures/
+UserSettings/
+ 
+# IDE
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.userprefs
+
+# Autres fichiers inutiles
+.DS_Store
+Thumbs.db
