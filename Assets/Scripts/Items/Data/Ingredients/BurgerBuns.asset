@@ -10,8 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 689300a864072844c95b570f6d2f0182, type: 3}
-  m_Name: Tomate
+  m_Name: BurgerBuns
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  name: Tomate
-  sprite: {fileID: -170058514730257529, guid: b82f8a8d5e885ce43a489ae4de62d753, type: 3}
+  name: "Pain \xE0 Burger"
+  sprite: {fileID: 21300000, guid: b82ca94c63b74394db946e27d1006656, type: 3}
+  counterType: 2
+  secondsToTransform: 0
+  itemCrafted: {fileID: 0}
   category: 0

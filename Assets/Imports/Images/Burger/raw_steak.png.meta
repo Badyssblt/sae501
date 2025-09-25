@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e3a67c85fe536174db21921b6a180672
+guid: 7f2d0e59489d4824889355bb108a1a6f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2609000479422318817
-    second: burger_top_0
+      213: 5241392393013017300
+    second: pixel-art-illustration-steak-pixelated-260nw-2348858507-removebg-preview_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: burger_top_0
+      name: pixel-art-illustration-steak-pixelated-260nw-2348858507-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 15
-        y: 3
-        width: 484
-        height: 476
+        x: 33
+        y: 78
+        width: 196
+        height: 151
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f17753513e7facbd0800000000000000
-      internalID: -2609000479422318817
+      spriteID: 4dab9f18c9a2db840800000000000000
+      internalID: 5241392393013017300
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      burger_top_0: -2609000479422318817
+      pixel-art-illustration-steak-pixelated-260nw-2348858507-removebg-preview_0: 5241392393013017300
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

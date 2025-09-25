@@ -1,13 +1,18 @@
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Counter : MonoBehaviour, IInteractable
 {
-    [SerializeField] private List<ItemData> items = new List<ItemData>(); // pour l'affichage
-    private List<ItemData> ingredientsOnCounter = new List<ItemData>();     // tous les ingrédients
+    [SerializeField] private ItemData currentItem; // pour l'affichage
+    private List<ItemData> ingredientsOnCounter = new List<ItemData>();     // tous les ingrÃ©dients
     private SpriteRenderer itemToDisplay;
     private bool inRange = false;
     private PlayerInteraction player;
+
+    public CounterType type;
+
+    private bool wasItemCrafted = false;
 
     private void Awake()
     {
@@ -46,42 +51,45 @@ public class Counter : MonoBehaviour, IInteractable
 
     private void UpdateVisual()
     {
-        if (items.Count == 0)
+        if (currentItem == null)
+        {
             itemToDisplay.sprite = null;
+        }
         else
-            itemToDisplay.sprite = items[items.Count - 1].sprite;
+        {
+
+            itemToDisplay.sprite = currentItem.sprite;
+        }
     }
 
-    public void Interact(PlayerInteraction player)
+
+    private void Crafting(InventorySystem playerInventory)
     {
-        if (!inRange) return;
-
-        InventorySystem playerInventory = player.GetComponent<InventorySystem>();
-
-        // Prendre le dernier item affiché
-        if (playerInventory.currentItem == null && items.Count > 0)
+        // Prendre l'item affichÃ© si le joueur n'en a pas
+        if (playerInventory.currentItem == null && currentItem != null)
         {
-            ItemData lastItem = items[items.Count - 1];
-            playerInventory.AddItem(lastItem);
+            playerInventory.AddItem(currentItem);
             // Ne touche pas ingredientsOnCounter pour garder la trace
-            items.RemoveAt(items.Count - 1);
+            currentItem = null;
             UpdateVisual();
             InventoryUI.Instance.UpdateInventory();
             return;
         }
 
-        // Poser un nouvel ingrédient
+
+
+        // Poser un nouvel ingrÃ©dient
         if (playerInventory.currentItem != null)
         {
             ItemData newIngredient = playerInventory.currentItem;
             playerInventory.RemoveItem(newIngredient);
 
-            // Si le comptoir a déjà un résultat affiché et qu'aucune recette ne correspond avec le nouvel ingrédient
+            // VÃ©rifier si une recette correspond avec les ingrÃ©dients actuels + le nouveau
+            List<ItemData> testIngredients = new List<ItemData>(ingredientsOnCounter) { newIngredient };
             ItemData newResult = null;
+
             foreach (var recipe in GameManager.Instance.recipes)
             {
-                // On teste avec tous les ingrédients actuels + le nouveau
-                List<ItemData> testIngredients = new List<ItemData>(ingredientsOnCounter) { newIngredient };
                 if (recipe.Matches(testIngredients))
                 {
                     newResult = recipe.result;
@@ -89,38 +97,99 @@ public class Counter : MonoBehaviour, IInteractable
                 }
             }
 
+
+
             if (newResult != null)
             {
+                // Recette trouvÃ©e
                 ingredientsOnCounter.Add(newIngredient);
-                if (items.Count == 0)
-                    items.Add(newResult);
-                else
-                    items[0] = newResult; // remplace le résultat actuel
+                currentItem = newResult; // afficher le rÃ©sultat de la recette
             }
             else
             {
-                if (items.Count > 0)
+                // Pas de recette correspondante
+                if (currentItem != null)
                 {
-                    // On rend l'item actuel au joueur
-                    ItemData currentDisplayed = items[0];
-                    playerInventory.AddItem(currentDisplayed);
+                    // Rendre l'ancien item affichÃ© au joueur
+                    playerInventory.AddItem(currentItem);
 
-                    // On remplace l'affichage par le nouvel ingrédient
-                    items[0] = newIngredient;
-                    // On remplace aussi la liste d'ingrédients pour garder cohérence
+                    // Poser le nouvel ingrÃ©dient sur le comptoir
+                    currentItem = newIngredient;
+
+                    // RÃ©initialiser les ingrÃ©dients du comptoir
                     ingredientsOnCounter.Clear();
                     ingredientsOnCounter.Add(newIngredient);
                 }
                 else
                 {
+
+                    // Comptoir vide â†’ poser le nouvel ingrÃ©dient
+                    currentItem = newIngredient;
                     ingredientsOnCounter.Add(newIngredient);
-                    items.Add(newIngredient);
                 }
             }
 
             UpdateVisual();
             InventoryUI.Instance.UpdateInventory();
         }
+
+        return;
+    }
+
+
+    private void TransformItem(InventorySystem playerInventory)
+    {
+        ItemData itemToTransform = playerInventory.currentItem;
+
+        if (wasItemCrafted)
+        {
+            playerInventory.AddItem(currentItem);
+            currentItem = null;
+            UpdateVisual();
+            InventoryUI.Instance.UpdateInventory();
+            wasItemCrafted = false;
+            return;
+        }
+
+        currentItem = itemToTransform;
+        playerInventory.RemoveItem(itemToTransform);
+        InventoryUI.Instance.UpdateInventory();
+        UpdateVisual();
+
+        // Essaye de mettre un objet que l'on doit crafter sur un Counter qui n'est pas fait pour Ã§a
+        if (itemToTransform && itemToTransform.counterType == CounterType.Crafting) return;
+        StartCoroutine(WaitForTransform(itemToTransform, playerInventory));
+
+
+
+    }
+
+    IEnumerator WaitForTransform(ItemData itemToTransform, InventorySystem playerInventory)
+    {
+        yield return new WaitForSeconds(itemToTransform.secondsToTransform);
+
+        currentItem = itemToTransform.itemCrafted;
+        wasItemCrafted = true;
+        UpdateVisual();
+    }
+
+
+    public void Interact(PlayerInteraction player)
+    {
+        if (!inRange) return;
+
+        InventorySystem playerInventory = player.GetComponent<InventorySystem>();
+
+        Debug.Log(type);
+        if (type == CounterType.Crafting)
+        {
+            Crafting(playerInventory);
+            return;
+        }else
+        {
+            TransformItem(playerInventory);
+        }
+
     }
 
 }

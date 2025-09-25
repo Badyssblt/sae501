@@ -7,6 +7,12 @@ public class ItemData : ScriptableObject
     public string name;
     public Sprite sprite;
 
+
+    [Header("Crafting Info")]
+    public CounterType counterType;
+    public int secondsToTransform;
+    public ItemData itemCrafted;
+
     [Header("Extra")]
     public ItemCategory category;
 
