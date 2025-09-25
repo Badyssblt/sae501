@@ -4,7 +4,7 @@ public class GameManager : MonoBehaviour
 {
     public RecipeData[] recipes;
     public static GameManager Instance;
-    private void Start()
+    private void Awake()
     {
         Instance = this;
     }

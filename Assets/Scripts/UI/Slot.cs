@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +5,7 @@ public class Slot : MonoBehaviour
 {
     [SerializeField] private ItemData item;
 
-    [SerializeField] private Image itemIcon; // assigner dans l'inspecteur, l'enfant "ItemIcon"
+    [SerializeField] private Image itemIcon;
 
     private void Awake()
     {

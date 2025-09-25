@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 689300a864072844c95b570f6d2f0182, type: 3}
-  m_Name: BurgerTomate
-  m_EditorClassIdentifier: Assembly-CSharp::S_ItemData
-  name: Burger tomate
-  sprite: {fileID: 1632572579259796971, guid: dfd05f3d7550ef74f9b29d6203ffdcfe, type: 3}
-  counterType: 0
+  m_Name: Lettuce
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  name: Salade
+  sprite: {fileID: -5817237085361267720, guid: 113021d8e5e2e8244b290ea9cd55e209, type: 3}
+  counterType: 2
   secondsToTransform: 0
   itemCrafted: {fileID: 0}
   category: 0

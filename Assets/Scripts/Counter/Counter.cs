@@ -141,6 +141,9 @@ public class Counter : MonoBehaviour, IInteractable
     {
         ItemData itemToTransform = playerInventory.currentItem;
 
+
+
+        // Vérifie si le précédent item a été finit de craft
         if (wasItemCrafted)
         {
             playerInventory.AddItem(currentItem);
@@ -148,6 +151,12 @@ public class Counter : MonoBehaviour, IInteractable
             UpdateVisual();
             InventoryUI.Instance.UpdateInventory();
             wasItemCrafted = false;
+            return;
+        }
+
+        if (itemToTransform.counterType != type)
+        {
+            Debug.Log("Mauvais comptoir !");
             return;
         }
 
@@ -180,7 +189,6 @@ public class Counter : MonoBehaviour, IInteractable
 
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
 
-        Debug.Log(type);
         if (type == CounterType.Crafting)
         {
             Crafting(playerInventory);
