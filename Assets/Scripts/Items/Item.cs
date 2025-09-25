@@ -8,6 +8,8 @@ public class Item : MonoBehaviour, IInteractable
     private BoxCollider2D collider;
     private bool inRange = false;
 
+    private PlayerInteraction player;
+
     private void Start()
     {
         collider = GetComponent<BoxCollider2D>();
@@ -16,11 +18,19 @@ public class Item : MonoBehaviour, IInteractable
     public void Interact(PlayerInteraction player)
     {
         InventorySystem inventory = player.GetComponent<InventorySystem>();
-        if (inventory != null && inRange)
+        if (inventory != null && inRange && inventory.currentItem == null)
         {
             inventory.AddItem(item);
-
+            InventoryUI.Instance.UpdateInventory();
             Destroy(gameObject);
+        }
+    }
+
+    private void Update()
+    {
+        if(inRange && Input.GetButtonDown("P1_B1"))
+        {
+            Interact(player);
         }
     }
 
@@ -29,11 +39,9 @@ public class Item : MonoBehaviour, IInteractable
         if (collision.CompareTag("Player"))
         {
             inRange = true;
-            PlayerInteraction player = collision.GetComponent<PlayerInteraction>();
-            if (player != null)
-            {
-                player.SetCurrentInteractable(this);
-            }
+            player = collision.GetComponent<PlayerInteraction>();
+            player.SetCurrentInteractable(this);
+           
         }
     }
 

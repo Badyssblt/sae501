@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
@@ -11,13 +10,16 @@ public class PlayerMovement : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic; // pour MovePosition
     }
 
-    // Appelé automatiquement par PlayerInput (Send Messages)
-    public void OnMove(InputAction.CallbackContext context)
+    void Update()
     {
-        movement = context.ReadValue<Vector2>();
+        // Lire les axes définis dans Input Manager
+        float moveX = Input.GetAxisRaw("P1_Horizontal");
+        float moveY = Input.GetAxisRaw("P1_Vertical");
+
+        // Normaliser pour éviter d’aller plus vite en diagonale
+        movement = new Vector2(moveX, moveY).normalized;
     }
 
     void FixedUpdate()

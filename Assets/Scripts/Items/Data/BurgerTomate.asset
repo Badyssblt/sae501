@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 689300a864072844c95b570f6d2f0182, type: 3}
+  m_Name: BurgerTomate
+  m_EditorClassIdentifier: Assembly-CSharp::S_ItemData
+  name: Burger tomate
+  sprite: {fileID: 8036711941687222851, guid: 148f4f67b4db21a46b9ea061b026fd6d, type: 3}
+  category: 0
