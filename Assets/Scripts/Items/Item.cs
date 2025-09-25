@@ -19,6 +19,7 @@ public class Item : MonoBehaviour, IInteractable
         if (inventory != null && inRange)
         {
             inventory.AddItem(item);
+
             Destroy(gameObject);
         }
     }

@@ -9,6 +9,7 @@ public class PlayerInteraction : MonoBehaviour
         if (currentInteractable != null)
         {
             currentInteractable.Interact(this);
+            InventoryUI.Instance.UpdateInventory();
         }
     }
 

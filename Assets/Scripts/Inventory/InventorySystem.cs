@@ -3,8 +3,7 @@ using UnityEngine;
 public class InventorySystem : MonoBehaviour
 {
     // Le joueur ne peut avoir qu'un seul item sur lui.
-    [SerializeField]
-    private ItemData currentItem;
+    public ItemData currentItem;
 
     public void AddItem(ItemData item)
     {
