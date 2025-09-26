@@ -189,7 +189,7 @@ public class Counter : MonoBehaviour, IInteractable
         UpdateVisual();
 
         // Essaye de mettre un objet que l'on doit crafter sur un Counter qui n'est pas fait pour ça
-        if (itemToTransform && itemToTransform.counterType == CounterType.Crafting) return;
+        if (itemToTransform && itemToTransform.counterType == CounterType.Assemblage) return;
         StartCoroutine(WaitForTransform(itemToTransform, playerInventory));
 
 
@@ -213,11 +213,11 @@ public class Counter : MonoBehaviour, IInteractable
 
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
         Debug.Log(type);
-        if (type == CounterType.Crafting)
+        if (type == CounterType.Assemblage)
         {
             Crafting(playerInventory);
             return;
-        }else if(type == CounterType.Serve)
+        }else if(type == CounterType.Service)
         {
             Serve(playerInventory);
         }

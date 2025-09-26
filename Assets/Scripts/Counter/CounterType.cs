@@ -2,8 +2,10 @@ using UnityEngine;
 
 public enum CounterType
 {
-    Fryer,
-    FryingPan,
-    Crafting,
-    Serve
+    Poele,
+    Friteuse,
+    Assemblage,
+    Service,
+    Decouper
+    
 }
