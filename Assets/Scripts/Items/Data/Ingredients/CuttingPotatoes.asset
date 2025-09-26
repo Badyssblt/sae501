@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689300a864072844c95b570f6d2f0182, type: 3}
   m_Name: CuttingPotatoes
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  name: Pomme de terrre
-  sprite: {fileID: -953275092127064231, guid: 1b77ac34383360148b88eedbcc4a8cb4, type: 3}
+  name: "Pomme de terrre coup\xE9"
+  sprite: {fileID: -170058514730257529, guid: b82f8a8d5e885ce43a489ae4de62d753, type: 3}
   counterType: 1
   secondsToTransform: 10
-  itemCrafted: {fileID: 0}
+  itemCrafted: {fileID: 11400000, guid: 824fdb60d7dda3241b11340a428490ab, type: 2}
   category: 0

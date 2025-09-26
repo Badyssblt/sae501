@@ -207,12 +207,30 @@ public class Counter : MonoBehaviour, IInteractable
 
     IEnumerator WaitForTransform(ItemData itemToTransform, InventorySystem playerInventory)
     {
-        yield return new WaitForSeconds(itemToTransform.secondsToTransform);
+        PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
+        PlayerSlider playerSlider = playerInventory.GetComponent<PlayerSlider>();
+
+        playerMovement.FreezePlayer();
+
+        // Démarrer le slider timer
+        playerSlider.StartTimer(itemToTransform.secondsToTransform);
+
+        float elapsedTime = 0f;
+        while (elapsedTime < itemToTransform.secondsToTransform)
+        {
+            elapsedTime += Time.deltaTime;
+            playerSlider.currentTime = Mathf.Clamp(itemToTransform.secondsToTransform - elapsedTime, 0f, itemToTransform.secondsToTransform);
+            yield return null;
+        }
+
+        playerMovement.UnfreezePlayer();
+        playerSlider.HideSlider();
 
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
         UpdateVisual();
     }
+
 
 
     public void Interact(PlayerInteraction player)
@@ -221,7 +239,6 @@ public class Counter : MonoBehaviour, IInteractable
         if (!inRange) return;
 
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
-        Debug.Log(type);
         if (type == CounterType.Assemblage)
         {
             Crafting(playerInventory, player);

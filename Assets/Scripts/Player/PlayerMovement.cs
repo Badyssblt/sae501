@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement State")]
     private Vector2 movement;
     private Rigidbody2D rb;
+    private Vector2 movement;
+    private bool isFrozen = false; // si true, le joueur est gelé
 
     // Pour compatibilité avec l'ancienne configuration
     [HideInInspector]

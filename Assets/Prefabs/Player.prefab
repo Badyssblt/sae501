@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 8564146068987652309}
   - component: {fileID: 8112283859266278267}
   - component: {fileID: 5618472159814913091}
+  - component: {fileID: 4197980645142796753}
   - component: {fileID: 435147304249956315}
   - component: {fileID: 7291183974157367107}
   - component: {fileID: 8812046628176235109}
@@ -305,6 +306,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b7371f2dccb7d4a963c4cd15a54cd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+--- !u!114 &4197980645142796753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905632694918771176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a671e71a7ef597479110ec480e16b8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSlider
+  slider: {fileID: 6064857534052299153}
+  offset: {x: 0, y: 1.5, z: 0}
+  timerDuration: 5
 --- !u!114 &435147304249956315
 MonoBehaviour:
   m_ObjectHideFlags: 0
