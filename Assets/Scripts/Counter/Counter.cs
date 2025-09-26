@@ -210,7 +210,6 @@ public class Counter : MonoBehaviour, IInteractable
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
         PlayerSlider playerSlider = playerInventory.GetComponent<PlayerSlider>();
 
-        playerMovement.FreezePlayer();
 
         // Démarrer le slider timer
         playerSlider.StartTimer(itemToTransform.secondsToTransform);
@@ -223,7 +222,6 @@ public class Counter : MonoBehaviour, IInteractable
             yield return null;
         }
 
-        playerMovement.UnfreezePlayer();
         playerSlider.HideSlider();
 
         currentItem = itemToTransform.itemCrafted;
