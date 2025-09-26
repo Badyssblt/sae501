@@ -41,7 +41,6 @@ public class OrderUI : MonoBehaviour
     private IEnumerator DestroyAfterDelay()
     {
         float elapsed = 0f;
-        Debug.Log(elapsed);
         while (elapsed < maxDelay)
         {
             // Si tu as un Slider pour visualiser le temps restant

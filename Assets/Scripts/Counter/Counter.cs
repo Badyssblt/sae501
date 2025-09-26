@@ -16,8 +16,17 @@ public class Counter : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        itemToDisplay = transform.Find("ItemDisplayed").gameObject.GetComponent<SpriteRenderer>();
+        Transform itemTransform = transform.Find("ItemDisplayed");
+        if (itemTransform != null)
+        {
+            itemToDisplay = itemTransform.gameObject.GetComponent<SpriteRenderer>();
+        }
+        else
+        {
+            itemToDisplay = null;
+        }
     }
+
 
     private void Update()
     {
@@ -59,6 +68,20 @@ public class Counter : MonoBehaviour, IInteractable
         {
 
             itemToDisplay.sprite = currentItem.sprite;
+        }
+    }
+
+    private void Serve(InventorySystem playerInventory)
+    {
+        var orders = OrderManager.Instance.currentOrders;
+
+        foreach(RecipeData order in orders)
+        {
+            if (order.result == playerInventory.currentItem)
+            {
+                OrderManager.Instance.CompleteOrder(order, playerInventory);
+                break;
+            }
         }
     }
 
@@ -185,15 +208,20 @@ public class Counter : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction player)
     {
+        Debug.Log(type);
         if (!inRange) return;
 
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
-
+        Debug.Log(type);
         if (type == CounterType.Crafting)
         {
             Crafting(playerInventory);
             return;
-        }else
+        }else if(type == CounterType.Serve)
+        {
+            Serve(playerInventory);
+        }
+        else
         {
             TransformItem(playerInventory);
         }

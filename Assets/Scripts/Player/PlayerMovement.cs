@@ -7,6 +7,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 movement;
     private Rigidbody2D rb;
 
+    public string horizontalAxis = "P1_Horizontal";
+    public string verticalAxis = "P1_Vertical";
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -14,16 +17,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Lire les axes définis dans Input Manager
-        float moveX = Input.GetAxisRaw("P1_Horizontal");
-        float moveY = Input.GetAxisRaw("P1_Vertical");
-
-        // Normaliser pour éviter d’aller plus vite en diagonale
-        movement = new Vector2(moveX, moveY).normalized;
+        
     }
 
     void FixedUpdate()
     {
+        // Lire les axes dÃ©finis dans Input Manager
+        float moveX = Input.GetAxisRaw(horizontalAxis);
+        float moveY = Input.GetAxisRaw(verticalAxis);
+
+        // Normaliser pour Ã©viter dâ€™aller plus vite en diagonale
+        movement = new Vector2(moveX, moveY).normalized;
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 }
