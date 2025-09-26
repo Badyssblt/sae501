@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RawSteak
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   name: Steak cru
-  sprite: {fileID: 5241392393013017300, guid: 7f2d0e59489d4824889355bb108a1a6f, type: 3}
+  sprite: {fileID: -6451513100783323093, guid: 371c8efe2d3d3cc468aefaa0497450cd, type: 3}
   counterType: 0
   secondsToTransform: 3
   itemCrafted: {fileID: 11400000, guid: 938c1684a4ac9d34684e2b67cc3aa3a0, type: 2}

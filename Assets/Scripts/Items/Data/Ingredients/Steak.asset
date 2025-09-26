@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Steak
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   name: Steak
-  sprite: {fileID: 2313043236011815425, guid: 61ca934d6b9f85d40acbc880b79db4f5, type: 3}
+  sprite: {fileID: 2313043236011815425, guid: a545fa4ca8165a244b78c164ee607b92, type: 3}
   counterType: 2
   secondsToTransform: 0
   itemCrafted: {fileID: 0}
