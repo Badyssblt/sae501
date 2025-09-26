@@ -198,8 +198,11 @@ public class Counter : MonoBehaviour, IInteractable
 
     IEnumerator WaitForTransform(ItemData itemToTransform, InventorySystem playerInventory)
     {
+        PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
+        playerMovement.FreezePlayer();
         yield return new WaitForSeconds(itemToTransform.secondsToTransform);
 
+        playerMovement.UnfreezePlayer();    
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
         UpdateVisual();
