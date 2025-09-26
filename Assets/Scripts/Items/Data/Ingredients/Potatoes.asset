@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   name: Pomme de terrre
   sprite: {fileID: -953275092127064231, guid: 1b77ac34383360148b88eedbcc4a8cb4, type: 3}
-  counterType: 1
-  secondsToTransform: 10
-  itemCrafted: {fileID: 0}
+  counterType: 4
+  secondsToTransform: 7
+  itemCrafted: {fileID: 11400000, guid: b0321818c498cd347bef567cdf8c8529, type: 2}
   category: 0
