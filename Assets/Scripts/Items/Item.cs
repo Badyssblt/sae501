@@ -21,18 +21,17 @@ public class Item : MonoBehaviour, IInteractable
         if (inventory != null && inRange && inventory.currentItem == null)
         {
             inventory.AddItem(item);
-            InventoryUI.Instance.UpdateInventory();
+            // Mettre à jour l'UI pour ce joueur
+            var playerController = player.GetComponent<PlayerController>();
+            if (InventoryUI.Instance != null && playerController != null)
+            {
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
+            }
             Destroy(gameObject);
         }
     }
 
-    private void Update()
-    {
-        if(inRange && Input.GetButtonDown("P1_B1"))
-        {
-            Interact(player);
-        }
-    }
+    // Plus besoin d'Update, l'interaction se fait via PlayerInteraction.OnInteract()
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

@@ -54,7 +54,7 @@ public class OrderManager : MonoBehaviour
             currentOrders.Add(order);
             tempList.RemoveAt(randomIndex);
 
-            // Crée l’UI pour chaque commande
+            // Crï¿½e lï¿½UI pour chaque commande
             var newOrderGO = Instantiate(orderPrefab, hb.transform);
             OrderUI orderGO = newOrderGO.GetComponent<OrderUI>();
             orderGO.recipe = order;
@@ -63,7 +63,7 @@ public class OrderManager : MonoBehaviour
         }
     }
 
-    public void CompleteOrder(RecipeData order, InventorySystem playerInventory)
+    public void CompleteOrder(RecipeData order, InventorySystem playerInventory, PlayerInteraction player)
     {
         currentOrders.Remove(order);
 
@@ -75,7 +75,12 @@ public class OrderManager : MonoBehaviour
             {
                 Destroy(child.gameObject);
                 playerInventory.RemoveItem(playerInventory.currentItem);
-                InventoryUI.Instance.UpdateInventory();
+                // Mettre Ã  jour l'UI pour ce joueur
+                var playerController = player.GetComponent<PlayerController>();
+                if (InventoryUI.Instance != null && playerController != null)
+                {
+                    InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+                }
                 break;
             }
         }

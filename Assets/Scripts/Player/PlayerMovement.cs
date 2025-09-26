@@ -3,11 +3,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float moveSpeed = 5f;
+
+    [Header("Movement State")]
     private Vector2 movement;
     private Rigidbody2D rb;
 
+    // Pour compatibilité avec l'ancienne configuration
+    [HideInInspector]
     public string horizontalAxis = "P1_Horizontal";
+    [HideInInspector]
     public string verticalAxis = "P1_Vertical";
 
     void Awake()
@@ -15,19 +21,35 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
-    {
-        
-    }
-
     void FixedUpdate()
     {
-        // Lire les axes définis dans Input Manager
-        float moveX = Input.GetAxisRaw(horizontalAxis);
-        float moveY = Input.GetAxisRaw(verticalAxis);
+        // Le mouvement est maintenant défini par PlayerController via SetMovement()
+        // On applique simplement le mouvement stocké
+        if (rb != null && movement != Vector2.zero)
+        {
+            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        }
+    }
 
-        // Normaliser pour éviter d’aller plus vite en diagonale
-        movement = new Vector2(moveX, moveY).normalized;
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    // Méthode appelée par PlayerController pour définir le mouvement
+    public void SetMovement(Vector2 newMovement)
+    {
+        movement = newMovement;
+    }
+
+    // Méthode pour récupérer le mouvement actuel (utile pour l'animation ou le debug)
+    public Vector2 GetMovement()
+    {
+        return movement;
+    }
+
+    // Méthode pour arrêter immédiatement le mouvement
+    public void StopMovement()
+    {
+        movement = Vector2.zero;
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
     }
 }

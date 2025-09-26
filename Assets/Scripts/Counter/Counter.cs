@@ -28,13 +28,7 @@ public class Counter : MonoBehaviour, IInteractable
     }
 
 
-    private void Update()
-    {
-        if (inRange && Input.GetButtonDown("P1_B1"))
-        {
-            Interact(player);
-        }
-    }
+    // Plus besoin d'Update, l'interaction se fait via PlayerInteraction.OnInteract()
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -71,7 +65,7 @@ public class Counter : MonoBehaviour, IInteractable
         }
     }
 
-    private void Serve(InventorySystem playerInventory)
+    private void Serve(InventorySystem playerInventory, PlayerInteraction player)
     {
         var orders = OrderManager.Instance.currentOrders;
 
@@ -79,14 +73,14 @@ public class Counter : MonoBehaviour, IInteractable
         {
             if (order.result == playerInventory.currentItem)
             {
-                OrderManager.Instance.CompleteOrder(order, playerInventory);
+                OrderManager.Instance.CompleteOrder(order, playerInventory, player);
                 break;
             }
         }
     }
 
 
-    private void Crafting(InventorySystem playerInventory)
+    private void Crafting(InventorySystem playerInventory, PlayerInteraction player)
     {
         // Prendre l'item affiché si le joueur n'en a pas
         if (playerInventory.currentItem == null && currentItem != null)
@@ -95,7 +89,12 @@ public class Counter : MonoBehaviour, IInteractable
             // Ne touche pas ingredientsOnCounter pour garder la trace
             currentItem = null;
             UpdateVisual();
-            InventoryUI.Instance.UpdateInventory();
+            // Mettre à jour l'UI pour ce joueur
+            var playerController = player.GetComponent<PlayerController>();
+            if (InventoryUI.Instance != null && playerController != null)
+            {
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+            }
             return;
         }
 
@@ -153,14 +152,19 @@ public class Counter : MonoBehaviour, IInteractable
             }
 
             UpdateVisual();
-            InventoryUI.Instance.UpdateInventory();
+            // Mettre à jour l'UI pour ce joueur
+            var playerController = player.GetComponent<PlayerController>();
+            if (InventoryUI.Instance != null && playerController != null)
+            {
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+            }
         }
 
         return;
     }
 
 
-    private void TransformItem(InventorySystem playerInventory)
+    private void TransformItem(InventorySystem playerInventory, PlayerInteraction player)
     {
         ItemData itemToTransform = playerInventory.currentItem;
 
@@ -172,7 +176,12 @@ public class Counter : MonoBehaviour, IInteractable
             playerInventory.AddItem(currentItem);
             currentItem = null;
             UpdateVisual();
-            InventoryUI.Instance.UpdateInventory();
+            // Mettre à jour l'UI pour ce joueur
+            var playerController = player.GetComponent<PlayerController>();
+            if (InventoryUI.Instance != null && playerController != null)
+            {
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+            }
             wasItemCrafted = false;
             return;
         }
@@ -215,15 +224,15 @@ public class Counter : MonoBehaviour, IInteractable
         Debug.Log(type);
         if (type == CounterType.Assemblage)
         {
-            Crafting(playerInventory);
+            Crafting(playerInventory, player);
             return;
         }else if(type == CounterType.Service)
         {
-            Serve(playerInventory);
+            Serve(playerInventory, player);
         }
         else
         {
-            TransformItem(playerInventory);
+            TransformItem(playerInventory, player);
         }
 
     }

@@ -1,17 +1,18 @@
 using UnityEngine;
 
-public class ItemGiver : MonoBehaviour
+public class ItemGiver : MonoBehaviour, IInteractable
 {
     [SerializeField] private ItemData itemToGive;
-    private bool inRange = false;
-    InventorySystem inventory;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            inRange = true;
-            inventory = collision.GetComponent<InventorySystem>();
+            var playerInteraction = collision.GetComponent<PlayerInteraction>();
+            if (playerInteraction != null)
+            {
+                playerInteraction.SetCurrentInteractable(this);
+            }
         }
     }
 
@@ -19,16 +20,30 @@ public class ItemGiver : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            inRange = false;
+            var playerInteraction = collision.GetComponent<PlayerInteraction>();
+            if (playerInteraction != null)
+            {
+                playerInteraction.ClearCurrentInteractable(this);
+            }
         }
     }
 
-    private void Update()
+    public void Interact(PlayerInteraction player)
     {
-        if(inRange && Input.GetButtonDown("P1_B1"))
+        // Récupérer l'inventaire du joueur qui interagit
+        var inventory = player.GetInventory();
+        if (inventory != null && itemToGive != null)
         {
             inventory.AddItem(itemToGive);
-            InventoryUI.Instance.UpdateInventory();
+
+            // Mettre à jour l'UI pour CE joueur spécifiquement
+            var playerController = player.GetComponent<PlayerController>();
+            if (playerController != null && InventoryUI.Instance != null)
+            {
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
+            }
+
+            Debug.Log($"Joueur {playerController?.playerId} a ramassé {itemToGive.name}");
         }
     }
 }
