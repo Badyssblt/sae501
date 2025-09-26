@@ -101,7 +101,7 @@ public class NetworkManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<NetworkManager>();
+                _instance = FindFirstObjectByType<NetworkManager>();
                 if (_instance == null)
                 {
                     GameObject go = new GameObject("NetworkManager");

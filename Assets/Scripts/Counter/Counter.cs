@@ -166,9 +166,11 @@ public class Counter : MonoBehaviour, IInteractable
 
     private void TransformItem(InventorySystem playerInventory, PlayerInteraction player)
     {
+
         ItemData itemToTransform = playerInventory.currentItem;
 
-
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        int playerId = playerController.playerId;
 
         // Vérifie si le précédent item a été finit de craft
         if (wasItemCrafted)
@@ -177,7 +179,6 @@ public class Counter : MonoBehaviour, IInteractable
             currentItem = null;
             UpdateVisual();
             // Mettre à jour l'UI pour ce joueur
-            var playerController = player.GetComponent<PlayerController>();
             if (InventoryUI.Instance != null && playerController != null)
             {
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
@@ -185,7 +186,6 @@ public class Counter : MonoBehaviour, IInteractable
             wasItemCrafted = false;
             return;
         }
-
         if (itemToTransform.counterType != type)
         {
             Debug.Log("Mauvais comptoir !");
@@ -194,7 +194,7 @@ public class Counter : MonoBehaviour, IInteractable
 
         currentItem = itemToTransform;
         playerInventory.RemoveItem(itemToTransform);
-        InventoryUI.Instance.UpdateInventory();
+        InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
         UpdateVisual();
 
         // Essaye de mettre un objet que l'on doit crafter sur un Counter qui n'est pas fait pour ça
@@ -204,30 +204,26 @@ public class Counter : MonoBehaviour, IInteractable
 
 
     }
-
     IEnumerator WaitForTransform(ItemData itemToTransform, InventorySystem playerInventory)
     {
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
-        PlayerSlider playerSlider = playerInventory.GetComponent<PlayerSlider>();
-
+        SliderTime sliderTime = GetComponent<SliderTime>();
 
         // Démarrer le slider timer
-        playerSlider.StartTimer(itemToTransform.secondsToTransform);
+        sliderTime.StartTimer(itemToTransform.secondsToTransform);
 
-        float elapsedTime = 0f;
-        while (elapsedTime < itemToTransform.secondsToTransform)
-        {
-            elapsedTime += Time.deltaTime;
-            playerSlider.currentTime = Mathf.Clamp(itemToTransform.secondsToTransform - elapsedTime, 0f, itemToTransform.secondsToTransform);
-            yield return null;
-        }
+        // Attendre le temps de transformation
+        yield return new WaitForSeconds(itemToTransform.secondsToTransform);
 
-        playerSlider.HideSlider();
+        // Cacher le slider une fois fini
+        sliderTime.HideSlider();
 
+        // Transformer l’item
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
         UpdateVisual();
     }
+
 
 
 

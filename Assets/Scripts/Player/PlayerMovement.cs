@@ -23,11 +23,9 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Le mouvement est maintenant défini par PlayerController via SetMovement()
-        // On applique simplement le mouvement stocké
-        if (rb != null && movement != Vector2.zero)
+        if (rb != null)
         {
-            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+            rb.linearVelocity = movement * moveSpeed;
         }
     }
 

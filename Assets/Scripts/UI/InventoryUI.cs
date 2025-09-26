@@ -47,9 +47,5 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    // Pour compatibilité avec l'ancien code
-    public void UpdateInventory()
-    {
-        Debug.LogWarning("UpdateInventory() sans playerId est déprécié. Utilisez UpdatePlayerInventory(playerId, inventory)");
-    }
+
 }

@@ -319,8 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSlider
   slider: {fileID: 6064857534052299153}
-  offset: {x: 0, y: 1.5, z: 0}
-  timerDuration: 5
+  currentTime: 0
 --- !u!114 &435147304249956315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,7 +360,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &8812046628176235109
 MonoBehaviour:
