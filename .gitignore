@@ -21,3 +21,11 @@ UserSettings/
 # Autres fichiers inutiles
 .DS_Store
 Thumbs.db
+/.idea/.gitignore
+/Assets/Scripts/Utils/InputTester.cs
+/Assets/Scripts/Utils/InputTester.cs.meta
+/Assets/Scripts/.claude/settings.local.json
+/Assets/Scripts/SETUP_GUIDE.md
+/Assets/Scripts/SETUP_GUIDE.md.meta
+/Assets/Scripts/UI/UI_SETUP.md
+/Assets/Scripts/UI/UI_SETUP.md.meta
