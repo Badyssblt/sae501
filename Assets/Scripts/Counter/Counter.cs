@@ -9,6 +9,12 @@ public class Counter : MonoBehaviour, IInteractable
     private SpriteRenderer itemToDisplay;
     private bool inRange = false;
     private PlayerInteraction player;
+    private Coroutine transformCoroutine;
+
+    // Si le joueur peut attendre le temps d'un craft
+    public bool needPlayerFreeze = false;
+
+
 
     public CounterType type;
 
@@ -197,31 +203,49 @@ public class Counter : MonoBehaviour, IInteractable
         InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
         UpdateVisual();
 
-        // Essaye de mettre un objet que l'on doit crafter sur un Counter qui n'est pas fait pour ça
         if (itemToTransform && itemToTransform.counterType == CounterType.Assemblage) return;
-        StartCoroutine(WaitForTransform(itemToTransform, playerInventory));
 
+        // Si une coroutine était déjà en cours, on l’arrête
+        if (transformCoroutine != null)
+            StopCoroutine(transformCoroutine);
 
-
+        transformCoroutine = StartCoroutine(WaitForTransform(itemToTransform, playerInventory));
     }
+
     IEnumerator WaitForTransform(ItemData itemToTransform, InventorySystem playerInventory)
     {
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
         SliderTime sliderTime = GetComponent<SliderTime>();
-
+        PlayerController playerController = playerInventory.GetComponent<PlayerController>();
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
+        AudioSource audioClip = playerMovement.GetComponent<AudioSource>();
+        audioClip.PlayOneShot(itemToTransform.soundToTransform);
+        float elapsed = 0f;
+        while (elapsed < itemToTransform.secondsToTransform)
+        {
+            if (!inRange && needPlayerFreeze) // joueur est sorti → on stoppe
+            {
+                sliderTime.StopTimer();
+                playerInventory.AddItem(itemToTransform);
+                currentItem = null;
+                UpdateVisual();
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+                transformCoroutine = null;
+                yield break;
+            }
 
-        // Attendre le temps de transformation
-        yield return new WaitForSeconds(itemToTransform.secondsToTransform);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
 
-        // Cacher le slider une fois fini
+        // Transformation finie
         sliderTime.HideSlider();
-
-        // Transformer l’item
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
         UpdateVisual();
+
+        transformCoroutine = null;
     }
 
 
@@ -229,10 +253,10 @@ public class Counter : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction player)
     {
-        Debug.Log(type);
         if (!inRange) return;
 
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
+
         if (type == CounterType.Assemblage)
         {
             Crafting(playerInventory, player);

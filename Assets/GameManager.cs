@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     private Dictionary<int, GameObject> activePlayers = new Dictionary<int, GameObject>();
     private Dictionary<int, PlayerController> playerControllers = new Dictionary<int, PlayerController>();
 
+
+
     [Header("Network")]
     private float lastStateSent = 0f;
     private float stateSendRate = 0.033f; // 30 FPS
@@ -243,6 +245,7 @@ public class GameManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
+        UIManager.Instance.UpdateScore(points);
     }
 
     public PlayerController GetPlayerController(int playerId)

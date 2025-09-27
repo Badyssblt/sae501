@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c69419a087f6244e9e83214530c3d03, type: 3}
-  m_Name: BurgerTomate
+  m_Name: Fries
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
   ingredients:
-  - {fileID: 11400000, guid: 87b3cbcefa4293a42bc670994d5e8188, type: 2}
-  - {fileID: 11400000, guid: b8eb28d54cc79a84fa21ddf7207598f2, type: 2}
-  result: {fileID: 11400000, guid: a743089fbd9de154fb4b62db99cc319a, type: 2}
+  - {fileID: 11400000, guid: 824fdb60d7dda3241b11340a428490ab, type: 2}
+  result: {fileID: 11400000, guid: 824fdb60d7dda3241b11340a428490ab, type: 2}

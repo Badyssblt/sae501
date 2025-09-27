@@ -5,7 +5,8 @@ using System.Collections;
 public class SliderTime : MonoBehaviour
 {
     [SerializeField] private Slider timerSlider;
-    [SerializeField] private GameObject sliderContainer; // si tu veux activer/désactiver l'objet parent du slider
+    [SerializeField] private GameObject sliderContainer;
+    [SerializeField] private Image fillImage; // Image du fill du slider
 
     private Coroutine timerCoroutine;
 
@@ -16,13 +17,37 @@ public class SliderTime : MonoBehaviour
 
         if (sliderContainer == null && timerSlider != null)
             sliderContainer = timerSlider.gameObject;
+
+        if (fillImage == null && timerSlider != null && timerSlider.fillRect != null)
+            fillImage = timerSlider.fillRect.GetComponent<Image>();
+    }
+
+    public void ResetSlider()
+    {
+        if (timerSlider != null)
+        {
+            timerSlider.value = 0f;
+            UpdateSliderColor(0f);
+        }
+    }
+
+    public void StopTimer()
+    {
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+            timerCoroutine = null;
+        }
+
+        ResetSlider();
+        HideSlider();
     }
 
     public void StartTimer(float duration)
     {
-        // Si un timer est déjà en cours → l'arrêter
-        if (timerCoroutine != null)
-            StopCoroutine(timerCoroutine);
+        // Toujours reset avant de lancer un nouveau timer
+        StopTimer();
+        ResetSlider();
 
         timerCoroutine = StartCoroutine(TimerRoutine(duration));
     }
@@ -32,21 +57,37 @@ public class SliderTime : MonoBehaviour
         if (sliderContainer != null)
             sliderContainer.SetActive(true);
 
-        timerSlider.minValue = 0f;   // Début à 0
+        timerSlider.minValue = 0f;
         timerSlider.maxValue = duration;
-        timerSlider.value = 0f;       // Valeur initiale à 0
+        timerSlider.value = 0f;
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            timerSlider.value = Mathf.Clamp(elapsed, 0f, duration); // Monte avec le temps
+            timerSlider.value = Mathf.Clamp(elapsed, 0f, duration);
+
+            // Mettre à jour la couleur en fonction du pourcentage
+            float percentage = timerSlider.value / duration;
+            UpdateSliderColor(percentage);
+
             yield return null;
         }
 
         HideSlider();
     }
 
+    private void UpdateSliderColor(float percentage)
+    {
+        if (fillImage == null) return;
+
+        if (percentage <= 0.33f)
+            fillImage.color = Color.red;
+        else if (percentage <= 0.66f)
+            fillImage.color = new Color(1f, 0.64f, 0f); // Orange
+        else
+            fillImage.color = Color.green;
+    }
 
     public void HideSlider()
     {

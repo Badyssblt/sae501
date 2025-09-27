@@ -74,6 +74,7 @@ public class OrderManager : MonoBehaviour
             if (orderUI != null && orderUI.recipe == order)
             {
                 Destroy(child.gameObject);
+                GameManager.Instance.AddScore(playerInventory.currentItem.scoreCount);
                 playerInventory.RemoveItem(playerInventory.currentItem);
                 // Mettre à jour l'UI pour ce joueur
                 var playerController = player.GetComponent<PlayerController>();

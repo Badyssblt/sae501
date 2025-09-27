@@ -3,6 +3,13 @@ using UnityEngine;
 public class ItemGiver : MonoBehaviour, IInteractable
 {
     [SerializeField] private ItemData itemToGive;
+    private SpriteRenderer spriteRenderer;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = itemToGive.sprite;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

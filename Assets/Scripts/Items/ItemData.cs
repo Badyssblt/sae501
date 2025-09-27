@@ -12,9 +12,11 @@ public class ItemData : ScriptableObject
     public CounterType counterType;
     public int secondsToTransform;
     public ItemData itemCrafted;
+    public AudioClip soundToTransform;
 
     [Header("Extra")]
     public ItemCategory category;
+    public int scoreCount = 1;
 
 }
 
