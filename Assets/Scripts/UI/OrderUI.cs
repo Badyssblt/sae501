@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -6,24 +6,43 @@ public class OrderUI : MonoBehaviour
 {
     [SerializeField] private Image itemResult;
     [SerializeField] private Slider timer;
+    [SerializeField] private GameObject sliderContainer;
     [SerializeField] private HorizontalLayoutGroup hb;
     [SerializeField] private GameObject ingredientPrefab;
+    [SerializeField] private Color colorGreen = Color.green;
+    [SerializeField] private Color colorOrange = new Color(1f, 0.65f, 0f); // orange
+    [SerializeField] private Color colorRed = Color.red;
+
     public float maxDelay = 10;
     public RecipeData recipe;
 
+    private Image timerFill; // l'image du fill du slider
+    private Coroutine timerCoroutine;
+
+    private void Awake()
+    {
+        if (timer == null)
+            timer = GetComponent<Slider>();
+
+        if (sliderContainer == null && timer != null)
+            sliderContainer = timer.gameObject;
+
+        if (timerFill == null && timer != null && timer.fillRect != null)
+            timerFill = timer.fillRect.GetComponent<Image>();
+    }
 
     public void UpdateRecipe()
     {
-        // Met à jour le sprite du résultat
+        // Met Ã  jour le sprite du rÃ©sultat
         itemResult.sprite = recipe.result.sprite;
 
-        // Supprime les anciens ingrédients affichés
+        // Supprime les anciens ingrÃ©dients affichÃ©s
         foreach (Transform child in hb.transform)
         {
             Destroy(child.gameObject);
         }
 
-        // Instancie un prefab pour chaque ingrédient
+        // Instancie un prefab pour chaque ingrÃ©dient
         foreach (ItemData ingredient in recipe.ingredients)
         {
             GameObject go = Instantiate(ingredientPrefab, hb.transform);
@@ -34,25 +53,86 @@ public class OrderUI : MonoBehaviour
             }
         }
 
-        // Lance la coroutine pour détruire l’OrderUI après un délai
-        StartCoroutine(DestroyAfterDelay());
+        // Lance le timer de dÃ©compte
+        StartTimer(maxDelay);
     }
 
-    private IEnumerator DestroyAfterDelay()
+    public void ResetSlider()
     {
-        float elapsed = 0f;
-        while (elapsed < maxDelay)
+        if (timer != null)
         {
-            // Si tu as un Slider pour visualiser le temps restant
-            if (timer != null)
-            {
-                timer.value = 1f - (elapsed / maxDelay);
-            }
+            timer.value = timer.maxValue; // Commence Ã  droite (plein)
+            UpdateSliderColor(1f); // 100% = vert
+        }
+    }
 
-            elapsed += Time.deltaTime;
-            yield return null; // attend la prochaine frame
+    public void StopTimer()
+    {
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+            timerCoroutine = null;
+        }
+        ResetSlider();
+        HideSlider();
+    }
+
+    public void StartTimer(float duration)
+    {
+        // Toujours reset avant de lancer un nouveau timer
+        StopTimer();
+        ResetSlider();
+        timerCoroutine = StartCoroutine(TimerRoutine(duration));
+    }
+
+    private IEnumerator TimerRoutine(float duration)
+    {
+        if (sliderContainer != null)
+            sliderContainer.SetActive(true);
+
+        timer.minValue = 0f;
+        timer.maxValue = duration;
+        timer.value = duration; // Commence plein (Ã  droite)
+
+        float remaining = duration;
+
+        while (remaining > 0f)
+        {
+            remaining -= Time.deltaTime;
+            timer.value = Mathf.Clamp(remaining, 0f, duration);
+
+            // Mettre Ã  jour la couleur en fonction du pourcentage restant
+            float percentage = remaining / duration;
+            UpdateSliderColor(percentage);
+
+            yield return null;
         }
 
-        Destroy(gameObject);
+        // Forcer affichage final Ã  0 une derniÃ¨re fois
+        timer.value = 0f;
+        UpdateSliderColor(0f);
+
+        // Petite attente d'une frame pour que le 0 s'affiche bien
+        yield return null;
+
+    }
+
+    private void UpdateSliderColor(float percentage)
+    {
+        if (timerFill == null) return;
+
+        if (percentage > 0.66f)
+            timerFill.color = colorGreen;
+        else if (percentage > 0.33f)
+            timerFill.color = colorOrange;
+        else
+            timerFill.color = colorRed;
+    }
+
+    public void HideSlider()
+    {
+        if (sliderContainer != null)
+            sliderContainer.SetActive(false);
+        timerCoroutine = null;
     }
 }

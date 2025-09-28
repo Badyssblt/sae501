@@ -333,7 +333,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eb1636af0f0b6f4484c758a089029a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 10
+  moveSpeed: 7
+  sprintSpeed: 14
+  sprintDuration: 2
+  sprintCooldown: 3
+  sprintKey: 304
   horizontalAxis: P1_Horizontal
   verticalAxis: P1_Vertical
 --- !u!50 &7291183974157367107

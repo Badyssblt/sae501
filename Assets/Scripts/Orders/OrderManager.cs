@@ -58,7 +58,7 @@ public class OrderManager : MonoBehaviour
             var newOrderGO = Instantiate(orderPrefab, hb.transform);
             OrderUI orderGO = newOrderGO.GetComponent<OrderUI>();
             orderGO.recipe = order;
-            orderGO.maxDelay = Random.Range(10f, 20f);
+            orderGO.maxDelay = 10f;
             orderGO.UpdateRecipe();
         }
     }
@@ -66,7 +66,6 @@ public class OrderManager : MonoBehaviour
     public void CompleteOrder(RecipeData order, InventorySystem playerInventory, PlayerInteraction player)
     {
         currentOrders.Remove(order);
-
         // Supprime le bon order correspondant
         foreach (Transform child in hb.transform)
         {
