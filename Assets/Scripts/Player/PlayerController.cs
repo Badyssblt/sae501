@@ -21,11 +21,13 @@ public class PlayerController : MonoBehaviour
     [Header("Components")]
     private PlayerMovement playerMovement;
     private PlayerInteraction playerInteraction;
+    private Animator animator;
 
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerInteraction = GetComponent<PlayerInteraction>();
+        animator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -37,7 +39,6 @@ public class PlayerController : MonoBehaviour
             verticalAxis = $"P{playerId}_Vertical";
             actionButton = $"P{playerId}_B1";  // Changé pour correspondre à votre Input Manager
 
-            Debug.Log($"Player {playerId} configuré avec axes: {horizontalAxis}, {verticalAxis}, {actionButton}");
         }
     }
 
@@ -66,6 +67,8 @@ public class PlayerController : MonoBehaviour
         if (playerMovement != null)
         {
             playerMovement.SetMovement(currentMovement);
+            animator.SetFloat("MoveX", currentMovement.x);
+            animator.SetFloat("MoveY", currentMovement.y);
         }
 
         // Gérer l'action (appui sur le bouton)
@@ -87,6 +90,7 @@ public class PlayerController : MonoBehaviour
         {
             horizontal = Input.GetAxisRaw(horizontalAxis);
             vertical = Input.GetAxisRaw(verticalAxis);
+
             actionPressed = Input.GetButton(actionButton);
         }
         catch (System.Exception e)
