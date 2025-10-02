@@ -217,6 +217,10 @@ public class Counter : MonoBehaviour, IInteractable
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
         SliderTime sliderTime = GetComponent<SliderTime>();
         PlayerController playerController = playerInventory.GetComponent<PlayerController>();
+        if (needPlayerFreeze)
+        {
+            playerMovement.Freeze();
+        }
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
         AudioSource audioClip = playerMovement.GetComponent<AudioSource>();
@@ -244,6 +248,7 @@ public class Counter : MonoBehaviour, IInteractable
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
         UpdateVisual();
+        playerMovement.Unfreeze();
 
         transformCoroutine = null;
     }
@@ -256,6 +261,7 @@ public class Counter : MonoBehaviour, IInteractable
         if (!inRange) return;
 
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
+        PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
         if (type == CounterType.Assemblage)
         {

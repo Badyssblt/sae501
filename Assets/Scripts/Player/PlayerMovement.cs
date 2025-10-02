@@ -19,14 +19,18 @@ public class PlayerMovement : MonoBehaviour
     private bool isOnCooldown = false;
     private float sprintTimer = 0f;
     private float cooldownTimer = 0f;
+    public bool isFrozen = false; // Pour geler le joueur (ex: dans un counter)
 
     // Axes pour compatibilité
     [HideInInspector] public string horizontalAxis = "P1_Horizontal";
     [HideInInspector] public string verticalAxis = "P1_Vertical";
 
+    private PlayerController playerController;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerController = GetComponent<PlayerController>();
     }
 
     void Update()
@@ -35,9 +39,22 @@ public class PlayerMovement : MonoBehaviour
         HandleSprintTimers();
     }
 
+    public void Freeze()
+    {
+        isFrozen = true;
+        playerController.animator.SetFloat("MoveX", 0);
+        playerController.animator.SetFloat("MoveY", 0);
+        StopMovement();
+    }
+
+    public void Unfreeze()
+    {
+        isFrozen = false;
+    }
+
     void FixedUpdate()
     {
-        if (rb != null)
+        if (rb != null && !isFrozen)
         {
             float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
             rb.linearVelocity = movement * currentSpeed;

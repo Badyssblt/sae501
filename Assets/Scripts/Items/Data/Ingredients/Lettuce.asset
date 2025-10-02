@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Lettuce
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   name: Salade
-  sprite: {fileID: -5817237085361267720, guid: 113021d8e5e2e8244b290ea9cd55e209, type: 3}
+  sprite: {fileID: 21300000, guid: 113021d8e5e2e8244b290ea9cd55e209, type: 3}
   counterType: 2
   secondsToTransform: 0
   itemCrafted: {fileID: 0}
+  soundToTransform: {fileID: 0}
   category: 0
+  scoreCount: 1

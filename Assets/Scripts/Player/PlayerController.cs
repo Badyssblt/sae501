@@ -14,14 +14,17 @@ public class PlayerController : MonoBehaviour
     private string actionButton;
 
     [Header("Input State")]
-    private Vector2 currentMovement;
+    public Vector2 currentMovement;
     private bool actionPressed = false;
     private bool actionPreviousFrame = false;
 
     [Header("Components")]
     private PlayerMovement playerMovement;
     private PlayerInteraction playerInteraction;
-    private Animator animator;
+    public Animator animator;
+
+    private float freezeHoldTimer = 0f;
+    [SerializeField] private float holdToUnfreezeTime = 0.5f;
 
     private void Awake()
     {
@@ -51,19 +54,36 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Récupérer les inputs selon le type de joueur
+        // Toujours lire les inputs même si frozen
         if (isLocalPlayer)
-        {
-            // Joueurs locaux (slots 1-2) : lire l'Input Manager
             ProcessLocalInput();
-        }
         else
-        {
-            // Joueurs distants (slots 3-4) : lire depuis le réseau
             ProcessRemoteInput();
+
+        // --- GESTION FREEZE ---
+        if (playerMovement.isFrozen)
+        {
+            if (currentMovement != Vector2.zero)
+            {
+                freezeHoldTimer += Time.deltaTime;
+                if (freezeHoldTimer >= holdToUnfreezeTime)
+                {
+                    playerMovement.Unfreeze();
+                    freezeHoldTimer = 0f;
+                }
+            }
+            else
+            {
+                freezeHoldTimer = 0f;
+            }
+
+            // Empêche d'envoyer le mouvement tant que frozen
+            currentMovement = Vector2.zero;
+            actionPressed = false;
+            return;
         }
 
-        // Transmettre le mouvement à PlayerMovement
+        // --- Si pas frozen ---
         if (playerMovement != null)
         {
             playerMovement.SetMovement(currentMovement);
@@ -71,7 +91,7 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat("MoveY", currentMovement.y);
         }
 
-        // Gérer l'action (appui sur le bouton)
+        // Gestion action
         if (actionPressed && !actionPreviousFrame)
         {
             playerInteraction?.OnInteract();
@@ -79,6 +99,7 @@ public class PlayerController : MonoBehaviour
 
         actionPreviousFrame = actionPressed;
     }
+
 
     private void ProcessLocalInput()
     {

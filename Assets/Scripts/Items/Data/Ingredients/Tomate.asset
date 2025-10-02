@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Tomate
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   name: Tomate
-  sprite: {fileID: -170058514730257529, guid: b82f8a8d5e885ce43a489ae4de62d753, type: 3}
+  sprite: {fileID: 21300000, guid: dacc3e6648acfb84e97eaf88a44549d7, type: 3}
   counterType: 2
   secondsToTransform: 0
   itemCrafted: {fileID: 0}
+  soundToTransform: {fileID: 0}
   category: 0
+  scoreCount: 1
