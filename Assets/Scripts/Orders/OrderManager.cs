@@ -21,10 +21,9 @@ public class OrderManager : MonoBehaviour
         Instance = this;
         recipes = GameManager.Instance.recipes;
         hb = GetComponent<HorizontalLayoutGroup>();
-        StartCoroutine(OrderRoutine());
     }
 
-    private IEnumerator OrderRoutine()
+    public IEnumerator OrderRoutine()
     {
         while (true)
         {

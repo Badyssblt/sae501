@@ -86,6 +86,8 @@ public class GameManager : MonoBehaviour
         timeLeft = gameTime;
         score = 0;
 
+        StartCoroutine(OrderManager.Instance.OrderRoutine());
+
         NetworkManager.Instance?.StartGame(mapName);
         Debug.Log("Partie démarrée!");
     }
