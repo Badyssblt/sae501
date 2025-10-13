@@ -30,7 +30,8 @@ public class GameManager : MonoBehaviour
     private int score = 0;
     private Dictionary<int, GameObject> activePlayers = new Dictionary<int, GameObject>();
     private Dictionary<int, PlayerController> playerControllers = new Dictionary<int, PlayerController>();
-
+    private GameObject gameUI;
+    [SerializeField] private GameObject highscoreUI;
 
 
     [Header("Network")]
@@ -50,6 +51,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        gameUI = GameObject.FindWithTag("GameUI");
+        gameUI.SetActive(false);
+    }
+
+    public void StartMenu()
+    {
         InitializeGame();
 
         // S'abonner aux événements réseau
@@ -59,6 +66,11 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
             NetworkManager.Instance.OnGameStarted += StartGame;
         }
+
+        GameObject mainMenu = GameObject.FindWithTag("MainMenu");
+        mainMenu.SetActive(false);
+
+        gameUI.SetActive(true);
     }
 
     private void InitializeGame()
@@ -241,7 +253,10 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.GameOver;
         NetworkManager.Instance?.EndGame(score);
-        Debug.Log($"Partie terminée! Score: {score}");
+        if (Anatidae.HighscoreManager.IsHighscore(score))
+        {
+            Anatidae.HighscoreManager.ShowHighscoreInput(score);
+        }
     }
 
     public void AddScore(int points)

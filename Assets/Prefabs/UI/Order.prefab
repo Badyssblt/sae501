@@ -33,10 +33,10 @@ RectTransform:
   - {fileID: 6491772764958695932}
   m_Father: {fileID: 4269476635001207376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 14.999994}
-  m_SizeDelta: {x: 129.6855, y: 30}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -15}
+  m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4590373080666961508
 MonoBehaviour:
@@ -294,6 +294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OrderUI
   itemResult: {fileID: 8209157755553296941}
   timer: {fileID: 4590373080666961508}
+  sliderContainer: {fileID: 0}
   hb: {fileID: 5989356631941143565}
   ingredientPrefab: {fileID: 1019118792720422740, guid: 454de9ffa48cdaa479225fcc76e442a1, type: 3}
   colorGreen: {r: 0, g: 1, b: 0, a: 1}
@@ -357,8 +358,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -41.5}
-  m_SizeDelta: {x: -52.65, y: -17.5658}
+  m_AnchoredPosition: {x: 0, y: -49.800003}
+  m_SizeDelta: {x: -52.65, y: -39.8035}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2309333934005491670
 CanvasRenderer:
@@ -531,11 +532,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 4269476635001207376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -4.8, y: -14.5}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 48, y: 48}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2268346799728202331
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -608,11 +609,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 311043685233233279, guid: 454de9ffa48cdaa479225fcc76e442a1, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 32
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 311043685233233279, guid: 454de9ffa48cdaa479225fcc76e442a1, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 32
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 311043685233233279, guid: 454de9ffa48cdaa479225fcc76e442a1, type: 3}
       propertyPath: m_LocalPosition.x

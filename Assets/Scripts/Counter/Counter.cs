@@ -4,19 +4,17 @@ using UnityEngine;
 
 public class Counter : MonoBehaviour, IInteractable
 {
-    [SerializeField] private ItemData currentItem; // pour l'affichage
-    private List<ItemData> ingredientsOnCounter = new List<ItemData>();     // tous les ingrédients
+    [SerializeField] private ItemData currentItem;
+    [SerializeField] private CounterTypeScriptable counterData;
+    private List<ItemData> ingredientsOnCounter = new List<ItemData>();
     private SpriteRenderer itemToDisplay;
     private bool inRange = false;
     private PlayerInteraction player;
     private Coroutine transformCoroutine;
 
-    // Si le joueur peut attendre le temps d'un craft
-    public bool needPlayerFreeze = false;
+    // L'objet sur le comptoir (friteuse etc...)
+    [SerializeField] private SpriteRenderer counterObject;
 
-
-
-    public CounterType type;
 
     private bool wasItemCrafted = false;
 
@@ -31,7 +29,8 @@ public class Counter : MonoBehaviour, IInteractable
         {
             itemToDisplay = null;
         }
-    }
+        counterObject.sprite = counterData.counterSprite;
+    }   
 
 
     // Plus besoin d'Update, l'interaction se fait via PlayerInteraction.OnInteract()
@@ -66,8 +65,13 @@ public class Counter : MonoBehaviour, IInteractable
         }
         else
         {
-
-            itemToDisplay.sprite = currentItem.sprite;
+            if(!counterData.itemNeedHidden)
+            {
+                itemToDisplay.sprite = currentItem.sprite;
+            }else
+            {
+                itemToDisplay.sprite = null;
+            }
         }
     }
 
@@ -192,7 +196,7 @@ public class Counter : MonoBehaviour, IInteractable
             wasItemCrafted = false;
             return;
         }
-        if (itemToTransform.counterType != type)
+        if (itemToTransform.counterType != counterData.type)
         {
             Debug.Log("Mauvais comptoir !");
             return;
@@ -217,7 +221,7 @@ public class Counter : MonoBehaviour, IInteractable
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
         SliderTime sliderTime = GetComponent<SliderTime>();
         PlayerController playerController = playerInventory.GetComponent<PlayerController>();
-        if (needPlayerFreeze)
+        if (counterData.needPlayerFreeze)
         {
             playerMovement.Freeze();
         }
@@ -228,7 +232,7 @@ public class Counter : MonoBehaviour, IInteractable
         float elapsed = 0f;
         while (elapsed < itemToTransform.secondsToTransform)
         {
-            if (!inRange && needPlayerFreeze) // joueur est sorti → on stoppe
+            if (!inRange && counterData.needPlayerFreeze) // joueur est sorti → on stoppe
             {
                 sliderTime.StopTimer();
                 playerInventory.AddItem(itemToTransform);
@@ -263,11 +267,11 @@ public class Counter : MonoBehaviour, IInteractable
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
-        if (type == CounterType.Assemblage)
+        if (counterData.type == CounterType.Assemblage)
         {
             Crafting(playerInventory, player);
             return;
-        }else if(type == CounterType.Service)
+        }else if(counterData.type == CounterType.Service)
         {
             Serve(playerInventory, player);
         }
