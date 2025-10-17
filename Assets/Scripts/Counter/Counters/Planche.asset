@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Planche
   m_EditorClassIdentifier: Assembly-CSharp::CounterTypeScriptable
   type: 4
-  counterSprite: {fileID: -1670422846, guid: 78b008e43463b4b4182677d46e0590b1, type: 3}
+  counterSprite: {fileID: -3263552523185059316, guid: fbffe731c870d194b94731014a9721e8, type: 3}
   soundOnUse: {fileID: 0}
   needPlayerFreeze: 1
   itemNeedHidden: 0

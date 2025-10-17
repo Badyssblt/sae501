@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Friteuse
   m_EditorClassIdentifier: Assembly-CSharp::CounterTypeScriptable
   type: 1
-  counterSprite: {fileID: 21300000, guid: 8d9cbab96076593458003230cd448673, type: 3}
+  counterSprite: {fileID: 0}
   soundOnUse: {fileID: 0}
   needPlayerFreeze: 0
   itemNeedHidden: 1
