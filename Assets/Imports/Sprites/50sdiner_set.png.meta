@@ -1,0 +1,3850 @@
+fileFormatVersion: 2
+guid: 8c176ac213ab3f8409468c82b28e5689
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6634586797026596095
+    second: 50sdiner_set_0
+  - first:
+      213: 2245856148093482485
+    second: 50sdiner_set_1
+  - first:
+      213: 4910267763683669556
+    second: 50sdiner_set_2
+  - first:
+      213: -3089501651088556521
+    second: 50sdiner_set_3
+  - first:
+      213: 2080878825752368963
+    second: 50sdiner_set_4
+  - first:
+      213: 6960629096771447052
+    second: 50sdiner_set_5
+  - first:
+      213: -3428516718729946987
+    second: 50sdiner_set_6
+  - first:
+      213: -4010512762590064909
+    second: 50sdiner_set_7
+  - first:
+      213: -1894538935074497841
+    second: 50sdiner_set_8
+  - first:
+      213: -225790252502096089
+    second: 50sdiner_set_9
+  - first:
+      213: -3789603618437292235
+    second: 50sdiner_set_10
+  - first:
+      213: 6586987611387617678
+    second: 50sdiner_set_11
+  - first:
+      213: -7083283372222910454
+    second: 50sdiner_set_12
+  - first:
+      213: -8475622917408205272
+    second: 50sdiner_set_13
+  - first:
+      213: 2943590175358162824
+    second: 50sdiner_set_14
+  - first:
+      213: 8499382905898800819
+    second: 50sdiner_set_15
+  - first:
+      213: -6943770226729722424
+    second: 50sdiner_set_16
+  - first:
+      213: 7295350556277194214
+    second: 50sdiner_set_17
+  - first:
+      213: -1189486632924194070
+    second: 50sdiner_set_18
+  - first:
+      213: -8770013054845073845
+    second: 50sdiner_set_19
+  - first:
+      213: 5211455701501343000
+    second: 50sdiner_set_20
+  - first:
+      213: 3728516873572036519
+    second: 50sdiner_set_21
+  - first:
+      213: -2430087153916846732
+    second: 50sdiner_set_22
+  - first:
+      213: -3506304317466773054
+    second: 50sdiner_set_23
+  - first:
+      213: -1963170973698132431
+    second: 50sdiner_set_24
+  - first:
+      213: -6221325111963987296
+    second: 50sdiner_set_25
+  - first:
+      213: -2133311722503272826
+    second: 50sdiner_set_26
+  - first:
+      213: 3717805842735120106
+    second: 50sdiner_set_27
+  - first:
+      213: -6468165698844914058
+    second: 50sdiner_set_28
+  - first:
+      213: -8311776046406466096
+    second: 50sdiner_set_29
+  - first:
+      213: -228847306664247904
+    second: 50sdiner_set_30
+  - first:
+      213: -6319229263332263007
+    second: 50sdiner_set_31
+  - first:
+      213: 391800893353978167
+    second: 50sdiner_set_32
+  - first:
+      213: 7150947371172582234
+    second: 50sdiner_set_33
+  - first:
+      213: 8775823527748203969
+    second: 50sdiner_set_34
+  - first:
+      213: -7507316266825817803
+    second: 50sdiner_set_35
+  - first:
+      213: 3179351082132443917
+    second: 50sdiner_set_36
+  - first:
+      213: 6815529081367168845
+    second: 50sdiner_set_37
+  - first:
+      213: 6150580228688944004
+    second: 50sdiner_set_38
+  - first:
+      213: 3294704819326823609
+    second: 50sdiner_set_39
+  - first:
+      213: -5678138413459419759
+    second: 50sdiner_set_40
+  - first:
+      213: -141949078135937631
+    second: 50sdiner_set_41
+  - first:
+      213: 7760744275130559650
+    second: 50sdiner_set_42
+  - first:
+      213: 526995107508190755
+    second: 50sdiner_set_43
+  - first:
+      213: 8063560536062932385
+    second: 50sdiner_set_44
+  - first:
+      213: -9018712899351259501
+    second: 50sdiner_set_45
+  - first:
+      213: 5608716068607738067
+    second: 50sdiner_set_46
+  - first:
+      213: -8210890233098656955
+    second: 50sdiner_set_47
+  - first:
+      213: -7601242088516579622
+    second: 50sdiner_set_48
+  - first:
+      213: -4922767903067651308
+    second: 50sdiner_set_49
+  - first:
+      213: -6380698209794009082
+    second: 50sdiner_set_50
+  - first:
+      213: 4314333422354241726
+    second: 50sdiner_set_51
+  - first:
+      213: -7307540505752598114
+    second: 50sdiner_set_52
+  - first:
+      213: -2687759360960151498
+    second: 50sdiner_set_53
+  - first:
+      213: 3834503291100165708
+    second: 50sdiner_set_54
+  - first:
+      213: -8447715678213394503
+    second: 50sdiner_set_55
+  - first:
+      213: 3084666141948277498
+    second: 50sdiner_set_56
+  - first:
+      213: -2219722233446639109
+    second: 50sdiner_set_57
+  - first:
+      213: 2058023383882486024
+    second: 50sdiner_set_58
+  - first:
+      213: 9136097734939603731
+    second: 50sdiner_set_59
+  - first:
+      213: -846685134348956831
+    second: 50sdiner_set_60
+  - first:
+      213: 3848067731496386658
+    second: 50sdiner_set_61
+  - first:
+      213: 1784385414057213385
+    second: 50sdiner_set_62
+  - first:
+      213: 5543472202105074727
+    second: 50sdiner_set_63
+  - first:
+      213: -14991304704207329
+    second: 50sdiner_set_64
+  - first:
+      213: 7291841206433266785
+    second: 50sdiner_set_65
+  - first:
+      213: 8399773844432285436
+    second: 50sdiner_set_66
+  - first:
+      213: -8597068573275236265
+    second: 50sdiner_set_67
+  - first:
+      213: 3327404924706690607
+    second: 50sdiner_set_68
+  - first:
+      213: -4136516835627860
+    second: 50sdiner_set_69
+  - first:
+      213: 6511525244388867890
+    second: 50sdiner_set_70
+  - first:
+      213: -8085510904744827899
+    second: 50sdiner_set_71
+  - first:
+      213: -7446209372654594285
+    second: 50sdiner_set_72
+  - first:
+      213: -419265373825576057
+    second: 50sdiner_set_73
+  - first:
+      213: 8992241790130109466
+    second: 50sdiner_set_74
+  - first:
+      213: -247457134631282069
+    second: 50sdiner_set_75
+  - first:
+      213: 6101616744582598649
+    second: 50sdiner_set_76
+  - first:
+      213: 4603824119424377718
+    second: 50sdiner_set_77
+  - first:
+      213: -4862052048972397675
+    second: 50sdiner_set_78
+  - first:
+      213: -2330265599553797672
+    second: 50sdiner_set_79
+  - first:
+      213: 2756958817857429816
+    second: 50sdiner_set_80
+  - first:
+      213: -5645619683266581185
+    second: 50sdiner_set_81
+  - first:
+      213: -6975863102090401541
+    second: 50sdiner_set_82
+  - first:
+      213: -7959539852731900869
+    second: 50sdiner_set_83
+  - first:
+      213: 3112315982422745978
+    second: 50sdiner_set_84
+  - first:
+      213: 9207217932610805060
+    second: 50sdiner_set_85
+  - first:
+      213: -5481824893079949843
+    second: 50sdiner_set_86
+  - first:
+      213: -3930087563097899872
+    second: 50sdiner_set_87
+  - first:
+      213: 3327703048784126506
+    second: 50sdiner_set_88
+  - first:
+      213: 5729259484733963289
+    second: 50sdiner_set_89
+  - first:
+      213: 7014746776058941864
+    second: 50sdiner_set_90
+  - first:
+      213: 3511947308328932263
+    second: 50sdiner_set_91
+  - first:
+      213: 5946571867270476239
+    second: 50sdiner_set_92
+  - first:
+      213: 6855949729624280785
+    second: 50sdiner_set_93
+  - first:
+      213: -5320262258743083974
+    second: 50sdiner_set_94
+  - first:
+      213: -3435420876765896907
+    second: 50sdiner_set_95
+  - first:
+      213: -2890378510994317609
+    second: 50sdiner_set_96
+  - first:
+      213: -3348094825815496362
+    second: 50sdiner_set_97
+  - first:
+      213: 3308914599337873627
+    second: 50sdiner_set_98
+  - first:
+      213: 4457084898524717481
+    second: 50sdiner_set_99
+  - first:
+      213: -4891940059979407774
+    second: 50sdiner_set_100
+  - first:
+      213: -5801820461536995501
+    second: 50sdiner_set_101
+  - first:
+      213: -1292186036350054747
+    second: 50sdiner_set_102
+  - first:
+      213: -5057601629223678452
+    second: 50sdiner_set_103
+  - first:
+      213: -4058969941319332538
+    second: 50sdiner_set_104
+  - first:
+      213: -5456786469743396705
+    second: 50sdiner_set_105
+  - first:
+      213: 3405395632369893153
+    second: 50sdiner_set_106
+  - first:
+      213: 9094286913498658211
+    second: 50sdiner_set_107
+  - first:
+      213: -3475118899262193393
+    second: 50sdiner_set_108
+  - first:
+      213: 670322994736049361
+    second: 50sdiner_set_109
+  - first:
+      213: 3109968713417159692
+    second: 50sdiner_set_110
+  - first:
+      213: -5181691419380769260
+    second: 50sdiner_set_111
+  - first:
+      213: -6067546458147935698
+    second: 50sdiner_set_112
+  - first:
+      213: 6701156672125212524
+    second: 50sdiner_set_113
+  - first:
+      213: -2038968466700787973
+    second: 50sdiner_set_114
+  - first:
+      213: 5604069896914784584
+    second: 50sdiner_set_115
+  - first:
+      213: 8095439502487444321
+    second: 50sdiner_set_116
+  - first:
+      213: 6985235429312454444
+    second: 50sdiner_set_117
+  - first:
+      213: 3630015367134359849
+    second: 50sdiner_set_118
+  - first:
+      213: -3279704886334272678
+    second: 50sdiner_set_119
+  - first:
+      213: -6511464336735908663
+    second: 50sdiner_set_120
+  - first:
+      213: 622825154333573496
+    second: 50sdiner_set_121
+  - first:
+      213: 2948952621583355723
+    second: 50sdiner_set_122
+  - first:
+      213: 8085157454297004340
+    second: 50sdiner_set_123
+  - first:
+      213: 6604025907707948772
+    second: 50sdiner_set_124
+  - first:
+      213: -6442326028744256741
+    second: 50sdiner_set_125
+  - first:
+      213: 2845562308481353182
+    second: 50sdiner_set_126
+  - first:
+      213: 220060370556503744
+    second: 50sdiner_set_127
+  - first:
+      213: -8471610147859640762
+    second: 50sdiner_set_128
+  - first:
+      213: -3160033853364895821
+    second: 50sdiner_set_129
+  - first:
+      213: -1308680131574929003
+    second: 50sdiner_set_130
+  - first:
+      213: 1497471485165802442
+    second: 50sdiner_set_131
+  - first:
+      213: -772467021576565582
+    second: 50sdiner_set_132
+  - first:
+      213: -5388935034730048485
+    second: 50sdiner_set_133
+  - first:
+      213: 6128767711654451627
+    second: 50sdiner_set_134
+  - first:
+      213: -1949147050692124084
+    second: 50sdiner_set_135
+  - first:
+      213: 6489485171762337321
+    second: 50sdiner_set_136
+  - first:
+      213: 3599283230072595614
+    second: 50sdiner_set_137
+  - first:
+      213: -2367965219677240801
+    second: 50sdiner_set_138
+  - first:
+      213: -3903682774075985378
+    second: 50sdiner_set_139
+  - first:
+      213: -4722708627109213467
+    second: 50sdiner_set_140
+  - first:
+      213: 3198471333343809045
+    second: 50sdiner_set_141
+  - first:
+      213: -1458939969200597712
+    second: 50sdiner_set_142
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: 50sdiner_set_0
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 388
+        width: 16
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10babbba5763de3a0800000000000000
+      internalID: -6634586797026596095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 386
+        width: 16
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f53db38442ea2f10800000000000000
+      internalID: 2245856148093482485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 387
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 436ba6ee386c42440800000000000000
+      internalID: 4910267763683669556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_3
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 384
+        width: 26
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71e32e10e92ef15d0800000000000000
+      internalID: -3089501651088556521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_4
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 385
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3471a9d5444c0ec10800000000000000
+      internalID: 2080878825752368963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_5
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 385
+        width: 22
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c096f46d84f199060800000000000000
+      internalID: 6960629096771447052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_6
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 404
+        width: 14
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5981d9995367b60d0800000000000000
+      internalID: -3428516718729946987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_7
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 324
+        width: 86
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fe06aa14ebc758c0800000000000000
+      internalID: -4010512762590064909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_8
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 320
+        width: 96
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcadcb150ee35b5e0800000000000000
+      internalID: -1894538935074497841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_9
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 321
+        width: 24
+        height: 54
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 727eddd26f4dddcf0800000000000000
+      internalID: -225790252502096089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_10
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 321
+        width: 42
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53f9283569f986bc0800000000000000
+      internalID: -3789603618437292235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_11
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 323
+        width: 42
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8168ac455ea96b50800000000000000
+      internalID: 6586987611387617678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_12
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 324
+        width: 14
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a00f8334d4f13bd90800000000000000
+      internalID: -7083283372222910454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_13
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 324
+        width: 54
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82659b5ccd9806a80800000000000000
+      internalID: -8475622917408205272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_14
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 324
+        width: 22
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8879d8e2babb9d820800000000000000
+      internalID: 2943590175358162824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_15
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 260
+        width: 16
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b61024a8bfd3f570800000000000000
+      internalID: 8499382905898800819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_16
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 258
+        width: 16
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cd57d9b4c5c2af90800000000000000
+      internalID: -6943770226729722424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_17
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 259
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6edb9d2bdaa4e3560800000000000000
+      internalID: 7295350556277194214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_18
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 256
+        width: 26
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aea5a73a5381e7fe0800000000000000
+      internalID: -1189486632924194070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_19
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 257
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b46cb669797aa4680800000000000000
+      internalID: -8770013054845073845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_20
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 257
+        width: 22
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 815fbaa595fc25840800000000000000
+      internalID: 5211455701501343000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_21
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 196
+        width: 86
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7afaf4c875a5eb330800000000000000
+      internalID: 3728516873572036519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_22
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 276
+        width: 84
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47ddb81db98964ed0800000000000000
+      internalID: -2430087153916846732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_23
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 193
+        width: 24
+        height: 54
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c979faecca175fc0800000000000000
+      internalID: -3506304317466773054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_24
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 193
+        width: 42
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1367d57966a61c4e0800000000000000
+      internalID: -1963170973698132431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_25
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 196
+        width: 54
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a25b2dc5c969a9a0800000000000000
+      internalID: -6221325111963987296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_26
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 196
+        width: 22
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68604098a44f462e0800000000000000
+      internalID: -2133311722503272826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_27
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 228
+        width: 84
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aee391857bc489330800000000000000
+      internalID: 3717805842735120106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_28
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 195
+        width: 42
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67e8bf311957c36a0800000000000000
+      internalID: -6468165698844914058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_29
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 196
+        width: 14
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d5875539b3a6ac80800000000000000
+      internalID: -8311776046406466096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_30
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 193
+        width: 22
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0adf87a4698f2dcf0800000000000000
+      internalID: -228847306664247904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_31
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 209
+        width: 26
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1abb3d837769d48a0800000000000000
+      internalID: -6319229263332263007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_32
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 200
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7396b0f26d4ff6500800000000000000
+      internalID: 391800893353978167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_33
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 193
+        width: 26
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a53514a2fb44d3360800000000000000
+      internalID: 7150947371172582234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_34
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 132
+        width: 16
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c572fe800df9c970800000000000000
+      internalID: 8775823527748203969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_35
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 130
+        width: 16
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 531e55b71a7a0d790800000000000000
+      internalID: -7507316266825817803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_36
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 128
+        width: 26
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0312cad6f25f1c20800000000000000
+      internalID: 3179351082132443917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_37
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 129
+        width: 22
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d470c3bd69f959e50800000000000000
+      internalID: 6815529081367168845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_38
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 68
+        width: 86
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48b9b8d71204b5550800000000000000
+      internalID: 6150580228688944004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_39
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 164
+        width: 84
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bc2ebbb39429bd20800000000000000
+      internalID: 3294704819326823609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_40
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 131
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19d404072333331b0800000000000000
+      internalID: -5678138413459419759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_41
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 129
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a56385c012b70ef0800000000000000
+      internalID: -141949078135937631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_42
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 68
+        width: 22
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2acadcfccc3b3bb60800000000000000
+      internalID: 7760744275130559650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_43
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 131
+        width: 20
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32ef4651243405700800000000000000
+      internalID: 526995107508190755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_44
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 131
+        width: 20
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a5b3e0c59587ef60800000000000000
+      internalID: 8063560536062932385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_45
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 129
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3965fe6b66817d280800000000000000
+      internalID: -9018712899351259501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_46
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 65
+        width: 24
+        height: 54
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d0c3635c8926dd40800000000000000
+      internalID: 5608716068607738067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_47
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 113
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5432e6e06de0d0e80800000000000000
+      internalID: -8210890233098656955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_48
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 98
+        width: 22
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ade8836f796f28690800000000000000
+      internalID: -7601242088516579622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_49
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 99
+        width: 28
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41345f19ca0deabb0800000000000000
+      internalID: -4922767903067651308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_50
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 65
+        width: 42
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 608d14ad8c43377a0800000000000000
+      internalID: -6380698209794009082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_51
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 68
+        width: 54
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb8150aa3679fdb30800000000000000
+      internalID: 4314333422354241726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_52
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 97
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9986d480a6669a90800000000000000
+      internalID: -7307540505752598114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_53
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 97
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6304d300a1923bad0800000000000000
+      internalID: -2687759360960151498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_54
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 67
+        width: 42
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c46771c5d64e63530800000000000000
+      internalID: 3834503291100165708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_55
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 68
+        width: 14
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bfa79c395fa3ca80800000000000000
+      internalID: -8447715678213394503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_56
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 81
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af27089438feeca20800000000000000
+      internalID: 3084666141948277498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_57
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 81
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf95067a366f131e0800000000000000
+      internalID: -2219722233446639109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_58
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 81
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80153cf1d519f8c10800000000000000
+      internalID: 2058023383882486024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_59
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 81
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 313735c1c70f9ce70800000000000000
+      internalID: 9136097734939603731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_60
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 81
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16bc6823b58ff34f0800000000000000
+      internalID: -846685134348956831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_61
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 81
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2604c7fb635176530800000000000000
+      internalID: 3848067731496386658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_62
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 65
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cdb44b741963c810800000000000000
+      internalID: 1784385414057213385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_63
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 65
+        width: 4
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 724b9b4e89e5eec40800000000000000
+      internalID: 5543472202105074727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_64
+      rect:
+        serializedVersion: 2
+        x: 375
+        y: 71
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f16d260ec7dbacff0800000000000000
+      internalID: -14991304704207329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_65
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 66
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16cb20481f2d13560800000000000000
+      internalID: 7291841206433266785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_66
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 66
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfee00fbecdf19470800000000000000
+      internalID: 8399773844432285436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_67
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 66
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 758514c8ea311b880800000000000000
+      internalID: -8597068573275236265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_68
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 66
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f26170156215d2e20800000000000000
+      internalID: 3327404924706690607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_69
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 66
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caca76f1cdd41fff0800000000000000
+      internalID: -4136516835627860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_70
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 66
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23f79c1d5b59d5a50800000000000000
+      internalID: 6511525244388867890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_71
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 66
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5042327cbae7acf80800000000000000
+      internalID: -8085510904744827899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_72
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 33
+        width: 13
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3171dbbf600c9a890800000000000000
+      internalID: -7446209372654594285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_73
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 34
+        width: 14
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78351862d587e2af0800000000000000
+      internalID: -419265373825576057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_74
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 35
+        width: 8
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1cb023e34cdacc70800000000000000
+      internalID: 8992241790130109466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_75
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 35
+        width: 11
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6a9a211c0bd09cf0800000000000000
+      internalID: -247457134631282069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_76
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 33
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ffcb68f91c4da450800000000000000
+      internalID: 6101616744582598649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_77
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 33
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6736aaef4a114ef30800000000000000
+      internalID: 4603824119424377718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_78
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 49
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5934a85fb65868cb0800000000000000
+      internalID: -4862052048972397675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_79
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 49
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d1884298cb39afd0800000000000000
+      internalID: -2330265599553797672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_80
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 32
+        width: 13
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 831e5c6107fa24620800000000000000
+      internalID: 2756958817857429816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_81
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 16
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3d21f15fcab6a1b0800000000000000
+      internalID: -5645619683266581185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_82
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 33
+        width: 29
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf8a526e771c03f90800000000000000
+      internalID: -6975863102090401541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_83
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 32
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3c9956eca80a8190800000000000000
+      internalID: -7959539852731900869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_84
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 50
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a73241175ea213b20800000000000000
+      internalID: 3112315982422745978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_85
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 50
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44d9fd28deb96cf70800000000000000
+      internalID: 9207217932610805060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_86
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 50
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ded631fbd45ace3b0800000000000000
+      internalID: -5481824893079949843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_87
+      rect:
+        serializedVersion: 2
+        x: 409
+        y: 50
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ac7e511f268579c0800000000000000
+      internalID: -3930087563097899872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_88
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 50
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2223ccba406e2e20800000000000000
+      internalID: 3327703048784126506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_89
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 50
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91cfa9d752b628f40800000000000000
+      internalID: 5729259484733963289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_90
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 2
+        width: 14
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a15f40f603695160800000000000000
+      internalID: 7014746776058941864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_91
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 2
+        width: 14
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a3d5d64871fcb030800000000000000
+      internalID: 3511947308328932263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_92
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 1
+        width: 19
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc1fcf36b97768250800000000000000
+      internalID: 5946571867270476239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_93
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 2
+        width: 26
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dec03864f9352f50800000000000000
+      internalID: 6855949729624280785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_94
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 2
+        width: 24
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3c73b3e9a1aa26b0800000000000000
+      internalID: -5320262258743083974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_95
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 33
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53f586a0aeee250d0800000000000000
+      internalID: -3435420876765896907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_96
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 33
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ded2c1ee0053e7d0800000000000000
+      internalID: -2890378510994317609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_97
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 34
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 659a1f0be7d2981d0800000000000000
+      internalID: -3348094825815496362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_98
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 34
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd053a5fb40abed20800000000000000
+      internalID: 3308914599337873627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_99
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a1e25eb91fbadd30800000000000000
+      internalID: 4457084898524717481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_100
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26e9c6e1f665c1cb0800000000000000
+      internalID: -4891940059979407774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_101
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3579e73970bcb7fa0800000000000000
+      internalID: -5801820461536995501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_102
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ae82af65ab311ee0800000000000000
+      internalID: -1292186036350054747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_103
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0e8fa25d1acfc9b0800000000000000
+      internalID: -5057601629223678452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_104
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64d4cadf754aba7c0800000000000000
+      internalID: -4058969941319332538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_105
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 34
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9879c7fd999544b0800000000000000
+      internalID: -5456786469743396705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_106
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 1
+        width: 13
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12ff21bf845624f20800000000000000
+      internalID: 3405395632369893153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_107
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 2
+        width: 14
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a53294a3c5653e70800000000000000
+      internalID: 9094286913498658211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_108
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 17
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f010b39e5c5e5cfc0800000000000000
+      internalID: -3475118899262193393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_109
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 2
+        width: 8
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dca40256377d4900800000000000000
+      internalID: 670322994736049361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_110
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 2
+        width: 8
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c04fec94114d82b20800000000000000
+      internalID: 3109968713417159692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_111
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 2
+        width: 8
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41e9e1c9b1fe618b0800000000000000
+      internalID: -5181691419380769260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_112
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 17
+        width: 48
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2aa9efb4aebbcba0800000000000000
+      internalID: -6067546458147935698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_113
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 18
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6713423d7a4ffc50800000000000000
+      internalID: 6701156672125212524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_114
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 16
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfe93128bf024b3e0800000000000000
+      internalID: -2038968466700787973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_115
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 17
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 841d01e21e7a5cd40800000000000000
+      internalID: 5604069896914784584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_116
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 17
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16bdd660657c85070800000000000000
+      internalID: 8095439502487444321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_117
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 17
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2f54a41d9a80f060800000000000000
+      internalID: 6985235429312454444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_118
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 18
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 921b0476eb7606230800000000000000
+      internalID: 3630015367134359849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_119
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 18
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5bcee158c52c72d0800000000000000
+      internalID: -3279704886334272678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_120
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 18
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cc4b395fa1a2a5a0800000000000000
+      internalID: -6511464336735908663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_121
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 18
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8710b319d28b4a800800000000000000
+      internalID: 622825154333573496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_122
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 18
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4fceecf8c8cce820800000000000000
+      internalID: 2948952621583355723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_123
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 18
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43979702edf343070800000000000000
+      internalID: 8085157454297004340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_124
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 18
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4eea86cc29636ab50800000000000000
+      internalID: 6604025907707948772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_125
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 2
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1312791c924896a0800000000000000
+      internalID: -6442326028744256741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_126
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 1
+        width: 32
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed58547d7d77d7720800000000000000
+      internalID: 2845562308481353182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_127
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 2
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c64928bdbfcd0300800000000000000
+      internalID: 220060370556503744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_128
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64e4b3d747bce6a80800000000000000
+      internalID: -8471610147859640762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_129
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 3
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bff9f3f3fd4524d0800000000000000
+      internalID: -3160033853364895821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_130
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 3
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5996dd0aa52a6dde0800000000000000
+      internalID: -1308680131574929003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_131
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 1
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac3959eb16618c410800000000000000
+      internalID: 1497471485165802442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_132
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 2
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bc893a2655a745f0800000000000000
+      internalID: -772467021576565582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_133
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 1
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1412414328a635b0800000000000000
+      internalID: -5388935034730048485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_134
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 3
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba91c0c13c1cd0550800000000000000
+      internalID: 6128767711654451627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_135
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 1
+        width: 9
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c42ee7c951d33f4e0800000000000000
+      internalID: -1949147050692124084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_136
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9261f0681684f0a50800000000000000
+      internalID: 6489485171762337321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_137
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e946f76270933f130800000000000000
+      internalID: 3599283230072595614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_138
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1288a0cd2c432fd0800000000000000
+      internalID: -2367965219677240801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_139
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e12b367133553d9c0800000000000000
+      internalID: -3903682774075985378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_140
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ea8b7f8681957eb0800000000000000
+      internalID: -4722708627109213467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_141
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51e4a304bb0436c20800000000000000
+      internalID: 3198471333343809045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 50sdiner_set_142
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 2
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 035dd2be3ddc0cbe0800000000000000
+      internalID: -1458939969200597712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1007d69d9594dd44aae1c923a3ef1b66
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      50sdiner_set_0: -6634586797026596095
+      50sdiner_set_1: 2245856148093482485
+      50sdiner_set_10: -3789603618437292235
+      50sdiner_set_100: -4891940059979407774
+      50sdiner_set_101: -5801820461536995501
+      50sdiner_set_102: -1292186036350054747
+      50sdiner_set_103: -5057601629223678452
+      50sdiner_set_104: -4058969941319332538
+      50sdiner_set_105: -5456786469743396705
+      50sdiner_set_106: 3405395632369893153
+      50sdiner_set_107: 9094286913498658211
+      50sdiner_set_108: -3475118899262193393
+      50sdiner_set_109: 670322994736049361
+      50sdiner_set_11: 6586987611387617678
+      50sdiner_set_110: 3109968713417159692
+      50sdiner_set_111: -5181691419380769260
+      50sdiner_set_112: -6067546458147935698
+      50sdiner_set_113: 6701156672125212524
+      50sdiner_set_114: -2038968466700787973
+      50sdiner_set_115: 5604069896914784584
+      50sdiner_set_116: 8095439502487444321
+      50sdiner_set_117: 6985235429312454444
+      50sdiner_set_118: 3630015367134359849
+      50sdiner_set_119: -3279704886334272678
+      50sdiner_set_12: -7083283372222910454
+      50sdiner_set_120: -6511464336735908663
+      50sdiner_set_121: 622825154333573496
+      50sdiner_set_122: 2948952621583355723
+      50sdiner_set_123: 8085157454297004340
+      50sdiner_set_124: 6604025907707948772
+      50sdiner_set_125: -6442326028744256741
+      50sdiner_set_126: 2845562308481353182
+      50sdiner_set_127: 220060370556503744
+      50sdiner_set_128: -8471610147859640762
+      50sdiner_set_129: -3160033853364895821
+      50sdiner_set_13: -8475622917408205272
+      50sdiner_set_130: -1308680131574929003
+      50sdiner_set_131: 1497471485165802442
+      50sdiner_set_132: -772467021576565582
+      50sdiner_set_133: -5388935034730048485
+      50sdiner_set_134: 6128767711654451627
+      50sdiner_set_135: -1949147050692124084
+      50sdiner_set_136: 6489485171762337321
+      50sdiner_set_137: 3599283230072595614
+      50sdiner_set_138: -2367965219677240801
+      50sdiner_set_139: -3903682774075985378
+      50sdiner_set_14: 2943590175358162824
+      50sdiner_set_140: -4722708627109213467
+      50sdiner_set_141: 3198471333343809045
+      50sdiner_set_142: -1458939969200597712
+      50sdiner_set_15: 8499382905898800819
+      50sdiner_set_16: -6943770226729722424
+      50sdiner_set_17: 7295350556277194214
+      50sdiner_set_18: -1189486632924194070
+      50sdiner_set_19: -8770013054845073845
+      50sdiner_set_2: 4910267763683669556
+      50sdiner_set_20: 5211455701501343000
+      50sdiner_set_21: 3728516873572036519
+      50sdiner_set_22: -2430087153916846732
+      50sdiner_set_23: -3506304317466773054
+      50sdiner_set_24: -1963170973698132431
+      50sdiner_set_25: -6221325111963987296
+      50sdiner_set_26: -2133311722503272826
+      50sdiner_set_27: 3717805842735120106
+      50sdiner_set_28: -6468165698844914058
+      50sdiner_set_29: -8311776046406466096
+      50sdiner_set_3: -3089501651088556521
+      50sdiner_set_30: -228847306664247904
+      50sdiner_set_31: -6319229263332263007
+      50sdiner_set_32: 391800893353978167
+      50sdiner_set_33: 7150947371172582234
+      50sdiner_set_34: 8775823527748203969
+      50sdiner_set_35: -7507316266825817803
+      50sdiner_set_36: 3179351082132443917
+      50sdiner_set_37: 6815529081367168845
+      50sdiner_set_38: 6150580228688944004
+      50sdiner_set_39: 3294704819326823609
+      50sdiner_set_4: 2080878825752368963
+      50sdiner_set_40: -5678138413459419759
+      50sdiner_set_41: -141949078135937631
+      50sdiner_set_42: 7760744275130559650
+      50sdiner_set_43: 526995107508190755
+      50sdiner_set_44: 8063560536062932385
+      50sdiner_set_45: -9018712899351259501
+      50sdiner_set_46: 5608716068607738067
+      50sdiner_set_47: -8210890233098656955
+      50sdiner_set_48: -7601242088516579622
+      50sdiner_set_49: -4922767903067651308
+      50sdiner_set_5: 6960629096771447052
+      50sdiner_set_50: -6380698209794009082
+      50sdiner_set_51: 4314333422354241726
+      50sdiner_set_52: -7307540505752598114
+      50sdiner_set_53: -2687759360960151498
+      50sdiner_set_54: 3834503291100165708
+      50sdiner_set_55: -8447715678213394503
+      50sdiner_set_56: 3084666141948277498
+      50sdiner_set_57: -2219722233446639109
+      50sdiner_set_58: 2058023383882486024
+      50sdiner_set_59: 9136097734939603731
+      50sdiner_set_6: -3428516718729946987
+      50sdiner_set_60: -846685134348956831
+      50sdiner_set_61: 3848067731496386658
+      50sdiner_set_62: 1784385414057213385
+      50sdiner_set_63: 5543472202105074727
+      50sdiner_set_64: -14991304704207329
+      50sdiner_set_65: 7291841206433266785
+      50sdiner_set_66: 8399773844432285436
+      50sdiner_set_67: -8597068573275236265
+      50sdiner_set_68: 3327404924706690607
+      50sdiner_set_69: -4136516835627860
+      50sdiner_set_7: -4010512762590064909
+      50sdiner_set_70: 6511525244388867890
+      50sdiner_set_71: -8085510904744827899
+      50sdiner_set_72: -7446209372654594285
+      50sdiner_set_73: -419265373825576057
+      50sdiner_set_74: 8992241790130109466
+      50sdiner_set_75: -247457134631282069
+      50sdiner_set_76: 6101616744582598649
+      50sdiner_set_77: 4603824119424377718
+      50sdiner_set_78: -4862052048972397675
+      50sdiner_set_79: -2330265599553797672
+      50sdiner_set_8: -1894538935074497841
+      50sdiner_set_80: 2756958817857429816
+      50sdiner_set_81: -5645619683266581185
+      50sdiner_set_82: -6975863102090401541
+      50sdiner_set_83: -7959539852731900869
+      50sdiner_set_84: 3112315982422745978
+      50sdiner_set_85: 9207217932610805060
+      50sdiner_set_86: -5481824893079949843
+      50sdiner_set_87: -3930087563097899872
+      50sdiner_set_88: 3327703048784126506
+      50sdiner_set_89: 5729259484733963289
+      50sdiner_set_9: -225790252502096089
+      50sdiner_set_90: 7014746776058941864
+      50sdiner_set_91: 3511947308328932263
+      50sdiner_set_92: 5946571867270476239
+      50sdiner_set_93: 6855949729624280785
+      50sdiner_set_94: -5320262258743083974
+      50sdiner_set_95: -3435420876765896907
+      50sdiner_set_96: -2890378510994317609
+      50sdiner_set_97: -3348094825815496362
+      50sdiner_set_98: 3308914599337873627
+      50sdiner_set_99: 4457084898524717481
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
