@@ -5,8 +5,25 @@ using UnityEngine.UI;
 
 public class OrderManager : MonoBehaviour
 {
+    // Classe pour lier une commande à un PNJ
+    [System.Serializable]
+    public class PNJOrder
+    {
+        public RecipeData recipe;
+        public PNJClient client;
+        public GameObject orderUI;
+
+        public PNJOrder(RecipeData recipe, PNJClient client, GameObject orderUI)
+        {
+            this.recipe = recipe;
+            this.client = client;
+            this.orderUI = orderUI;
+        }
+    }
+
     private RecipeData[] recipes;
     public List<RecipeData> currentOrders = new List<RecipeData>();
+    public List<PNJOrder> pnjOrders = new List<PNJOrder>(); // Commandes des PNJ
     private HorizontalLayoutGroup hb;
 
     [SerializeField] private int maxOrders = 3;
@@ -23,6 +40,8 @@ public class OrderManager : MonoBehaviour
         hb = GetComponent<HorizontalLayoutGroup>();
     }
 
+    // Ces méthodes ne sont plus utilisées - les commandes sont créées par les PNJ
+    /*
     public IEnumerator OrderRoutine()
     {
         while (true)
@@ -61,6 +80,7 @@ public class OrderManager : MonoBehaviour
             orderGO.UpdateRecipe();
         }
     }
+    */
 
     public void CompleteOrder(RecipeData order, InventorySystem playerInventory, PlayerInteraction player)
     {
@@ -88,5 +108,86 @@ public class OrderManager : MonoBehaviour
     public List<RecipeData> GetCurrentOrders()
     {
         return currentOrders;
+    }
+
+    // Crée une commande spécifique pour un PNJ
+    public void CreatePNJOrder(PNJClient client)
+    {
+        if (recipes.Length == 0) return;
+
+        // Choisir une recette aléatoire
+        RecipeData randomRecipe = recipes[Random.Range(0, recipes.Length)];
+
+        // Créer l'UI pour cette commande
+        var newOrderGO = Instantiate(orderPrefab, hb.transform);
+        OrderUI orderUI = newOrderGO.GetComponent<OrderUI>();
+        orderUI.recipe = randomRecipe;
+        orderUI.maxDelay = client.tempsPourManger; // Utilise le temps d'attente du client
+        orderUI.UpdateRecipe();
+
+        // Ajouter à la liste des commandes
+        currentOrders.Add(randomRecipe);
+        pnjOrders.Add(new PNJOrder(randomRecipe, client, newOrderGO));
+
+        Debug.Log("Commande créée pour " + client.name + " : " + randomRecipe.result.name);
+    }
+
+    // Complète une commande de PNJ
+    public void CompletePNJOrder(RecipeData order, InventorySystem playerInventory, PlayerInteraction player)
+    {
+        // Chercher si cette commande appartient à un PNJ
+        PNJOrder pnjOrder = pnjOrders.Find(o => o.recipe == order);
+
+        if (pnjOrder != null)
+        {
+            // Notifier le PNJ qu'il a reçu sa commande
+            pnjOrder.client.RecevoirCommande();
+
+            // Retirer de la liste
+            currentOrders.Remove(order);
+            pnjOrders.Remove(pnjOrder);
+
+            // Détruire l'UI
+            if (pnjOrder.orderUI != null)
+            {
+                Destroy(pnjOrder.orderUI);
+            }
+
+            // Ajouter le score
+            GameManager.Instance.AddScore(playerInventory.currentItem.scoreCount);
+            playerInventory.RemoveItem(playerInventory.currentItem);
+
+            // Mettre à jour l'UI pour ce joueur
+            var playerController = player.GetComponent<PlayerController>();
+            if (InventoryUI.Instance != null && playerController != null)
+            {
+                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+            }
+
+            Debug.Log("Commande livrée au PNJ " + pnjOrder.client.name);
+        }
+        else
+        {
+            // Si ce n'est pas une commande PNJ, utiliser l'ancien système
+            CompleteOrder(order, playerInventory, player);
+        }
+    }
+
+    // Retire une commande PNJ expirée
+    public void RemoveExpiredPNJOrder(PNJClient client)
+    {
+        PNJOrder pnjOrder = pnjOrders.Find(o => o.client == client);
+        if (pnjOrder != null)
+        {
+            currentOrders.Remove(pnjOrder.recipe);
+            pnjOrders.Remove(pnjOrder);
+
+            if (pnjOrder.orderUI != null)
+            {
+                Destroy(pnjOrder.orderUI);
+            }
+
+            Debug.Log("Commande expirée pour " + client.name);
+        }
     }
 }

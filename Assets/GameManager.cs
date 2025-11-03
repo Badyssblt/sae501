@@ -98,7 +98,14 @@ public class GameManager : MonoBehaviour
         timeLeft = gameTime;
         score = 0;
 
-        StartCoroutine(OrderManager.Instance.OrderRoutine());
+        // Les commandes sont maintenant générées uniquement par les PNJ
+        // StartCoroutine(OrderManager.Instance.OrderRoutine());
+
+        // Démarrer le spawn des PNJ
+        if (PNJSpawner.Instance != null)
+        {
+            PNJSpawner.Instance.StartSpawning();
+        }
 
         NetworkManager.Instance?.StartGame(mapName);
         Debug.Log("Partie démarrée!");
@@ -252,6 +259,13 @@ public class GameManager : MonoBehaviour
     public void EndGame()
     {
         currentState = GameState.GameOver;
+
+        // Arrêter le spawn des PNJ
+        if (PNJSpawner.Instance != null)
+        {
+            PNJSpawner.Instance.StopSpawning();
+        }
+
         NetworkManager.Instance?.EndGame(score);
         if (Anatidae.HighscoreManager.IsHighscore(score))
         {

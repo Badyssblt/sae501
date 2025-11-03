@@ -9,6 +9,8 @@ Builds/
 Logs/
 MemoryCaptures/
 UserSettings/
+
+nul
  
 # IDE
 .vs/

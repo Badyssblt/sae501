@@ -83,7 +83,8 @@ public class Counter : MonoBehaviour, IInteractable
         {
             if (order.result == playerInventory.currentItem)
             {
-                OrderManager.Instance.CompleteOrder(order, playerInventory, player);
+                // Utiliser CompletePNJOrder qui gère automatiquement les commandes PNJ et normales
+                OrderManager.Instance.CompletePNJOrder(order, playerInventory, player);
                 break;
             }
         }
