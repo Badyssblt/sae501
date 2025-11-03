@@ -15,7 +15,7 @@ public class PNJSpawner : MonoBehaviour
     [SerializeField] private float delaiAvantPremierSpawn = 3f;
 
     [Header("Limites")]
-    [SerializeField] private int maxPNJSimultanes = 3;
+    [SerializeField] private int maxPNJSimultanes = 6;
 
     private float timerSpawn;
     private int pnjActifs = 0;

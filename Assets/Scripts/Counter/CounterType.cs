@@ -6,6 +6,7 @@ public enum CounterType
     Friteuse,
     Assemblage,
     Service,
-    Decouper
-    
+    Decouper,
+    Poubelle
+
 }
