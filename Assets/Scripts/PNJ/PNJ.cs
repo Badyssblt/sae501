@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PNJClient : MonoBehaviour
+public class PNJClient : MonoBehaviour, IInteractable
 {
     [Header("D�placement")]
     public Transform[] chemin;         // Points � suivre dans l'ordre
@@ -170,6 +170,69 @@ public class PNJClient : MonoBehaviour
                 Debug.Log(name + " est parti insatisfait !");
                 // Optionnel : p�nalit� de score
                 // GameManager.Instance.AddScore(-10);
+            }
+        }
+    }
+
+    // === INTERACTION AVEC LE JOUEUR ===
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            PlayerInteraction player = collision.GetComponent<PlayerInteraction>();
+            if (player != null)
+            {
+                player.SetCurrentInteractable(this);
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            PlayerInteraction player = collision.GetComponent<PlayerInteraction>();
+            if (player != null)
+            {
+                player.ClearCurrentInteractable(this);
+            }
+        }
+    }
+
+    public void Interact(PlayerInteraction player)
+    {
+        // V�rifier que le client attend son service
+        if (etat != EtatClient.AttendService)
+        {
+            Debug.Log(name + " n'attend pas de commande pour le moment.");
+            return;
+        }
+
+        InventorySystem playerInventory = player.GetInventory();
+
+        // V�rifier que le joueur tient un objet
+        if (playerInventory.currentItem == null)
+        {
+            Debug.Log("Le joueur n'a aucun objet � donner.");
+            return;
+        }
+
+        // V�rifier si l'objet correspond � la commande du client
+        if (OrderManager.Instance != null)
+        {
+            // Chercher la commande de ce PNJ dans la liste pnjOrders
+            OrderManager.PNJOrder pnjOrder = OrderManager.Instance.pnjOrders.Find(o => o.client == this);
+
+            if (pnjOrder != null && pnjOrder.recipe.result == playerInventory.currentItem)
+            {
+                // Commande correcte ! Livrer la commande
+                // CompletePNJOrder g�re le retrait de l'item, l'ajout du score et la mise � jour de l'UI
+                OrderManager.Instance.CompletePNJOrder(pnjOrder.recipe, playerInventory, player);
+                Debug.Log(name + " a re�u le bon plat !");
+            }
+            else
+            {
+                Debug.Log("L'objet donn� ne correspond pas � la commande du client !");
             }
         }
     }
