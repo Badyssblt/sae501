@@ -10,6 +10,8 @@ public class PNJClient : MonoBehaviour, IInteractable
     [Header("�tat du client")]
     public float tempsAttenteCommande = 2f;
     public float tempsPourManger = 15f;
+    [Tooltip("Direction dans laquelle le PNJ regarde quand il attend au comptoir")]
+    public Vector2 directionAttente = Vector2.down; // Par défaut, regarde vers le bas
 
     [HideInInspector]
     public int positionIndex = -1;     // Index de la position au comptoir (assign� par le spawner)
@@ -26,6 +28,7 @@ public class PNJClient : MonoBehaviour, IInteractable
     private float timer;
     private bool commandeRecue = false;
     private Vector2 positionFinale; // Position finale avec offset appliqu�
+    private Vector2 lastDirection = Vector2.right; // Dernière direction regardée (par défaut : droite)
 
     private enum EtatClient
     {
@@ -43,6 +46,13 @@ public class PNJClient : MonoBehaviour, IInteractable
         if (chemin.Length == 0)
         {
             Debug.LogWarning("Aucun point de chemin d�fini pour le PNJ " + name);
+        }
+
+        // Initialiser l'animation avec la direction par défaut
+        if (anim != null)
+        {
+            anim.SetFloat("MoveX", lastDirection.x);
+            anim.SetFloat("MoveY", lastDirection.y);
         }
     }
 
@@ -82,7 +92,47 @@ public class PNJClient : MonoBehaviour, IInteractable
                 break;
         }
 
-        if (anim) anim.SetBool("marche", rb.linearVelocity.magnitude > 0.1f);
+        // Mettre à jour les animations
+        UpdateAnimations();
+    }
+
+    // === ANIMATIONS ===
+    void UpdateAnimations()
+    {
+        if (anim == null) return;
+
+        // Calculer la direction du mouvement normalisée
+        Vector2 velocity = rb.linearVelocity;
+        bool isMoving = velocity.magnitude > 0.1f;
+
+        // Mettre à jour les paramètres d'animation
+        if (isMoving)
+        {
+            // En mouvement : utiliser la direction du mouvement
+            Vector2 direction = velocity.normalized;
+            lastDirection = direction;
+
+            anim.SetFloat("MoveX", direction.x);
+            anim.SetFloat("MoveY", direction.y);
+        }
+        else
+        {
+            // À l'arrêt : mettre les paramètres de mouvement à 0 pour jouer l'idle
+            anim.SetFloat("MoveX", 0);
+            anim.SetFloat("MoveY", 0);
+        }
+
+        // Si l'Animator Controller utilise un paramètre "marche" (booléen)
+        // pour basculer entre walk et idle, le gérer ici
+        try
+        {
+            anim.SetBool("marche", isMoving);
+        }
+        catch
+        {
+            // Le paramètre "marche" n'existe pas dans l'Animator Controller
+            // Cela signifie que le système utilise uniquement MoveX/MoveY
+        }
     }
 
     // === MOUVEMENT ===
@@ -94,6 +144,13 @@ public class PNJClient : MonoBehaviour, IInteractable
             rb.linearVelocity = Vector2.zero;
             etat = EtatClient.AttendCommande;
             timer = tempsAttenteCommande;
+
+            // Regarder dans la direction d'attente définie
+            if (directionAttente != Vector2.zero)
+            {
+                lastDirection = directionAttente.normalized;
+            }
+
             return;
         }
 

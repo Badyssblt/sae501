@@ -51,6 +51,12 @@ namespace Anatidae {
         public void DisableHighscoreInput()
         {
             HighscoreManager.DisableHighscoreInput();
+
+            // Afficher le panneau de restart après la validation du highscore
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ShowRestartPanelAfterHighscore();
+            }
         }
 
         const float repeatTime = .1f;

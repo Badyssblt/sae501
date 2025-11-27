@@ -190,4 +190,20 @@ public class OrderManager : MonoBehaviour
             Debug.Log("Commande expirée pour " + client.name);
         }
     }
+
+    // Nettoie toutes les commandes en cours (appelé à la fin de la partie)
+    public void ClearAllOrders()
+    {
+        // Détruire tous les UI des commandes
+        foreach (Transform child in hb.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Vider les listes
+        currentOrders.Clear();
+        pnjOrders.Clear();
+
+        Debug.Log("Toutes les commandes ont été nettoyées !");
+    }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
     private Dictionary<int, PlayerController> playerControllers = new Dictionary<int, PlayerController>();
     private GameObject gameUI;
     [SerializeField] private GameObject highscoreUI;
+    [SerializeField] private GamePanelUI gamePanelUI;
 
 
     [Header("Network")]
@@ -267,7 +269,18 @@ public class GameManager : MonoBehaviour
         if (PNJSpawner.Instance != null)
         {
             PNJSpawner.Instance.StopSpawning();
+            // Détruire tous les PNJ existants
+            PNJSpawner.Instance.DestroyAllPNJ();
         }
+
+        // Nettoyer toutes les commandes en cours
+        if (OrderManager.Instance != null)
+        {
+            OrderManager.Instance.ClearAllOrders();
+        }
+
+        // Désactiver les contrôles des joueurs
+        DisableAllPlayerControls();
 
         NetworkManager.Instance?.EndGame(score);
 
@@ -276,7 +289,14 @@ public class GameManager : MonoBehaviour
         {
             if (Anatidae.HighscoreManager.IsHighscore(score))
             {
+                // C'est un highscore, afficher l'input du highscore
+                // Le RestartPanel sera affiché après validation via ShowRestartPanelAfterHighscore()
                 Anatidae.HighscoreManager.ShowHighscoreInput(score);
+            }
+            else
+            {
+                // Pas un highscore, afficher directement le panneau de restart
+                ShowRestartPanelAfterHighscore();
             }
         }
         else
@@ -292,8 +312,62 @@ public class GameManager : MonoBehaviour
 
         if (Anatidae.HighscoreManager.IsHighscore(score))
         {
+            // C'est un highscore, afficher l'input du highscore
+            // Le RestartPanel sera affiché après validation via ShowRestartPanelAfterHighscore()
             Anatidae.HighscoreManager.ShowHighscoreInput(score);
         }
+        else
+        {
+            // Pas un highscore, afficher directement le panneau de restart
+            ShowRestartPanelAfterHighscore();
+        }
+    }
+
+    /// <summary>
+    /// Méthode publique à appeler après la validation du highscore pour afficher le panneau de restart
+    /// </summary>
+    public void ShowRestartPanelAfterHighscore()
+    {
+        if (gamePanelUI != null)
+        {
+            gamePanelUI.ShowRestartPanel(score);
+        }
+    }
+
+    /// <summary>
+    /// Désactive les contrôles de tous les joueurs
+    /// </summary>
+    private void DisableAllPlayerControls()
+    {
+        foreach (var kvp in activePlayers)
+        {
+            GameObject playerObj = kvp.Value;
+            if (playerObj != null)
+            {
+                // Désactiver le mouvement
+                PlayerMovement movement = playerObj.GetComponent<PlayerMovement>();
+                if (movement != null)
+                {
+                    movement.enabled = false;
+                }
+
+                // Désactiver l'interaction
+                PlayerInteraction interaction = playerObj.GetComponent<PlayerInteraction>();
+                if (interaction != null)
+                {
+                    interaction.enabled = false;
+                }
+
+                // Arrêter le Rigidbody2D
+                Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                }
+            }
+        }
+
+        Debug.Log("Contrôles de tous les joueurs désactivés !");
     }
 
     public void AddScore(int points)
@@ -326,5 +400,33 @@ public class GameManager : MonoBehaviour
     public void SetMapName(string newMapName)
     {
         mapName = newMapName;
+    }
+
+    public void RestartGame()
+    {
+        Debug.Log("Redémarrage de la partie...");
+
+        // Réinitialiser l'état du jeu
+        currentState = GameState.Waiting;
+        score = 0;
+        timeLeft = gameTime;
+
+        // Détruire tous les joueurs actifs
+        foreach (var player in activePlayers.Values)
+        {
+            if (player != null)
+                Destroy(player);
+        }
+        activePlayers.Clear();
+        playerControllers.Clear();
+
+        // Arrêter le spawn des PNJ s'il est actif
+        if (PNJSpawner.Instance != null)
+        {
+            PNJSpawner.Instance.StopSpawning();
+        }
+
+        // Recharger la scène actuelle pour tout réinitialiser
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

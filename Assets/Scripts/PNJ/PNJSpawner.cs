@@ -79,6 +79,30 @@ public class PNJSpawner : MonoBehaviour
         Debug.Log("PNJSpawner arrêté !");
     }
 
+    // Détruit tous les PNJ actifs
+    public void DestroyAllPNJ()
+    {
+        // Trouver tous les PNJ dans la scène
+        PNJClient[] allPNJ = FindObjectsByType<PNJClient>(FindObjectsSortMode.None);
+
+        foreach (PNJClient pnj in allPNJ)
+        {
+            if (pnj != null)
+            {
+                Destroy(pnj.gameObject);
+            }
+        }
+
+        // Réinitialiser les compteurs
+        pnjActifs = 0;
+        for (int i = 0; i < positionsOccupees.Length; i++)
+        {
+            positionsOccupees[i] = false;
+        }
+
+        Debug.Log("Tous les PNJ ont été détruits !");
+    }
+
     void SpawnPNJ()
     {
         if (pnjPrefab == null || spawnPoint == null || cheminPoints.Length == 0)
