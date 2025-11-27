@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::S_ItemData
   name: Burger tomate steak
   sprite: {fileID: 210256612, guid: 4d5ae557fceb18f40a912ae1c306d974, type: 3}
+  counterType: 0
+  secondsToTransform: 0
+  itemCrafted: {fileID: 0}
+  soundToTransform: {fileID: 0}
   category: 0
+  scoreCount: 10

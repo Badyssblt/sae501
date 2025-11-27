@@ -249,6 +249,7 @@ MonoBehaviour:
   sprintDuration: 2
   sprintCooldown: 3
   sprintKey: 304
+  isFrozen: 0
   horizontalAxis: P1_Horizontal
   verticalAxis: P1_Vertical
 --- !u!50 &7291183974157367107
@@ -338,6 +339,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   playerId: 1
   isLocalPlayer: 1
+  currentMovement: {x: 0, y: 0}
+  animator: {fileID: 0}
+  holdToUnfreezeTime: 0.5
 --- !u!82 &7241820277188107740
 AudioSource:
   m_ObjectHideFlags: 0
@@ -503,7 +507,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -877225615
   m_SortingLayer: 2
-  m_SortingOrder: 5
+  m_SortingOrder: 100
   m_Sprite: {fileID: 21300000, guid: 8a6c7638ba104614e93bff3e73f1ab52, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

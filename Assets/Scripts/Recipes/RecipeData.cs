@@ -10,23 +10,40 @@ public class RecipeData : ScriptableObject
 
     public bool Matches(List<ItemData> itemsOnCounter)
     {
-        // Les deux listes doivent avoir le même nombre d'éléments
+        // Les deux listes doivent avoir le mï¿½me nombre d'ï¿½lï¿½ments
         if (itemsOnCounter.Count != ingredients.Length)
+        {
+            Debug.Log($"  [Match] Nombre diffÃ©rent: {itemsOnCounter.Count} items vs {ingredients.Length} ingrÃ©dients requis");
             return false;
+        }
 
         // Copies temporaires pour comparer sans modifier les originales
         List<ItemData> tempIngredients = new List<ItemData>(ingredients);
         List<ItemData> tempItems = new List<ItemData>(itemsOnCounter);
 
-        // Vérifie que chaque ingrédient est présent
+        Debug.Log($"  [Match] Recette requiert:");
+        foreach (var ing in ingredients)
+        {
+            Debug.Log($"    - {ing.name}");
+        }
+
+        // Vï¿½rifie que chaque ingrï¿½dient est prï¿½sent
         foreach (var ingredient in tempIngredients)
         {
             if (tempItems.Contains(ingredient))
-                tempItems.Remove(ingredient); // supprime pour gérer les doublons
+            {
+                tempItems.Remove(ingredient); // supprime pour gï¿½rer les doublons
+                Debug.Log($"  [Match] âœ“ {ingredient.name} trouvÃ©");
+            }
             else
-                return false; // ingrédient manquant
+            {
+                Debug.Log($"  [Match] âœ— {ingredient.name} manquant");
+                return false; // ingrï¿½dient manquant
+            }
         }
 
-        return tempItems.Count == 0; // tous les ingrédients trouvés
+        bool allMatched = tempItems.Count == 0;
+        Debug.Log($"  [Match] RÃ©sultat: {(allMatched ? "âœ“ MATCH" : "âœ— Items restants")}");
+        return allMatched; // tous les ingrï¿½dients trouvï¿½s
     }
 }

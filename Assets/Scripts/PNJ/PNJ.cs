@@ -15,6 +15,8 @@ public class PNJClient : MonoBehaviour, IInteractable
     public int positionIndex = -1;     // Index de la position au comptoir (assign� par le spawner)
     [HideInInspector]
     public float offsetEntreClients = 0.5f; // Espacement entre les clients
+    [HideInInspector]
+    public DirectionAlignement directionAlignement = DirectionAlignement.Vertical; // Direction d'alignement des clients
 
     private int indexPoint = 0;
     private Rigidbody2D rb;
@@ -92,7 +94,6 @@ public class PNJClient : MonoBehaviour, IInteractable
             rb.linearVelocity = Vector2.zero;
             etat = EtatClient.AttendCommande;
             timer = tempsAttenteCommande;
-            Debug.Log(name + " est arriv� au comptoir !");
             return;
         }
 
@@ -101,7 +102,9 @@ public class PNJClient : MonoBehaviour, IInteractable
         // Si c'est le dernier point, appliquer l'offset
         if (indexPoint == chemin.Length - 1 && positionIndex >= 0)
         {
-            Vector2 offset = new Vector2(0, positionIndex * offsetEntreClients);
+            Vector2 offset = directionAlignement == DirectionAlignement.Vertical
+                ? new Vector2(0, positionIndex * offsetEntreClients)
+                : new Vector2(positionIndex * offsetEntreClients, 0);
             target += offset;
             positionFinale = target;
         }
@@ -128,7 +131,7 @@ public class PNJClient : MonoBehaviour, IInteractable
         if (OrderManager.Instance != null)
         {
             OrderManager.Instance.CreatePNJOrder(this);
-            Debug.Log(name + " a command� et attend d'�tre servi !");
+
         }
         else
         {
@@ -141,13 +144,11 @@ public class PNJClient : MonoBehaviour, IInteractable
     {
         commandeRecue = true;
         etat = EtatClient.Satisfait;
-        Debug.Log(name + " a re�u son plat et est satisfait !");
     }
 
     void PartirInsatisfait()
     {
         etat = EtatClient.Insatisfait;
-        Debug.Log(name + " n'a pas re�u sa commande et part m�content !");
 
         // Retirer la commande de l'OrderManager
         if (OrderManager.Instance != null)

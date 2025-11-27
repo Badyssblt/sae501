@@ -17,4 +17,6 @@ MonoBehaviour:
   counterType: 2
   secondsToTransform: 0
   itemCrafted: {fileID: 0}
+  soundToTransform: {fileID: 0}
   category: 0
+  scoreCount: 10

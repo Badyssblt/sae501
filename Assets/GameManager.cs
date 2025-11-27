@@ -53,6 +53,9 @@ public class GameManager : MonoBehaviour
     {
         gameUI = GameObject.FindWithTag("GameUI");
         gameUI.SetActive(false);
+
+        // Récupérer les highscores au démarrage
+        StartCoroutine(Anatidae.HighscoreManager.FetchHighscores());
     }
 
     public void StartMenu()
@@ -267,6 +270,26 @@ public class GameManager : MonoBehaviour
         }
 
         NetworkManager.Instance?.EndGame(score);
+
+        // Vérifier le highscore seulement si les données ont été récupérées
+        if (Anatidae.HighscoreManager.HasFetchedHighscores)
+        {
+            if (Anatidae.HighscoreManager.IsHighscore(score))
+            {
+                Anatidae.HighscoreManager.ShowHighscoreInput(score);
+            }
+        }
+        else
+        {
+            // Si les highscores n'ont pas été récupérés, les récupérer puis vérifier
+            StartCoroutine(CheckHighscoreAfterFetch());
+        }
+    }
+
+    private IEnumerator CheckHighscoreAfterFetch()
+    {
+        yield return StartCoroutine(Anatidae.HighscoreManager.FetchHighscores());
+
         if (Anatidae.HighscoreManager.IsHighscore(score))
         {
             Anatidae.HighscoreManager.ShowHighscoreInput(score);

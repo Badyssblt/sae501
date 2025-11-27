@@ -121,13 +121,26 @@ public class Counter : MonoBehaviour, IInteractable
             List<ItemData> testIngredients = new List<ItemData>(ingredientsOnCounter) { newIngredient };
             ItemData newResult = null;
 
+            Debug.Log($"[Crafting] Test avec {testIngredients.Count} ingrédients:");
+            foreach (var item in testIngredients)
+            {
+                Debug.Log($"  - {item.name}");
+            }
+
             foreach (var recipe in GameManager.Instance.recipes)
             {
+                Debug.Log($"[Crafting] Test recette: {recipe.name} ({recipe.ingredients.Length} ingrédients)");
                 if (recipe.Matches(testIngredients))
                 {
                     newResult = recipe.result;
+                    Debug.Log($"[Crafting] ✓ Recette trouvée! Résultat: {newResult.name}");
                     break;
                 }
+            }
+
+            if (newResult == null)
+            {
+                Debug.Log("[Crafting] ✗ Aucune recette ne correspond");
             }
 
 
@@ -197,6 +210,14 @@ public class Counter : MonoBehaviour, IInteractable
             wasItemCrafted = false;
             return;
         }
+
+        // Vérifier si le joueur a un item avant d'essayer de le transformer
+        if (itemToTransform == null)
+        {
+            Debug.Log("Aucun item à transformer !");
+            return;
+        }
+
         if (itemToTransform.counterType != counterData.type)
         {
             Debug.Log("Mauvais comptoir !");

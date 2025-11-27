@@ -1,5 +1,11 @@
 using UnityEngine;
 
+public enum DirectionAlignement
+{
+    Vertical,
+    Horizontal
+}
+
 public class PNJSpawner : MonoBehaviour
 {
     [Header("Configuration Spawn")]
@@ -9,6 +15,7 @@ public class PNJSpawner : MonoBehaviour
 
     [Header("Espacement PNJ")]
     [SerializeField] private float offsetEntreClients = 0.5f; // Distance entre chaque client au comptoir
+    [SerializeField] private DirectionAlignement directionAlignement = DirectionAlignement.Vertical; // Direction d'alignement des clients
 
     [Header("Timing")]
     [SerializeField] private float intervalSpawn = 10f;
@@ -97,6 +104,7 @@ public class PNJSpawner : MonoBehaviour
             client.chemin = cheminPoints;
             client.positionIndex = positionIndex;
             client.offsetEntreClients = offsetEntreClients;
+            client.directionAlignement = directionAlignement;
 
             // Marquer la position comme occupée
             positionsOccupees[positionIndex] = true;
@@ -174,7 +182,9 @@ public class PNJSpawner : MonoBehaviour
                 Gizmos.color = Color.yellow;
                 for (int i = 0; i < maxPNJSimultanes; i++)
                 {
-                    Vector3 offset = new Vector3(0, i * offsetEntreClients, 0);
+                    Vector3 offset = directionAlignement == DirectionAlignement.Vertical
+                        ? new Vector3(0, i * offsetEntreClients, 0)
+                        : new Vector3(i * offsetEntreClients, 0, 0);
                     Gizmos.DrawWireSphere(dernierPoint + offset, 0.15f);
                 }
             }

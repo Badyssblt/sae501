@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 689300a864072844c95b570f6d2f0182, type: 3}
-  m_Name: Fries 1
+  m_Name: Drink
   m_EditorClassIdentifier: Assembly-CSharp::S_ItemData
   name: Boisson
   sprite: {fileID: -1021786942601955692, guid: 2904564eb9328f24aa9f6017e69f07f4, type: 3}
