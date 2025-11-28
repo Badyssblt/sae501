@@ -53,6 +53,10 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
+        // Permet au jeu de tourner même quand la fenêtre n'a pas le focus
+        // Important pour le multijoueur sur le même PC
+        Application.runInBackground = true;
+
         // Collecter tous les counters de la scène
         allCounters = FindObjectsByType<Counter>(FindObjectsSortMode.None);
     }
