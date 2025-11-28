@@ -436,6 +436,13 @@ public class NetworkManager : MonoBehaviour
         var state = JsonUtility.FromJson<FullStateMessage>(data);
         if (state == null) return;
 
+        // Synchroniser le tick du client avec le serveur (+ un peu d'avance pour la latence)
+        if (state.tick > CurrentTick || CurrentTick - state.tick > 100)
+        {
+            CurrentTick = state.tick + 3; // 3 ticks d'avance (~100ms à 30 ticks/s)
+            Debug.Log($"[Network] Tick synchronisé: {CurrentTick}");
+        }
+
         // Convertir en StateSnapshot
         var snapshot = new StateSnapshot(state.tick, Time.time)
         {
@@ -466,6 +473,12 @@ public class NetworkManager : MonoBehaviour
 
         var delta = JsonUtility.FromJson<DeltaStateMessage>(data);
         if (delta == null) return;
+
+        // Synchroniser le tick si nécessaire
+        if (delta.tick > CurrentTick || CurrentTick - delta.tick > 100)
+        {
+            CurrentTick = delta.tick + 3;
+        }
 
         // Récupérer le dernier snapshot et le mettre à jour
         var latest = InterpolationBuffer.GetLatestSnapshot();
