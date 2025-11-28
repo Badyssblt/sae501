@@ -117,15 +117,35 @@ public class PlayerController : MonoBehaviour
         float horizontal = 0f;
         float vertical = 0f;
 
+        // Essayer les axes arcade d'abord
         try
         {
             horizontal = Input.GetAxisRaw(horizontalAxis);
             vertical = Input.GetAxisRaw(verticalAxis);
             actionPressed = Input.GetButton(actionButton);
         }
-        catch (System.Exception e)
+        catch (System.Exception)
         {
-            Debug.LogWarning($"Axes non configurés pour le joueur {playerId}: {e.Message}");
+            // Axes non configurés, on utilise le fallback clavier
+        }
+
+        // Fallback clavier (ZQSD/WASD + Espace) si pas d'input arcade
+        if (horizontal == 0f && vertical == 0f && !actionPressed)
+        {
+            // ZQSD (FR) et WASD (EN)
+            if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
+            if (Input.GetKey(KeyCode.S)) vertical = -1f;
+            if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A)) horizontal = -1f;
+            if (Input.GetKey(KeyCode.D)) horizontal = 1f;
+
+            // Aussi les flèches
+            if (Input.GetKey(KeyCode.UpArrow)) vertical = 1f;
+            if (Input.GetKey(KeyCode.DownArrow)) vertical = -1f;
+            if (Input.GetKey(KeyCode.LeftArrow)) horizontal = -1f;
+            if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
+
+            // Espace ou E pour l'action
+            actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
         }
 
         currentMovement = new Vector2(horizontal, vertical).normalized;
