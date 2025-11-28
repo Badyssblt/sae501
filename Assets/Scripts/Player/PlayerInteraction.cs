@@ -48,4 +48,10 @@ public class PlayerInteraction : MonoBehaviour
     {
         return inventory;
     }
+
+    // Retourne l'objet interactable actuel (pour le réseau)
+    public IInteractable GetCurrentInteractable()
+    {
+        return currentInteractable;
+    }
 }

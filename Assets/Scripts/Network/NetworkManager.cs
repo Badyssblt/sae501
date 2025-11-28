@@ -1,97 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using NativeWebSocket;
-using System.Text;
+using CookMoiCa.Network;
 
-[Serializable]
-public class NetworkMessage
-{
-    public string eventType;
-}
-
-[Serializable]
-public class GameStateMessage
-{
-    public string eventType = "gameState";
-    public float timeLeft;
-    public int score;
-    public string map;
-    public List<PlayerStateData> players;
-    public List<ObjectData> objects;
-    public List<StationData> stations;
-    public List<OrderData> orders;
-}
-
-[Serializable]
-public class PlayerStateData
-{
-    public int id;
-    public float x;
-    public float y;
-    public string carry;
-    public string action;
-}
-
-[Serializable]
-public class ObjectData
-{
-    public string id;
-    public string type;
-    public float x;
-    public float y;
-    public int? heldBy;
-}
-
-[Serializable]
-public class StationData
-{
-    public string id;
-    public string type;
-    public string occupiedBy;
-    public string cookingState;
-    public float? timeRemaining;
-}
-
-[Serializable]
-public class OrderData
-{
-    public string id;
-    public List<string> ingredients;
-    public string status;
-    public float timeRemaining;
-}
-
-[Serializable]
-public class InputMessage
-{
-    public int playerId;
-    public float horizontal;
-    public float vertical;
-    public bool action;
-}
-
-[Serializable]
-public class RegisterHostMessage
-{
-    public string eventType = "registerAsHost";
-}
-
-[Serializable]
-public class SetupLobbyMessage
-{
-    public string eventType = "setupLobby";
-    public string map;
-}
-
-[Serializable]
-public class StartGameMessage
-{
-    public string eventType = "startGame";
-    public string map;
-}
-
+/// <summary>
+/// NetworkManager - Gère toute la communication réseau
+/// Supporte deux modes :
+/// - Host (borne d'arcade) : Source de vérité, broadcast l'état
+/// - Client (navigateur web) : Prediction locale, réconciliation avec serveur
+/// </summary>
 public class NetworkManager : MonoBehaviour
 {
     private static NetworkManager _instance;
@@ -113,23 +32,77 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    // ============================================================
+    // CONFIGURATION
+    // ============================================================
+
     [Header("Network Settings")]
     [SerializeField] private string serverUrl = "ws://localhost:4000";
-    [SerializeField] private float gameStateSendRate = 30f; // 30 FPS
+    [SerializeField] private float deltaSendRate = 20f; // 20 FPS pour les deltas
+    [SerializeField] private float fullStateSendRate = 2f; // Full state toutes les 500ms
+
+    [Header("Interpolation Settings")]
+    [SerializeField] private float interpolationDelay = 0.1f; // 100ms
+
+    // ============================================================
+    // ÉTAT RÉSEAU
+    // ============================================================
 
     private WebSocket websocket;
-    private bool isConnected = false;
-    private float lastGameStateSent = 0f;
+    public bool IsConnected { get; private set; } = false;
 
-    // Stockage temporaire des inputs reçus
+    // Mode (déterminé au démarrage)
+    public NetworkRole Role { get; private set; } = NetworkRole.Host;
+
+    // Paramètres client (si mode Client)
+    public int LocalPlayerSlot { get; private set; } = -1;
+    public string LocalPlayerName { get; private set; } = "";
+    public string RequestedMap { get; private set; } = "";
+
+    // ============================================================
+    // SYSTÈME DE TICKS
+    // ============================================================
+
+    public uint CurrentTick { get; private set; } = 0;
+    private const float TICK_RATE = 1f / 30f; // 30 ticks par seconde
+    private float tickAccumulator = 0f;
+
+    // ============================================================
+    // INTERPOLATION & PREDICTION (Client seulement)
+    // ============================================================
+
+    public InterpolationBuffer InterpolationBuffer { get; private set; }
+    public PredictionSystem PredictionSystem { get; private set; }
+
+    // ============================================================
+    // DELTA SYNC (Host seulement)
+    // ============================================================
+
+    private StateSnapshot lastSentState;
+    private float lastDeltaSent = 0f;
+    private float lastFullStateSent = 0f;
+
+    // ============================================================
+    // INPUTS DISTANTS (Host seulement)
+    // ============================================================
+
     private Dictionary<int, InputMessage> remoteInputs = new Dictionary<int, InputMessage>();
 
-    // Events
+    // ============================================================
+    // EVENTS
+    // ============================================================
+
     public event Action<int, string> OnPlayerJoined;
     public event Action<int> OnPlayerLeft;
     public event Action<InputMessage> OnInputReceived;
     public event Action OnGameStarted;
     public event Action<int> OnGameEnded;
+    public event Action<StateSnapshot> OnStateReceived; // Client: reçoit état serveur
+    public event Action<GameEventMessage> OnGameEvent; // Events instantanés
+
+    // ============================================================
+    // UNITY LIFECYCLE
+    // ============================================================
 
     private void Awake()
     {
@@ -141,6 +114,13 @@ public class NetworkManager : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // Initialiser les systèmes
+        InterpolationBuffer = new InterpolationBuffer(interpolationDelay);
+        PredictionSystem = new PredictionSystem();
+
+        // Déterminer le rôle
+        DetermineNetworkRole();
     }
 
     private async void Start()
@@ -148,217 +128,14 @@ public class NetworkManager : MonoBehaviour
         await ConnectToServer();
     }
 
-    private async System.Threading.Tasks.Task ConnectToServer()
+    private void FixedUpdate()
     {
-        try
+        // Incrémenter les ticks
+        tickAccumulator += Time.fixedDeltaTime;
+        while (tickAccumulator >= TICK_RATE)
         {
-            websocket = new WebSocket(serverUrl);
-
-            websocket.OnOpen += () =>
-            {
-                Debug.Log("WebSocket connecté!");
-                isConnected = true;
-                RegisterAsHost();
-            };
-
-            websocket.OnError += (e) =>
-            {
-                Debug.LogError($"WebSocket erreur: {e}");
-            };
-
-            websocket.OnClose += (e) =>
-            {
-                Debug.Log("WebSocket fermé");
-                isConnected = false;
-            };
-
-            websocket.OnMessage += (bytes) =>
-            {
-                string message = Encoding.UTF8.GetString(bytes);
-                ProcessMessage(message);
-            };
-
-            await websocket.Connect();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Erreur connexion WebSocket: {e}");
-        }
-    }
-
-    private void ProcessMessage(string message)
-    {
-        try
-        {
-            // Socket.IO encapsule les messages dans un format spécial
-            // Format: 42["eventName",{data}] ou 42{"eventName":"value"}
-
-            // Retirer le préfixe Socket.IO si présent
-            if (message.StartsWith("42"))
-            {
-                message = message.Substring(2);
-            }
-
-            // Si c'est un tableau Socket.IO
-            if (message.StartsWith("["))
-            {
-                // Parser comme tableau ["eventName", {data}]
-                var parts = message.TrimStart('[').TrimEnd(']').Split(new[] { ',' }, 2);
-                if (parts.Length >= 2)
-                {
-                    string eventName = parts[0].Trim('"');
-                    string data = parts[1];
-
-                    switch (eventName)
-                    {
-                        case "input":
-                            var inputMsg = JsonUtility.FromJson<InputMessage>(data);
-                            remoteInputs[inputMsg.playerId] = inputMsg;
-                            OnInputReceived?.Invoke(inputMsg);
-                            Debug.Log($"Input reçu du joueur {inputMsg.playerId}: H={inputMsg.horizontal} V={inputMsg.vertical} Action={inputMsg.action}");
-                            break;
-
-                        case "playerJoined":
-                            // Format: {"slot": 3, "name": "PlayerName"}
-                            var joinData = JsonUtility.FromJson<PlayerJoinedData>(data);
-                            OnPlayerJoined?.Invoke(joinData.slot, joinData.name);
-                            break;
-
-                        case "playerLeft":
-                            // Format: {"slot": 3}
-                            var leftData = JsonUtility.FromJson<PlayerLeftData>(data);
-                            OnPlayerLeft?.Invoke(leftData.slot);
-                            break;
-
-                        case "gameStarted":
-                            OnGameStarted?.Invoke();
-                            Debug.Log("Partie démarrée!");
-                            break;
-
-                        case "gameEnded":
-                            var endData = JsonUtility.FromJson<GameEndedData>(data);
-                            OnGameEnded?.Invoke(endData.score);
-                            break;
-
-                        case "lobbyUpdate":
-                            // Format: {"players": {...}}
-                            Debug.Log($"Lobby update reçu: {data}");
-                            break;
-
-                        case "gameStatusUpdate":
-                            // Format: {"status": "ready", "map": "italie"}
-                            Debug.Log($"Status update reçu: {data}");
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                // Format direct d'objet (fallback)
-                var baseMsg = JsonUtility.FromJson<NetworkMessage>(message);
-                Debug.Log($"Message direct reçu: {message}");
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Erreur parsing message: {e}\nMessage: {message}");
-        }
-    }
-
-    [Serializable]
-    private class PlayerJoinedData
-    {
-        public int slot;
-        public string name;
-    }
-
-    [Serializable]
-    private class PlayerLeftData
-    {
-        public int slot;
-    }
-
-    [Serializable]
-    private class GameEndedData
-    {
-        public int score;
-    }
-
-    public void RegisterAsHost()
-    {
-        if (!isConnected) return;
-
-        // Format Socket.IO: 42["eventName",data]
-        string message = "42[\"registerAsHost\"]";
-        SendMessage(message);
-        Debug.Log("Enregistré comme host");
-    }
-
-    public void SetupLobby(string mapName)
-    {
-        if (!isConnected) return;
-
-        // Format Socket.IO: 42["setupLobby",{"map":"italie"}]
-        var data = new { map = mapName };
-        string json = JsonUtility.ToJson(data);
-        string message = $"42[\"setupLobby\",{json}]";
-        SendMessage(message);
-        Debug.Log($"Lobby configuré avec map: {mapName}");
-    }
-
-    public void StartGame(string mapName)
-    {
-        if (!isConnected) return;
-
-        // Format Socket.IO: 42["startGame",{"map":"italie"}]
-        var data = new { map = mapName };
-        string json = JsonUtility.ToJson(data);
-        string message = $"42[\"startGame\",{json}]";
-        SendMessage(message);
-        Debug.Log("Partie lancée!");
-    }
-
-    public void SendGameState(GameStateMessage gameState)
-    {
-        if (!isConnected) return;
-
-        // Limiter l'envoi à 30 FPS
-        if (Time.time - lastGameStateSent < 1f / gameStateSendRate)
-            return;
-
-        // Format Socket.IO: 42["gameState",{...}]
-        string json = JsonUtility.ToJson(gameState);
-        string message = $"42[\"gameState\",{json}]";
-        SendMessage(message);
-        lastGameStateSent = Time.time;
-    }
-
-    public void EndGame(int finalScore)
-    {
-        if (!isConnected) return;
-
-        // Format Socket.IO: 42["endGame",{"score":150}]
-        var data = new { score = finalScore };
-        string json = JsonUtility.ToJson(data);
-        string message = $"42[\"endGame\",{json}]";
-        SendMessage(message);
-        Debug.Log($"Partie terminée envoyée avec score: {finalScore}");
-    }
-
-    public InputMessage GetRemoteInput(int playerId)
-    {
-        if (remoteInputs.TryGetValue(playerId, out InputMessage input))
-        {
-            return input;
-        }
-        return null;
-    }
-
-    private void SendMessage(string message)
-    {
-        if (websocket != null && websocket.State == WebSocketState.Open)
-        {
-            websocket.SendText(message);
+            CurrentTick++;
+            tickAccumulator -= TICK_RATE;
         }
     }
 
@@ -368,6 +145,13 @@ public class NetworkManager : MonoBehaviour
         if (websocket != null)
             websocket.DispatchMessageQueue();
         #endif
+
+        // Nettoyer périodiquement
+        if (Role == NetworkRole.Client)
+        {
+            InterpolationBuffer.CleanOldSnapshots(Time.time);
+            PredictionSystem.CleanOldInputs(CurrentTick);
+        }
     }
 
     private async void OnDestroy()
@@ -383,6 +167,646 @@ public class NetworkManager : MonoBehaviour
         if (!pauseStatus && websocket != null && websocket.State != WebSocketState.Open)
         {
             await ConnectToServer();
+        }
+    }
+
+    // ============================================================
+    // DÉTERMINATION DU RÔLE
+    // ============================================================
+
+    private void DetermineNetworkRole()
+    {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        // En WebGL, vérifier l'URL pour les paramètres client
+        string url = Application.absoluteURL;
+        Debug.Log($"[Network] URL: {url}");
+
+        if (url.Contains("slot="))
+        {
+            Role = NetworkRole.Client;
+            ParseClientParams(url);
+            Debug.Log($"[Network] Mode CLIENT - Slot={LocalPlayerSlot}, Name={LocalPlayerName}, Map={RequestedMap}");
+        }
+        else
+        {
+            Role = NetworkRole.Host;
+            Debug.Log("[Network] Mode HOST");
+        }
+        #else
+        // En éditeur/standalone, toujours host
+        Role = NetworkRole.Host;
+        Debug.Log("[Network] Mode HOST (Editor/Standalone)");
+        #endif
+    }
+
+    private void ParseClientParams(string url)
+    {
+        try
+        {
+            // Parse: ?slot=3&name=Player&map=italie
+            Uri uri = new Uri(url);
+            string query = uri.Query;
+
+            if (string.IsNullOrEmpty(query)) return;
+
+            query = query.TrimStart('?');
+            string[] pairs = query.Split('&');
+
+            foreach (string pair in pairs)
+            {
+                string[] kv = pair.Split('=');
+                if (kv.Length != 2) continue;
+
+                string key = kv[0].ToLower();
+                string value = Uri.UnescapeDataString(kv[1]);
+
+                switch (key)
+                {
+                    case "slot":
+                        int.TryParse(value, out int slot);
+                        LocalPlayerSlot = slot;
+                        break;
+                    case "name":
+                        LocalPlayerName = value;
+                        break;
+                    case "map":
+                        RequestedMap = value;
+                        break;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[Network] Erreur parsing URL: {e.Message}");
+        }
+    }
+
+    // ============================================================
+    // CONNEXION WEBSOCKET
+    // ============================================================
+
+    private async System.Threading.Tasks.Task ConnectToServer()
+    {
+        try
+        {
+            websocket = new WebSocket(serverUrl);
+
+            websocket.OnOpen += () =>
+            {
+                Debug.Log("[Network] WebSocket connecté!");
+                IsConnected = true;
+
+                if (Role == NetworkRole.Host)
+                {
+                    RegisterAsHost();
+                }
+            };
+
+            websocket.OnError += (e) =>
+            {
+                Debug.LogError($"[Network] WebSocket erreur: {e}");
+            };
+
+            websocket.OnClose += (e) =>
+            {
+                Debug.Log("[Network] WebSocket fermé");
+                IsConnected = false;
+            };
+
+            websocket.OnMessage += (bytes) =>
+            {
+                string message = Encoding.UTF8.GetString(bytes);
+                ProcessMessage(message);
+            };
+
+            await websocket.Connect();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[Network] Erreur connexion: {e}");
+        }
+    }
+
+    // ============================================================
+    // TRAITEMENT DES MESSAGES
+    // ============================================================
+
+    private void ProcessMessage(string rawMessage)
+    {
+        try
+        {
+            string message = rawMessage;
+            string eventName = "";
+            string data = "{}";
+
+            // Format Socket.IO: 42["eventName",{data}]
+            if (message.StartsWith("42"))
+            {
+                message = message.Substring(2);
+            }
+
+            if (message.StartsWith("["))
+            {
+                // Parser le tableau ["eventName", {data}]
+                int firstComma = message.IndexOf(',');
+                if (firstComma > 0)
+                {
+                    eventName = message.Substring(1, firstComma - 1).Trim('"');
+                    data = message.Substring(firstComma + 1).TrimEnd(']');
+                }
+                else
+                {
+                    eventName = message.Trim('[', ']', '"');
+                }
+            }
+            else
+            {
+                // Format JSON direct
+                var baseMsg = JsonUtility.FromJson<NetworkMessageBase>(message);
+                eventName = baseMsg?.type ?? "";
+                data = message;
+            }
+
+            // Router vers le bon handler
+            switch (eventName)
+            {
+                case "input":
+                    HandleInput(data);
+                    break;
+
+                case "playerJoined":
+                    HandlePlayerJoined(data);
+                    break;
+
+                case "playerLeft":
+                    HandlePlayerLeft(data);
+                    break;
+
+                case "gameStarted":
+                    OnGameStarted?.Invoke();
+                    break;
+
+                case "gameEnded":
+                    HandleGameEnded(data);
+                    break;
+
+                case "fullState":
+                    HandleFullState(data);
+                    break;
+
+                case "delta":
+                    HandleDelta(data);
+                    break;
+
+                case "event":
+                    HandleGameEvent(data);
+                    break;
+
+                case "gameStatusUpdate":
+                case "lobbyUpdate":
+                    // Ces messages sont gérés par le lobby UI
+                    Debug.Log($"[Network] {eventName}: {data}");
+                    break;
+
+                default:
+                    Debug.Log($"[Network] Message inconnu: {eventName}");
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[Network] Erreur parsing: {e}\nMessage: {rawMessage}");
+        }
+    }
+
+    [Serializable]
+    private class NetworkMessageBase
+    {
+        public string type;
+    }
+
+    private void HandleInput(string data)
+    {
+        var input = JsonUtility.FromJson<InputMessage>(data);
+        if (input != null)
+        {
+            remoteInputs[input.playerId] = input;
+            OnInputReceived?.Invoke(input);
+            Debug.Log($"[Network] Input reçu: P{input.playerId} H={input.horizontal} V={input.vertical}");
+        }
+    }
+
+    private void HandlePlayerJoined(string data)
+    {
+        var msg = JsonUtility.FromJson<PlayerJoinedMessage>(data);
+        if (msg != null)
+        {
+            OnPlayerJoined?.Invoke(msg.slot, msg.name);
+            Debug.Log($"[Network] Joueur rejoint: slot={msg.slot}, name={msg.name}");
+        }
+    }
+
+    private void HandlePlayerLeft(string data)
+    {
+        var msg = JsonUtility.FromJson<PlayerLeftMessage>(data);
+        if (msg != null)
+        {
+            OnPlayerLeft?.Invoke(msg.slot);
+            remoteInputs.Remove(msg.slot);
+            Debug.Log($"[Network] Joueur parti: slot={msg.slot}");
+        }
+    }
+
+    private void HandleGameEnded(string data)
+    {
+        var msg = JsonUtility.FromJson<GameEndedData>(data);
+        OnGameEnded?.Invoke(msg?.score ?? 0);
+    }
+
+    [Serializable]
+    private class GameEndedData
+    {
+        public int score;
+    }
+
+    private void HandleFullState(string data)
+    {
+        if (Role != NetworkRole.Client) return;
+
+        var state = JsonUtility.FromJson<FullStateMessage>(data);
+        if (state == null) return;
+
+        // Convertir en StateSnapshot
+        var snapshot = new StateSnapshot(state.tick, Time.time)
+        {
+            TimeLeft = state.timeLeft,
+            Score = state.score
+        };
+
+        foreach (var player in state.players)
+        {
+            snapshot.Players[player.id] = player;
+        }
+
+        foreach (var counter in state.counters)
+        {
+            snapshot.Counters[counter.id] = counter;
+        }
+
+        // Ajouter au buffer d'interpolation
+        InterpolationBuffer.AddSnapshot(snapshot);
+
+        // Notifier pour réconciliation
+        OnStateReceived?.Invoke(snapshot);
+    }
+
+    private void HandleDelta(string data)
+    {
+        if (Role != NetworkRole.Client) return;
+
+        var delta = JsonUtility.FromJson<DeltaStateMessage>(data);
+        if (delta == null) return;
+
+        // Récupérer le dernier snapshot et le mettre à jour
+        var latest = InterpolationBuffer.GetLatestSnapshot();
+        var snapshot = latest?.Clone() ?? new StateSnapshot();
+        snapshot.Tick = delta.tick;
+        snapshot.Timestamp = Time.time;
+
+        if (delta.timeLeft.HasValue)
+            snapshot.TimeLeft = delta.timeLeft.Value;
+
+        if (delta.score.HasValue)
+            snapshot.Score = delta.score.Value;
+
+        if (delta.players != null)
+        {
+            foreach (var player in delta.players)
+            {
+                snapshot.Players[player.id] = player;
+            }
+        }
+
+        if (delta.counters != null)
+        {
+            foreach (var counter in delta.counters)
+            {
+                snapshot.Counters[counter.id] = counter;
+            }
+        }
+
+        InterpolationBuffer.AddSnapshot(snapshot);
+        OnStateReceived?.Invoke(snapshot);
+    }
+
+    private void HandleGameEvent(string data)
+    {
+        var evt = JsonUtility.FromJson<GameEventMessage>(data);
+        if (evt != null)
+        {
+            OnGameEvent?.Invoke(evt);
+        }
+    }
+
+    // ============================================================
+    // ENVOI DE MESSAGES (HOST)
+    // ============================================================
+
+    public void RegisterAsHost()
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        SendSocketIO("registerAsHost");
+        Debug.Log("[Network] Enregistré comme host");
+    }
+
+    public void SetupLobby(string mapName)
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        var data = new { map = mapName };
+        SendSocketIO("setupLobby", data);
+        Debug.Log($"[Network] Lobby configuré: {mapName}");
+    }
+
+    public void StartGame(string mapName)
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        var data = new { map = mapName };
+        SendSocketIO("startGame", data);
+        Debug.Log("[Network] Partie lancée!");
+    }
+
+    public void EndGame(int finalScore)
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        var data = new { score = finalScore };
+        SendSocketIO("endGame", data);
+        Debug.Log($"[Network] Partie terminée: {finalScore}");
+    }
+
+    /// <summary>
+    /// Envoie l'état complet du jeu (appelé périodiquement par GameManager)
+    /// </summary>
+    public void SendFullState(FullStateMessage state)
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        // Limiter la fréquence
+        if (Time.time - lastFullStateSent < 1f / fullStateSendRate)
+            return;
+
+        state.tick = CurrentTick;
+        SendSocketIO("fullState", state);
+        lastFullStateSent = Time.time;
+
+        // Stocker pour le delta
+        lastSentState = ConvertToSnapshot(state);
+    }
+
+    /// <summary>
+    /// Envoie les changements depuis le dernier état (delta sync)
+    /// </summary>
+    public void SendDeltaState(FullStateMessage currentState)
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        // Limiter la fréquence
+        if (Time.time - lastDeltaSent < 1f / deltaSendRate)
+            return;
+
+        var delta = new DeltaStateMessage
+        {
+            tick = CurrentTick
+        };
+
+        bool hasChanges = false;
+
+        // Comparer avec le dernier état envoyé
+        if (lastSentState != null)
+        {
+            // Time/Score changes
+            if (Mathf.Abs(currentState.timeLeft - lastSentState.TimeLeft) > 0.1f)
+            {
+                delta.timeLeft = currentState.timeLeft;
+                hasChanges = true;
+            }
+
+            if (currentState.score != lastSentState.Score)
+            {
+                delta.score = currentState.score;
+                hasChanges = true;
+            }
+
+            // Player changes
+            delta.players = new List<PlayerState>();
+            foreach (var player in currentState.players)
+            {
+                if (lastSentState.Players.TryGetValue(player.id, out var lastPlayer))
+                {
+                    // Vérifier si changement significatif
+                    float posDiff = Vector2.Distance(
+                        new Vector2(player.x, player.y),
+                        new Vector2(lastPlayer.x, lastPlayer.y)
+                    );
+
+                    if (posDiff > 0.01f || player.carry != lastPlayer.carry || player.isFrozen != lastPlayer.isFrozen)
+                    {
+                        delta.players.Add(player);
+                        hasChanges = true;
+                    }
+                }
+                else
+                {
+                    // Nouveau joueur
+                    delta.players.Add(player);
+                    hasChanges = true;
+                }
+            }
+
+            // Counter changes
+            delta.counters = new List<CounterState>();
+            foreach (var counter in currentState.counters)
+            {
+                if (lastSentState.Counters.TryGetValue(counter.id, out var lastCounter))
+                {
+                    if (counter.currentItem != lastCounter.currentItem ||
+                        counter.cookingState != lastCounter.cookingState ||
+                        Mathf.Abs(counter.cookingProgress - lastCounter.cookingProgress) > 0.01f)
+                    {
+                        delta.counters.Add(counter);
+                        hasChanges = true;
+                    }
+                }
+                else
+                {
+                    delta.counters.Add(counter);
+                    hasChanges = true;
+                }
+            }
+        }
+        else
+        {
+            // Premier envoi, tout est un changement
+            delta.timeLeft = currentState.timeLeft;
+            delta.score = currentState.score;
+            delta.players = currentState.players;
+            delta.counters = currentState.counters;
+            hasChanges = true;
+        }
+
+        if (hasChanges)
+        {
+            SendSocketIO("delta", delta);
+            lastDeltaSent = Time.time;
+            lastSentState = ConvertToSnapshot(currentState);
+        }
+    }
+
+    /// <summary>
+    /// Envoie un événement instantané
+    /// </summary>
+    public void SendGameEvent(string eventName, object eventData)
+    {
+        if (!IsConnected || Role != NetworkRole.Host) return;
+
+        var evt = new GameEventMessage(CurrentTick, eventName, eventData);
+        SendSocketIO("event", evt);
+    }
+
+    private StateSnapshot ConvertToSnapshot(FullStateMessage state)
+    {
+        var snapshot = new StateSnapshot(state.tick, Time.time)
+        {
+            TimeLeft = state.timeLeft,
+            Score = state.score
+        };
+
+        foreach (var player in state.players)
+        {
+            snapshot.Players[player.id] = player;
+        }
+
+        foreach (var counter in state.counters)
+        {
+            snapshot.Counters[counter.id] = counter;
+        }
+
+        return snapshot;
+    }
+
+    // ============================================================
+    // ENVOI DE MESSAGES (CLIENT)
+    // ============================================================
+
+    /// <summary>
+    /// Envoie les inputs du joueur local (mode Client)
+    /// </summary>
+    public void SendInput(Vector2 movement, ActionType action, string targetId = null)
+    {
+        if (!IsConnected || Role != NetworkRole.Client) return;
+        if (LocalPlayerSlot < 0) return;
+
+        var input = new InputMessage(CurrentTick, LocalPlayerSlot, movement.x, movement.y, action, targetId);
+
+        // Stocker pour prediction
+        PredictionSystem.AddPendingInput(new InputSnapshot(
+            CurrentTick,
+            LocalPlayerSlot,
+            movement,
+            action,
+            targetId
+        ));
+
+        // Envoyer au serveur (format JSON standard pour clients web)
+        string json = JsonUtility.ToJson(input);
+        SendRaw(json);
+    }
+
+    // ============================================================
+    // RÉCUPÉRATION DES INPUTS DISTANTS (HOST)
+    // ============================================================
+
+    public InputMessage GetRemoteInput(int playerId)
+    {
+        if (remoteInputs.TryGetValue(playerId, out InputMessage input))
+        {
+            return input;
+        }
+        return null;
+    }
+
+    public void ClearRemoteInput(int playerId)
+    {
+        remoteInputs.Remove(playerId);
+    }
+
+    // ============================================================
+    // HELPERS ENVOI
+    // ============================================================
+
+    private void SendSocketIO(string eventName, object data = null)
+    {
+        if (websocket == null || websocket.State != WebSocketState.Open) return;
+
+        string message;
+        if (data != null)
+        {
+            string json = JsonUtility.ToJson(data);
+            message = $"42[\"{eventName}\",{json}]";
+        }
+        else
+        {
+            message = $"42[\"{eventName}\"]";
+        }
+
+        websocket.SendText(message);
+    }
+
+    private void SendRaw(string message)
+    {
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            websocket.SendText(message);
+        }
+    }
+
+    // ============================================================
+    // INTERPOLATION HELPERS (Client)
+    // ============================================================
+
+    /// <summary>
+    /// Retourne la position interpolée d'un joueur distant
+    /// </summary>
+    public Vector2? GetInterpolatedPosition(int playerId)
+    {
+        if (Role != NetworkRole.Client) return null;
+        return InterpolationBuffer.GetInterpolatedPosition(playerId, Time.time);
+    }
+
+    /// <summary>
+    /// Retourne l'état interpolé d'un counter
+    /// </summary>
+    public CounterState GetInterpolatedCounterState(string counterId)
+    {
+        if (Role != NetworkRole.Client) return null;
+        return InterpolationBuffer.GetInterpolatedCounterState(counterId, Time.time);
+    }
+
+    /// <summary>
+    /// Vérifie si un joueur est le joueur local (pour ce client)
+    /// </summary>
+    public bool IsLocalPlayer(int playerId)
+    {
+        if (Role == NetworkRole.Host)
+        {
+            return playerId == 1 || playerId == 2; // Slots locaux sur la borne
+        }
+        else
+        {
+            return playerId == LocalPlayerSlot;
         }
     }
 }

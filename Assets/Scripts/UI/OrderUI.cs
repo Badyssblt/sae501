@@ -135,4 +135,14 @@ public class OrderUI : MonoBehaviour
             sliderContainer.SetActive(false);
         timerCoroutine = null;
     }
+
+    /// <summary>
+    /// Retourne le temps restant pour cette commande (pour le réseau)
+    /// </summary>
+    public float GetTimeRemaining()
+    {
+        if (timer != null)
+            return timer.value;
+        return 0f;
+    }
 }

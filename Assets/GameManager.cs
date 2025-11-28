@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using CookMoiCa.Network;
 
 public enum GameState
 {
@@ -18,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Settings")]
     [SerializeField] private string mapName = "italie";
-    [SerializeField] private float gameTime = 120f; // Temps de jeu en secondes
+    [SerializeField] private float gameTime = 120f;
     [SerializeField] private int maxPlayers = 4;
 
     [Header("Player Spawning")]
@@ -35,10 +36,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject highscoreUI;
     [SerializeField] private GamePanelUI gamePanelUI;
 
-
     [Header("Network")]
-    private float lastStateSent = 0f;
-    private float stateSendRate = 0.033f; // 30 FPS
+    private float lastDeltaSent = 0f;
+    private float lastFullStateSent = 0f;
+
+    // Référence aux counters pour la synchronisation
+    private Counter[] allCounters;
 
     private void Awake()
     {
@@ -49,19 +52,94 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+
+        // Collecter tous les counters de la scène
+        allCounters = FindObjectsByType<Counter>(FindObjectsSortMode.None);
     }
 
     private void Start()
     {
         gameUI = GameObject.FindWithTag("GameUI");
-        gameUI.SetActive(false);
+        if (gameUI != null)
+            gameUI.SetActive(false);
 
-        // Récupérer les highscores au démarrage
-        StartCoroutine(Anatidae.HighscoreManager.FetchHighscores());
+        // Vérifier si on est en mode Client
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Client)
+        {
+            // Mode Client: démarrer automatiquement
+            StartAsClient();
+        }
+        else
+        {
+            // Mode Host: attendre le menu
+            StartCoroutine(Anatidae.HighscoreManager.FetchHighscores());
+        }
+    }
+
+    /// <summary>
+    /// Démarrage en mode Client (navigateur web)
+    /// </summary>
+    private void StartAsClient()
+    {
+        Debug.Log("[GameManager] Démarrage en mode CLIENT");
+
+        // Cacher le menu principal
+        GameObject mainMenu = GameObject.FindWithTag("MainMenu");
+        if (mainMenu != null)
+            mainMenu.SetActive(false);
+
+        if (gameUI != null)
+            gameUI.SetActive(true);
+
+        // Spawner tous les joueurs (même simulation que le host)
+        SpawnPlayer(1, false); // Distant pour ce client
+        SpawnPlayer(2, false); // Distant pour ce client
+
+        // Le joueur local de ce client
+        int localSlot = NetworkManager.Instance.LocalPlayerSlot;
+        if (localSlot >= 3 && localSlot <= 4)
+        {
+            // Reconfigurer le joueur local
+            if (activePlayers.ContainsKey(localSlot))
+            {
+                var controller = playerControllers[localSlot];
+                controller.isLocalPlayer = true;
+            }
+            else
+            {
+                SpawnPlayer(localSlot, true);
+            }
+        }
+
+        // S'abonner aux événements réseau
+        NetworkManager.Instance.OnPlayerJoined += OnPlayerJoined;
+        NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
+        NetworkManager.Instance.OnStateReceived += OnServerStateReceived;
+        NetworkManager.Instance.OnGameEvent += OnGameEvent;
+
+        // Utiliser la map demandée
+        if (!string.IsNullOrEmpty(NetworkManager.Instance.RequestedMap))
+        {
+            mapName = NetworkManager.Instance.RequestedMap;
+        }
+
+        // Démarrer directement en mode Playing
+        currentState = GameState.Playing;
+        timeLeft = gameTime;
+        score = 0;
+
+        Debug.Log($"[GameManager] Client prêt - Slot local: {localSlot}");
     }
 
     public void StartMenu()
     {
+        // Mode Host seulement
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Client)
+        {
+            Debug.LogWarning("[GameManager] StartMenu appelé en mode Client, ignoré");
+            return;
+        }
+
         InitializeGame();
 
         // S'abonner aux événements réseau
@@ -73,23 +151,24 @@ public class GameManager : MonoBehaviour
         }
 
         GameObject mainMenu = GameObject.FindWithTag("MainMenu");
-        mainMenu.SetActive(false);
+        if (mainMenu != null)
+            mainMenu.SetActive(false);
 
-        gameUI.SetActive(true);
+        if (gameUI != null)
+            gameUI.SetActive(true);
     }
 
     private void InitializeGame()
     {
-        // Spawner les joueurs locaux (slots 1-2) au démarrage
+        // Host: Spawner les joueurs locaux (slots 1-2)
         SpawnPlayer(1, true);
         SpawnPlayer(2, true);
-
-        // Ne plus auto-setup le lobby, attendre l'UI
-        // SetupLobby();
     }
 
     public void SetupLobby()
     {
+        if (NetworkManager.Instance?.Role != NetworkRole.Host) return;
+
         currentState = GameState.Ready;
         NetworkManager.Instance?.SetupLobby(mapName);
         Debug.Log("Lobby configuré, en attente des joueurs distants...");
@@ -98,13 +177,11 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         if (currentState != GameState.Ready) return;
+        if (NetworkManager.Instance?.Role != NetworkRole.Host) return;
 
         currentState = GameState.Playing;
         timeLeft = gameTime;
         score = 0;
-
-        // Les commandes sont maintenant générées uniquement par les PNJ
-        // StartCoroutine(OrderManager.Instance.OrderRoutine());
 
         // Démarrer le spawn des PNJ
         if (PNJSpawner.Instance != null)
@@ -126,10 +203,9 @@ public class GameManager : MonoBehaviour
 
         GameObject newPlayer;
 
-        // Vérifier qu'on a un spawn point
         if (spawnPoints.Length < playerId || spawnPoints[playerId - 1] == null)
         {
-            Debug.LogError($"Spawn point manquant pour le joueur {playerId}! Création à l'origine.");
+            Debug.LogError($"Spawn point manquant pour le joueur {playerId}!");
             Vector3 fallbackPos = new Vector3((playerId - 1) * 2, 0, 0);
             newPlayer = Instantiate(playerPrefab, fallbackPos, Quaternion.identity);
         }
@@ -147,7 +223,6 @@ public class GameManager : MonoBehaviour
         player.name = $"Player_{playerId}";
         activePlayers[playerId] = player;
 
-        // Configurer le PlayerController
         PlayerController controller = player.GetComponent<PlayerController>();
         if (controller == null)
         {
@@ -158,7 +233,6 @@ public class GameManager : MonoBehaviour
         controller.isLocalPlayer = isLocal;
         playerControllers[playerId] = controller;
 
-        // Configurer PlayerMovement avec les bons axes pour les joueurs locaux
         if (isLocal)
         {
             PlayerMovement movement = player.GetComponent<PlayerMovement>();
@@ -171,7 +245,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Joueur {playerId} spawné (Local: {isLocal})");
 
-        // Activer le slot d'inventaire UI pour ce joueur
         if (InventoryUI.Instance != null)
         {
             InventoryUI.Instance.ActivatePlayerSlot(playerId);
@@ -182,7 +255,21 @@ public class GameManager : MonoBehaviour
     {
         if (slot >= 3 && slot <= 4)
         {
-            SpawnPlayer(slot, false);
+            // En mode Host, spawner comme joueur distant
+            // En mode Client, c'est peut-être nous ou un autre joueur distant
+            bool isLocal = NetworkManager.Instance?.Role == NetworkRole.Client &&
+                          NetworkManager.Instance.LocalPlayerSlot == slot;
+
+            if (!activePlayers.ContainsKey(slot))
+            {
+                SpawnPlayer(slot, isLocal);
+            }
+            else if (isLocal)
+            {
+                // Reconfigurer comme local
+                playerControllers[slot].isLocalPlayer = true;
+            }
+
             Debug.Log($"{playerName} a rejoint en slot {slot}");
         }
     }
@@ -191,7 +278,6 @@ public class GameManager : MonoBehaviour
     {
         if (activePlayers.TryGetValue(slot, out GameObject player))
         {
-            // Désactiver le slot d'inventaire UI avant de détruire le joueur
             if (InventoryUI.Instance != null)
             {
                 InventoryUI.Instance.DeactivatePlayerSlot(slot);
@@ -204,104 +290,234 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Callback quand le client reçoit l'état du serveur
+    /// </summary>
+    private void OnServerStateReceived(StateSnapshot serverState)
+    {
+        if (NetworkManager.Instance?.Role != NetworkRole.Client) return;
+
+        // Mettre à jour le timer et score depuis le serveur
+        timeLeft = serverState.TimeLeft;
+        score = serverState.Score;
+
+        // Vérifier la désynchronisation pour le joueur local
+        int localSlot = NetworkManager.Instance.LocalPlayerSlot;
+        if (activePlayers.TryGetValue(localSlot, out GameObject localPlayer))
+        {
+            Vector2 localPos = localPlayer.transform.position;
+            string localCarry = GetPlayerCarry(localSlot);
+
+            bool needsRollback = NetworkManager.Instance.PredictionSystem.CheckForDesync(
+                serverState, localSlot, localPos, localCarry
+            );
+
+            if (needsRollback)
+            {
+                PerformRollback(serverState, localSlot);
+            }
+        }
+
+        // Mettre à jour les joueurs distants (interpolation gérée par PlayerController)
+    }
+
+    /// <summary>
+    /// Effectue un rollback de l'état local vers l'état serveur
+    /// </summary>
+    private void PerformRollback(StateSnapshot serverState, int localPlayerId)
+    {
+        Debug.Log($"[GameManager] Rollback pour joueur {localPlayerId}");
+
+        // Restaurer la position du serveur
+        if (serverState.Players.TryGetValue(localPlayerId, out PlayerState serverPlayer))
+        {
+            if (activePlayers.TryGetValue(localPlayerId, out GameObject player))
+            {
+                Vector2 serverPos = new Vector2(serverPlayer.x, serverPlayer.y);
+
+                // Correction douce au lieu de téléportation brutale
+                Vector2 currentPos = player.transform.position;
+                Vector2 correctedPos = RollbackHelper.SmoothCorrection(currentPos, serverPos, 0.1f);
+                player.transform.position = correctedPos;
+
+                // Restaurer l'inventaire si différent
+                // Note: à implémenter avec le système d'inventaire
+            }
+        }
+
+        // Rejouer les inputs non confirmés
+        var inputsToReplay = NetworkManager.Instance.PredictionSystem.GetInputsToReplay();
+        foreach (var input in inputsToReplay)
+        {
+            // Les inputs seront appliqués naturellement au prochain Update
+            // car ils sont toujours dans le buffer
+        }
+    }
+
+    private void OnGameEvent(GameEventMessage evt)
+    {
+        // Traiter les événements instantanés du serveur
+        Debug.Log($"[GameManager] Event reçu: {evt.eventName}");
+
+        // À implémenter selon les événements (itemGrabbed, cookingCompleted, etc.)
+    }
+
+    private string GetPlayerCarry(int playerId)
+    {
+        if (playerControllers.TryGetValue(playerId, out PlayerController controller))
+        {
+            var inventory = controller.GetComponent<InventorySystem>();
+            if (inventory != null && inventory.currentItem != null)
+            {
+                return inventory.currentItem.name;
+            }
+        }
+        return null;
+    }
+
     private void Update()
     {
         if (currentState == GameState.Playing)
         {
-            // Mise à jour du timer
-            timeLeft -= Time.deltaTime;
-            if (timeLeft <= 0)
+            // Host: décrémenter le timer
+            if (NetworkManager.Instance?.Role == NetworkRole.Host)
             {
-                EndGame();
-            }
+                timeLeft -= Time.deltaTime;
+                if (timeLeft <= 0)
+                {
+                    EndGame();
+                }
 
-            // Envoyer l'état du jeu aux clients
-            if (Time.time - lastStateSent > stateSendRate)
-            {
-                SendGameState();
-                lastStateSent = Time.time;
+                // Envoyer l'état aux clients
+                SendGameStateToClients();
             }
+            // Client: le timer est synchronisé via OnServerStateReceived
         }
     }
 
-    private void SendGameState()
+    /// <summary>
+    /// Envoie l'état du jeu aux clients (Host seulement)
+    /// </summary>
+    private void SendGameStateToClients()
     {
         if (NetworkManager.Instance == null) return;
+        if (NetworkManager.Instance.Role != NetworkRole.Host) return;
 
-        var gameState = new GameStateMessage
+        var state = BuildCurrentState();
+
+        // Envoyer delta fréquemment, full state moins souvent
+        NetworkManager.Instance.SendDeltaState(state);
+        NetworkManager.Instance.SendFullState(state);
+    }
+
+    /// <summary>
+    /// Construit l'état complet actuel du jeu
+    /// </summary>
+    private FullStateMessage BuildCurrentState()
+    {
+        var state = new FullStateMessage
         {
-            eventType = "gameState",
             timeLeft = timeLeft,
             score = score,
             map = mapName,
-            players = new List<PlayerStateData>(),
-            objects = new List<ObjectData>(), // À implémenter plus tard
-            stations = new List<StationData>(), // À implémenter plus tard
-            orders = new List<OrderData>() // À implémenter plus tard
+            gameState = currentState.ToString().ToLower()
         };
 
-        // Ajouter les données des joueurs
+        // Ajouter les joueurs
         foreach (var kvp in activePlayers)
         {
             int playerId = kvp.Key;
             GameObject playerObj = kvp.Value;
 
-            var playerData = new PlayerStateData
+            if (playerObj == null) continue;
+
+            var movement = playerObj.GetComponent<PlayerMovement>();
+            var inventory = playerObj.GetComponent<InventorySystem>();
+
+            state.players.Add(new PlayerState
             {
                 id = playerId,
                 x = playerObj.transform.position.x,
                 y = playerObj.transform.position.y,
-                carry = null, // À implémenter avec l'inventaire
-                action = "idle" // À implémenter avec les actions
-            };
-
-            gameState.players.Add(playerData);
+                carry = inventory?.currentItem?.name,
+                isFrozen = movement != null && movement.isFrozen
+            });
         }
 
-        NetworkManager.Instance.SendGameState(gameState);
+        // Ajouter les counters
+        if (allCounters != null)
+        {
+            foreach (var counter in allCounters)
+            {
+                if (counter == null) continue;
+
+                state.counters.Add(new CounterState
+                {
+                    id = counter.NetworkId,
+                    type = counter.GetCounterType(),
+                    currentItem = counter.GetCurrentItemName(),
+                    cookingState = counter.GetCookingState(),
+                    cookingProgress = counter.GetCookingProgress(),
+                    lockedBy = counter.GetLockedByPlayer()
+                });
+            }
+        }
+
+        // Ajouter les commandes
+        if (OrderManager.Instance != null)
+        {
+            var orders = OrderManager.Instance.GetActiveOrders();
+            foreach (var order in orders)
+            {
+                state.orders.Add(new OrderState
+                {
+                    id = order.id,
+                    recipeName = order.recipeName,
+                    timeRemaining = order.timeRemaining,
+                    status = order.status
+                });
+            }
+        }
+
+        return state;
     }
 
     public void EndGame()
     {
         currentState = GameState.GameOver;
 
-        // Arrêter le spawn des PNJ
         if (PNJSpawner.Instance != null)
         {
             PNJSpawner.Instance.StopSpawning();
-            // Détruire tous les PNJ existants
             PNJSpawner.Instance.DestroyAllPNJ();
         }
 
-        // Nettoyer toutes les commandes en cours
         if (OrderManager.Instance != null)
         {
             OrderManager.Instance.ClearAllOrders();
         }
 
-        // Désactiver les contrôles des joueurs
         DisableAllPlayerControls();
 
-        NetworkManager.Instance?.EndGame(score);
+        // Seul le host envoie endGame
+        if (NetworkManager.Instance?.Role == NetworkRole.Host)
+        {
+            NetworkManager.Instance?.EndGame(score);
+        }
 
-        // Vérifier le highscore seulement si les données ont été récupérées
         if (Anatidae.HighscoreManager.HasFetchedHighscores)
         {
             if (Anatidae.HighscoreManager.IsHighscore(score))
             {
-                // C'est un highscore, afficher l'input du highscore
-                // Le RestartPanel sera affiché après validation via ShowRestartPanelAfterHighscore()
                 Anatidae.HighscoreManager.ShowHighscoreInput(score);
             }
             else
             {
-                // Pas un highscore, afficher directement le panneau de restart
                 ShowRestartPanelAfterHighscore();
             }
         }
         else
         {
-            // Si les highscores n'ont pas été récupérés, les récupérer puis vérifier
             StartCoroutine(CheckHighscoreAfterFetch());
         }
     }
@@ -312,20 +528,14 @@ public class GameManager : MonoBehaviour
 
         if (Anatidae.HighscoreManager.IsHighscore(score))
         {
-            // C'est un highscore, afficher l'input du highscore
-            // Le RestartPanel sera affiché après validation via ShowRestartPanelAfterHighscore()
             Anatidae.HighscoreManager.ShowHighscoreInput(score);
         }
         else
         {
-            // Pas un highscore, afficher directement le panneau de restart
             ShowRestartPanelAfterHighscore();
         }
     }
 
-    /// <summary>
-    /// Méthode publique à appeler après la validation du highscore pour afficher le panneau de restart
-    /// </summary>
     public void ShowRestartPanelAfterHighscore()
     {
         if (gamePanelUI != null)
@@ -334,9 +544,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Désactive les contrôles de tous les joueurs
-    /// </summary>
     private void DisableAllPlayerControls()
     {
         foreach (var kvp in activePlayers)
@@ -344,36 +551,33 @@ public class GameManager : MonoBehaviour
             GameObject playerObj = kvp.Value;
             if (playerObj != null)
             {
-                // Désactiver le mouvement
                 PlayerMovement movement = playerObj.GetComponent<PlayerMovement>();
                 if (movement != null)
-                {
                     movement.enabled = false;
-                }
 
-                // Désactiver l'interaction
                 PlayerInteraction interaction = playerObj.GetComponent<PlayerInteraction>();
                 if (interaction != null)
-                {
                     interaction.enabled = false;
-                }
 
-                // Arrêter le Rigidbody2D
                 Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
                 if (rb != null)
-                {
                     rb.linearVelocity = Vector2.zero;
-                }
             }
         }
 
-        Debug.Log("Contrôles de tous les joueurs désactivés !");
+        Debug.Log("Contrôles de tous les joueurs désactivés!");
     }
 
     public void AddScore(int points)
     {
         score += points;
-        UIManager.Instance.UpdateScore(points);
+        UIManager.Instance?.UpdateScore(points);
+
+        // Envoyer l'événement aux clients
+        if (NetworkManager.Instance?.Role == NetworkRole.Host)
+        {
+            NetworkManager.Instance.SendGameEvent("scoreUpdated", new { points = points, total = score });
+        }
     }
 
     public PlayerController GetPlayerController(int playerId)
@@ -382,20 +586,15 @@ public class GameManager : MonoBehaviour
         return controller;
     }
 
-    public GameState GetCurrentState()
+    public GameObject GetPlayerObject(int playerId)
     {
-        return currentState;
+        activePlayers.TryGetValue(playerId, out GameObject player);
+        return player;
     }
 
-    public float GetTimeLeft()
-    {
-        return timeLeft;
-    }
-
-    public int GetScore()
-    {
-        return score;
-    }
+    public GameState GetCurrentState() => currentState;
+    public float GetTimeLeft() => timeLeft;
+    public int GetScore() => score;
 
     public void SetMapName(string newMapName)
     {
@@ -406,12 +605,10 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Redémarrage de la partie...");
 
-        // Réinitialiser l'état du jeu
         currentState = GameState.Waiting;
         score = 0;
         timeLeft = gameTime;
 
-        // Détruire tous les joueurs actifs
         foreach (var player in activePlayers.Values)
         {
             if (player != null)
@@ -420,13 +617,24 @@ public class GameManager : MonoBehaviour
         activePlayers.Clear();
         playerControllers.Clear();
 
-        // Arrêter le spawn des PNJ s'il est actif
         if (PNJSpawner.Instance != null)
         {
             PNJSpawner.Instance.StopSpawning();
         }
 
-        // Recharger la scène actuelle pour tout réinitialiser
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnDestroy()
+    {
+        // Se désabonner des événements réseau
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.OnPlayerJoined -= OnPlayerJoined;
+            NetworkManager.Instance.OnPlayerLeft -= OnPlayerLeft;
+            NetworkManager.Instance.OnGameStarted -= StartGame;
+            NetworkManager.Instance.OnStateReceived -= OnServerStateReceived;
+            NetworkManager.Instance.OnGameEvent -= OnGameEvent;
+        }
     }
 }

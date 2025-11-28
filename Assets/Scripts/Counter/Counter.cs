@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CookMoiCa.Network;
 
 public class Counter : MonoBehaviour, IInteractable
 {
@@ -15,11 +16,48 @@ public class Counter : MonoBehaviour, IInteractable
     // L'objet sur le comptoir (friteuse etc...)
     [SerializeField] private SpriteRenderer counterObject;
 
-
     private bool wasItemCrafted = false;
+
+    // ============================================================
+    // NETWORK - ID et état pour synchronisation
+    // ============================================================
+
+    [Header("Network")]
+    [SerializeField] private string networkId;
+    private static int counterIdCounter = 0;
+
+    // État de cuisson pour synchronisation
+    private string cookingState = "idle"; // idle, cooking, done
+    private float cookingProgress = 0f;
+    private float cookingDuration = 0f;
+
+    // Système de lock pour conflits
+    private int? lockedByPlayer = null;
+    private uint lockTick = 0;
+
+    /// <summary>
+    /// ID unique pour la synchronisation réseau
+    /// </summary>
+    public string NetworkId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(networkId))
+            {
+                networkId = $"counter_{counterIdCounter++}_{gameObject.name}";
+            }
+            return networkId;
+        }
+    }
 
     private void Awake()
     {
+        // Générer un ID basé sur la position si pas défini
+        if (string.IsNullOrEmpty(networkId))
+        {
+            networkId = $"counter_{transform.position.x:F1}_{transform.position.y:F1}";
+        }
+
         Transform itemTransform = transform.Find("ItemDisplayed");
         if (itemTransform != null)
         {
@@ -29,7 +67,96 @@ public class Counter : MonoBehaviour, IInteractable
         {
             itemToDisplay = null;
         }
-        counterObject.sprite = counterData.counterSprite;
+
+        if (counterObject != null && counterData != null)
+        {
+            counterObject.sprite = counterData.counterSprite;
+        }
+    }
+
+    // ============================================================
+    // NETWORK - Getters pour état
+    // ============================================================
+
+    public string GetCounterType()
+    {
+        return counterData?.type.ToString() ?? "Unknown";
+    }
+
+    public string GetCurrentItemName()
+    {
+        return currentItem?.name;
+    }
+
+    public string GetCookingState()
+    {
+        return cookingState;
+    }
+
+    public float GetCookingProgress()
+    {
+        return cookingProgress;
+    }
+
+    public int? GetLockedByPlayer()
+    {
+        return lockedByPlayer;
+    }
+
+    // ============================================================
+    // NETWORK - Système de lock pour conflits
+    // ============================================================
+
+    /// <summary>
+    /// Tente de verrouiller ce counter pour un joueur
+    /// Retourne true si le lock est obtenu
+    /// </summary>
+    public bool TryLock(int playerId, uint tick)
+    {
+        // Si pas de lock ou nouveau tick plus ancien (priorité au premier)
+        if (lockedByPlayer == null)
+        {
+            lockedByPlayer = playerId;
+            lockTick = tick;
+            return true;
+        }
+
+        // Si déjà locké par le même joueur
+        if (lockedByPlayer == playerId)
+        {
+            return true;
+        }
+
+        // Si le tick entrant est plus ancien, il a priorité
+        if (tick < lockTick)
+        {
+            lockedByPlayer = playerId;
+            lockTick = tick;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Libère le lock
+    /// </summary>
+    public void ReleaseLock(int playerId)
+    {
+        if (lockedByPlayer == playerId)
+        {
+            lockedByPlayer = null;
+            lockTick = 0;
+        }
+    }
+
+    /// <summary>
+    /// Force la libération du lock (timeout ou admin)
+    /// </summary>
+    public void ForceReleaseLock()
+    {
+        lockedByPlayer = null;
+        lockTick = 0;
     }   
 
 
@@ -243,29 +370,46 @@ public class Counter : MonoBehaviour, IInteractable
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
         SliderTime sliderTime = GetComponent<SliderTime>();
         PlayerController playerController = playerInventory.GetComponent<PlayerController>();
+
+        // Mettre à jour l'état réseau
+        cookingState = "cooking";
+        cookingDuration = itemToTransform.secondsToTransform;
+        cookingProgress = 0f;
+
         if (counterData.needPlayerFreeze)
         {
             playerMovement.Freeze();
         }
+
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
         AudioSource audioClip = playerMovement.GetComponent<AudioSource>();
-        audioClip.PlayOneShot(itemToTransform.soundToTransform);
+        if (audioClip != null && itemToTransform.soundToTransform != null)
+        {
+            audioClip.PlayOneShot(itemToTransform.soundToTransform);
+        }
+
         float elapsed = 0f;
         while (elapsed < itemToTransform.secondsToTransform)
         {
-            if (!inRange && counterData.needPlayerFreeze) // joueur est sorti → on stoppe
+            if (!inRange && counterData.needPlayerFreeze)
             {
+                // Joueur est sorti → on stoppe
                 sliderTime.StopTimer();
                 playerInventory.AddItem(itemToTransform);
                 currentItem = null;
                 UpdateVisual();
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
+
+                // Reset état réseau
+                cookingState = "idle";
+                cookingProgress = 0f;
                 transformCoroutine = null;
                 yield break;
             }
 
             elapsed += Time.deltaTime;
+            cookingProgress = elapsed / itemToTransform.secondsToTransform;
             yield return null;
         }
 
@@ -275,6 +419,10 @@ public class Counter : MonoBehaviour, IInteractable
         wasItemCrafted = true;
         UpdateVisual();
         playerMovement.Unfreeze();
+
+        // Mettre à jour état réseau
+        cookingState = "done";
+        cookingProgress = 1f;
 
         transformCoroutine = null;
     }
