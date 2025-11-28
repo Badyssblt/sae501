@@ -129,8 +129,11 @@ public class PlayerController : MonoBehaviour
             // Axes non configurés, on utilise le fallback clavier
         }
 
-        // Fallback clavier (ZQSD/WASD + Espace) si pas d'input arcade
-        if (horizontal == 0f && vertical == 0f && !actionPressed)
+        // Fallback clavier (ZQSD/WASD + Espace) - UNIQUEMENT pour les clients web distants
+        // Vérification à l'exécution : seulement si on est en mode Client (pas Host/borne arcade)
+        if (NetworkManager.Instance != null &&
+            NetworkManager.Instance.Role == NetworkRole.Client &&
+            horizontal == 0f && vertical == 0f && !actionPressed)
         {
             // ZQSD (FR) et WASD (EN)
             if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
