@@ -218,6 +218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b7371f2dccb7d4a963c4cd15a54cd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  interactionDistance: 0.3
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &4197980645142796753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,8 +248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eb1636af0f0b6f4484c758a089029a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 7
-  sprintSpeed: 14
+  moveSpeed: 5
+  sprintSpeed: 7
   sprintDuration: 2
   sprintCooldown: 3
   sprintKey: 304
@@ -340,7 +344,7 @@ MonoBehaviour:
   playerId: 1
   isLocalPlayer: 1
   currentMovement: {x: 0, y: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 1750373611411239103}
   holdToUnfreezeTime: 0.5
 --- !u!82 &7241820277188107740
 AudioSource:

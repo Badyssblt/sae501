@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: CheeseBurgerRecipe
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
   ingredients:
-  - {fileID: 11400000, guid: 87b3cbcefa4293a42bc670994d5e8188, type: 2}
-  - {fileID: 11400000, guid: 938c1684a4ac9d34684e2b67cc3aa3a0, type: 2}
+  - {fileID: 11400000, guid: 6ab09689a39029746abc4ca71ca9d0cf, type: 2}
   - {fileID: 11400000, guid: 85db07aff66f4632a78fed75e3bbbb16, type: 2}
   result: {fileID: 11400000, guid: 2e067b2b17a441d5b20a8037d5fc929f, type: 2}

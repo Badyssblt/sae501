@@ -87,8 +87,25 @@ public class PlayerController : MonoBehaviour
         if (playerMovement != null)
         {
             playerMovement.SetMovement(currentMovement);
-            animator.SetFloat("MoveX", currentMovement.x);
-            animator.SetFloat("MoveY", currentMovement.y);
+
+            // Mettre à jour les paramètres d'animation
+            if (currentMovement != Vector2.zero)
+            {
+                // En mouvement : utiliser la direction actuelle
+                animator.SetFloat("MoveX", currentMovement.x);
+                animator.SetFloat("MoveY", currentMovement.y);
+                animator.SetBool("IsMoving", true);
+                animator.SetFloat("LastMoveX", currentMovement.x);
+                animator.SetFloat("LastMoveY", currentMovement.y);
+            }
+            else
+            {
+                // À l'arrêt : mettre MoveX et MoveY à 0, garder LastMoveX et LastMoveY
+                animator.SetFloat("MoveX", 0);
+                animator.SetFloat("MoveY", 0);
+                animator.SetBool("IsMoving", false);
+                // LastMoveX et LastMoveY gardent leur dernière valeur
+            }
         }
 
         // Gestion action

@@ -8,13 +8,19 @@ public class Counter : MonoBehaviour, IInteractable
     [SerializeField] private CounterTypeScriptable counterData;
     private List<ItemData> ingredientsOnCounter = new List<ItemData>();
     private SpriteRenderer itemToDisplay;
-    private bool inRange = false;
-    private PlayerInteraction player;
     private Coroutine transformCoroutine;
 
     // L'objet sur le comptoir (friteuse etc...)
     [SerializeField] private SpriteRenderer counterObject;
 
+    // L'icône "prêt" qui s'affiche quand l'item est fini
+    private SpriteRenderer readyIcon;
+    private Vector3 readyIconInitialPosition;
+    private Coroutine bounceCoroutine;
+
+    // Paramètres de l'animation bounce
+    [SerializeField] private float bounceHeight = 0.3f;
+    [SerializeField] private float bounceSpeed = 2f;
 
     private bool wasItemCrafted = false;
 
@@ -29,33 +35,22 @@ public class Counter : MonoBehaviour, IInteractable
         {
             itemToDisplay = null;
         }
+
+        Transform readyIconTransform = transform.Find("ReadyIcon");
+        if (readyIconTransform != null)
+        {
+            readyIcon = readyIconTransform.gameObject.GetComponent<SpriteRenderer>();
+            readyIconInitialPosition = readyIconTransform.localPosition;
+            readyIcon.enabled = false; // Masquer par défaut
+        }
+        else
+        {
+            readyIcon = null;
+        }
+
         counterObject.sprite = counterData.counterSprite;
     }   
 
-
-    // Plus besoin d'Update, l'interaction se fait via PlayerInteraction.OnInteract()
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            inRange = true;
-            player = collision.GetComponent<PlayerInteraction>();
-            if (player != null)
-                player.SetCurrentInteractable(this);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            inRange = false;
-            PlayerInteraction player = collision.GetComponent<PlayerInteraction>();
-            if (player != null)
-                player.ClearCurrentInteractable(this);
-        }
-    }
 
     private void UpdateVisual()
     {
@@ -72,6 +67,46 @@ public class Counter : MonoBehaviour, IInteractable
             {
                 itemToDisplay.sprite = null;
             }
+        }
+    }
+
+    private void UpdateReadyIcon()
+    {
+        if (readyIcon != null)
+        {
+            // L'icône ne s'affiche que si l'item est crafté ET que ce n'est pas un comptoir d'assemblage
+            bool shouldShowIcon = wasItemCrafted && counterData.type != CounterType.Assemblage;
+            readyIcon.enabled = shouldShowIcon;
+
+            if (shouldShowIcon)
+            {
+                // Démarrer l'animation de bounce
+                if (bounceCoroutine != null)
+                    StopCoroutine(bounceCoroutine);
+                bounceCoroutine = StartCoroutine(BounceAnimation());
+            }
+            else
+            {
+                // Arrêter l'animation et réinitialiser la position
+                if (bounceCoroutine != null)
+                {
+                    StopCoroutine(bounceCoroutine);
+                    bounceCoroutine = null;
+                }
+                readyIcon.transform.localPosition = readyIconInitialPosition;
+            }
+        }
+    }
+
+    IEnumerator BounceAnimation()
+    {
+        float time = 0f;
+        while (true)
+        {
+            time += Time.deltaTime * bounceSpeed;
+            float yOffset = Mathf.Abs(Mathf.Sin(time)) * bounceHeight;
+            readyIcon.transform.localPosition = readyIconInitialPosition + new Vector3(0, yOffset, 0);
+            yield return null;
         }
     }
 
@@ -147,9 +182,10 @@ public class Counter : MonoBehaviour, IInteractable
 
             if (newResult != null)
             {
-                // Recette trouvée
-                ingredientsOnCounter.Add(newIngredient);
-                currentItem = newResult; // afficher le résultat de la recette
+                // Recette trouvée - le résultat devient le nouvel ingrédient de base
+                ingredientsOnCounter.Clear();
+                ingredientsOnCounter.Add(newResult);
+                currentItem = newResult;
             }
             else
             {
@@ -208,6 +244,7 @@ public class Counter : MonoBehaviour, IInteractable
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
             }
             wasItemCrafted = false;
+            UpdateReadyIcon(); // Masquer l'icône "prêt"
             return;
         }
 
@@ -254,17 +291,6 @@ public class Counter : MonoBehaviour, IInteractable
         float elapsed = 0f;
         while (elapsed < itemToTransform.secondsToTransform)
         {
-            if (!inRange && counterData.needPlayerFreeze) // joueur est sorti → on stoppe
-            {
-                sliderTime.StopTimer();
-                playerInventory.AddItem(itemToTransform);
-                currentItem = null;
-                UpdateVisual();
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-                transformCoroutine = null;
-                yield break;
-            }
-
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -274,6 +300,7 @@ public class Counter : MonoBehaviour, IInteractable
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
         UpdateVisual();
+        UpdateReadyIcon(); // Afficher l'icône "prêt"
         playerMovement.Unfreeze();
 
         transformCoroutine = null;
@@ -284,8 +311,6 @@ public class Counter : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction player)
     {
-        if (!inRange) return;
-
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
