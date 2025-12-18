@@ -42,7 +42,15 @@ public class LobbyUI : MonoBehaviour
 
     private void Start()
     {
-        // Configuration initiale
+        // Si on est en mode Client, on cache tout le lobby UI et on va direct au jeu
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
+        {
+            Debug.Log("[LobbyUI] Mode Client détecté - Skip du lobby");
+            ShowGamePanel();
+            return;
+        }
+
+        // Configuration initiale (Host seulement)
         ShowMapSelection();
 
         // Initialiser les couleurs si non définies

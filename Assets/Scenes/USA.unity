@@ -5494,7 +5494,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 20cabc6128f7b8149bf7dbaf0b5333ad, type: 2}
   - {fileID: 11400000, guid: c527411a2ef94d64aa588a5ecf31e053, type: 2}
   mapName: italie
-  gameTime: 100
+  gameTime: 120
   maxPlayers: 4
   playerPrefab: {fileID: 4905632694918771176, guid: 32381048c916c7a418fd00328bdb609e, type: 3}
   spawnPoints:

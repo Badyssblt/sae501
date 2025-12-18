@@ -206,4 +206,46 @@ public class OrderManager : MonoBehaviour
 
         Debug.Log("Toutes les commandes ont été nettoyées !");
     }
+
+    // ============================================================
+    // NETWORK - Retourne les commandes actives pour la synchronisation
+    // ============================================================
+
+    /// <summary>
+    /// Structure pour les données de commande réseau
+    /// </summary>
+    public struct OrderInfo
+    {
+        public string id;
+        public string recipeName;
+        public float timeRemaining;
+        public string status;
+    }
+
+    /// <summary>
+    /// Retourne les commandes actives sous forme sérialisable pour le réseau
+    /// </summary>
+    public List<OrderInfo> GetActiveOrders()
+    {
+        var orders = new List<OrderInfo>();
+
+        foreach (var pnjOrder in pnjOrders)
+        {
+            if (pnjOrder.orderUI != null)
+            {
+                var orderUI = pnjOrder.orderUI.GetComponent<OrderUI>();
+                float timeRemaining = orderUI != null ? orderUI.GetTimeRemaining() : 0f;
+
+                orders.Add(new OrderInfo
+                {
+                    id = $"order_{pnjOrder.client?.GetInstanceID() ?? 0}",
+                    recipeName = pnjOrder.recipe?.result?.name ?? "Unknown",
+                    timeRemaining = timeRemaining,
+                    status = "pending"
+                });
+            }
+        }
+
+        return orders;
+    }
 }

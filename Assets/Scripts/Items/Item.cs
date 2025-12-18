@@ -10,9 +10,43 @@ public class Item : MonoBehaviour, IInteractable
 
     private PlayerInteraction player;
 
+    // ============================================================
+    // NETWORK - ID pour synchronisation
+    // ============================================================
+
+    [Header("Network")]
+    [SerializeField] private string networkId;
+    private static int itemIdCounter = 0;
+
+    /// <summary>
+    /// ID unique pour la synchronisation réseau
+    /// </summary>
+    public string NetworkId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(networkId))
+            {
+                networkId = $"item_{itemIdCounter++}_{item?.name ?? "unknown"}";
+            }
+            return networkId;
+        }
+    }
+
+    /// <summary>
+    /// Retourne les données de l'item
+    /// </summary>
+    public ItemData ItemData => item;
+
     private void Start()
     {
         collider = GetComponent<BoxCollider2D>();
+
+        // Générer un ID basé sur la position et le type si pas défini
+        if (string.IsNullOrEmpty(networkId))
+        {
+            networkId = $"item_{transform.position.x:F1}_{transform.position.y:F1}_{item?.name ?? "unknown"}";
+        }
     }
 
     public void Interact(PlayerInteraction player)

@@ -101,13 +101,9 @@ public class PlayerInteraction : MonoBehaviour
             triggerInteractable = null;
     }
 
-    // Pour debug - voir la direction du raycast en mode Scene
-    private void OnDrawGizmos()
+    // Permet aux objets interactables d'accéder à l'inventaire du joueur
+    public InventorySystem GetInventory()
     {
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(transform.position, lastFacingDirection * interactionDistance);
-        }
+        return inventory;
     }
 }

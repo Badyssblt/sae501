@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CookMoiCa.Network;
 
 public class Counter : MonoBehaviour, IInteractable
 {
@@ -24,8 +25,46 @@ public class Counter : MonoBehaviour, IInteractable
 
     private bool wasItemCrafted = false;
 
+    // ============================================================
+    // NETWORK - ID et état pour synchronisation
+    // ============================================================
+
+    [Header("Network")]
+    [SerializeField] private string networkId;
+    private static int counterIdCounter = 0;
+
+    // État de cuisson pour synchronisation
+    private string cookingState = "idle"; // idle, cooking, done
+    private float cookingProgress = 0f;
+    private float cookingDuration = 0f;
+
+    // Système de lock pour conflits
+    private int? lockedByPlayer = null;
+    private uint lockTick = 0;
+
+    /// <summary>
+    /// ID unique pour la synchronisation réseau
+    /// </summary>
+    public string NetworkId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(networkId))
+            {
+                networkId = $"counter_{counterIdCounter++}_{gameObject.name}";
+            }
+            return networkId;
+        }
+    }
+
     private void Awake()
     {
+        // Générer un ID basé sur la position si pas défini
+        if (string.IsNullOrEmpty(networkId))
+        {
+            networkId = $"counter_{transform.position.x:F1}_{transform.position.y:F1}";
+        }
+
         Transform itemTransform = transform.Find("ItemDisplayed");
         if (itemTransform != null)
         {
@@ -280,18 +319,30 @@ public class Counter : MonoBehaviour, IInteractable
         PlayerMovement playerMovement = playerInventory.GetComponent<PlayerMovement>();
         SliderTime sliderTime = GetComponent<SliderTime>();
         PlayerController playerController = playerInventory.GetComponent<PlayerController>();
+
+        // Mettre à jour l'état réseau
+        cookingState = "cooking";
+        cookingDuration = itemToTransform.secondsToTransform;
+        cookingProgress = 0f;
+
         if (counterData.needPlayerFreeze)
         {
             playerMovement.Freeze();
         }
+
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
         AudioSource audioClip = playerMovement.GetComponent<AudioSource>();
-        audioClip.PlayOneShot(itemToTransform.soundToTransform);
+        if (audioClip != null && itemToTransform.soundToTransform != null)
+        {
+            audioClip.PlayOneShot(itemToTransform.soundToTransform);
+        }
+
         float elapsed = 0f;
         while (elapsed < itemToTransform.secondsToTransform)
         {
             elapsed += Time.deltaTime;
+            cookingProgress = elapsed / itemToTransform.secondsToTransform;
             yield return null;
         }
 
@@ -302,6 +353,10 @@ public class Counter : MonoBehaviour, IInteractable
         UpdateVisual();
         UpdateReadyIcon(); // Afficher l'icône "prêt"
         playerMovement.Unfreeze();
+
+        // Mettre à jour état réseau
+        cookingState = "done";
+        cookingProgress = 1f;
 
         transformCoroutine = null;
     }
