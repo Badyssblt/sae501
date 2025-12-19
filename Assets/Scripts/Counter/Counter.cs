@@ -18,12 +18,14 @@ public class Counter : MonoBehaviour, IInteractable
     private SpriteRenderer readyIcon;
     private Vector3 readyIconInitialPosition;
     private Coroutine bounceCoroutine;
+    [SerializeField] private AudioClip readySound;
 
     // Paramètres de l'animation bounce
     [SerializeField] private float bounceHeight = 0.3f;
     [SerializeField] private float bounceSpeed = 2f;
 
     private bool wasItemCrafted = false;
+    private bool wasReadyIconShown = false;
 
     // ============================================================
     // NETWORK - ID et état pour synchronisation
@@ -119,6 +121,13 @@ public class Counter : MonoBehaviour, IInteractable
 
             if (shouldShowIcon)
             {
+                // Jouer le son si l'icône vient d'apparaître
+                if (!wasReadyIconShown && readySound != null)
+                {
+                    AudioSource.PlayClipAtPoint(readySound, transform.position);
+                }
+                wasReadyIconShown = true;
+
                 // Démarrer l'animation de bounce
                 if (bounceCoroutine != null)
                     StopCoroutine(bounceCoroutine);
@@ -126,6 +135,7 @@ public class Counter : MonoBehaviour, IInteractable
             }
             else
             {
+                wasReadyIconShown = false;
                 // Arrêter l'animation et réinitialiser la position
                 if (bounceCoroutine != null)
                 {
@@ -382,6 +392,35 @@ public class Counter : MonoBehaviour, IInteractable
             TransformItem(playerInventory, player);
         }
 
+    }
+
+    // ============================================================
+    // GETTERS pour la synchronisation réseau
+    // ============================================================
+
+    public string GetCounterType()
+    {
+        return counterData != null ? counterData.type.ToString() : "Unknown";
+    }
+
+    public string GetCurrentItemName()
+    {
+        return currentItem != null ? currentItem.name : null;
+    }
+
+    public string GetCookingState()
+    {
+        return cookingState;
+    }
+
+    public float GetCookingProgress()
+    {
+        return cookingProgress;
+    }
+
+    public int? GetLockedByPlayer()
+    {
+        return lockedByPlayer;
     }
 
 }

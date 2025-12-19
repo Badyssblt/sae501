@@ -89,6 +89,12 @@ public class PlayerInteraction : MonoBehaviour
         return inventory;
     }
 
+    // Retourne l'interactable actuellement ciblé
+    public IInteractable GetCurrentInteractable()
+    {
+        return currentInteractable;
+    }
+
     // Méthodes pour les triggers (utilisées par les PNJ)
     public void SetCurrentInteractable(IInteractable interactable)
     {
@@ -99,11 +105,5 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (triggerInteractable == interactable)
             triggerInteractable = null;
-    }
-
-    // Permet aux objets interactables d'accéder à l'inventaire du joueur
-    public InventorySystem GetInventory()
-    {
-        return inventory;
     }
 }

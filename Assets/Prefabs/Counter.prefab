@@ -55,8 +55,10 @@ MonoBehaviour:
   currentItem: {fileID: 0}
   counterData: {fileID: 0}
   counterObject: {fileID: 0}
+  readySound: {fileID: 8300000, guid: 8fe19e01eaf943b4f89c199fa5108a1f, type: 3}
   bounceHeight: 0.3
   bounceSpeed: 2
+  networkId: 
 --- !u!212 &3635026045718563842
 SpriteRenderer:
   m_ObjectHideFlags: 0

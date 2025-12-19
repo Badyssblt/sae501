@@ -6,6 +6,7 @@ using TMPro;
 public class LobbyUI : MonoBehaviour
 {
     [Header("UI Elements")]
+    [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject lobbyPanel;
     [SerializeField] private GameObject mapSelectionPanel;
     [SerializeField] private GameObject waitingRoomPanel;
@@ -203,6 +204,7 @@ public class LobbyUI : MonoBehaviour
 
     private void ShowMapSelection()
     {
+        if (mainMenuPanel) mainMenuPanel.SetActive(true);
         if (lobbyPanel) lobbyPanel.SetActive(true);
         if (mapSelectionPanel) mapSelectionPanel.SetActive(true);
         if (waitingRoomPanel) waitingRoomPanel.SetActive(false);
@@ -214,6 +216,7 @@ public class LobbyUI : MonoBehaviour
 
     private void ShowWaitingRoom()
     {
+        if (mainMenuPanel) mainMenuPanel.SetActive(false);
         if (lobbyPanel) lobbyPanel.SetActive(true);
         if (mapSelectionPanel) mapSelectionPanel.SetActive(false);
         if (waitingRoomPanel) waitingRoomPanel.SetActive(true);

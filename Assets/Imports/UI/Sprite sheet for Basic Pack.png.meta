@@ -2301,7 +2301,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite sheet for Basic Pack_99
+      name: UIBackground
       rect:
         serializedVersion: 2
         x: 59
@@ -2310,7 +2310,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 4, z: 4, w: 4}
       customData: 
       outline: []
       physicsShape: []
@@ -7406,7 +7406,7 @@ TextureImporter:
       Sprite sheet for Basic Pack_96: -246919937
       Sprite sheet for Basic Pack_97: -246259108
       Sprite sheet for Basic Pack_98: -2029110583
-      Sprite sheet for Basic Pack_99: 16607810
+      UIBackground: 16607810
       UIButton: -1334684012
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
