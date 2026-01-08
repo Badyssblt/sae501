@@ -96,4 +96,23 @@ public class SliderTime : MonoBehaviour
 
         timerCoroutine = null;
     }
+
+    /// <summary>
+    /// Définit directement la progression du slider (pour sync réseau)
+    /// </summary>
+    public void SetProgress(float progress)
+    {
+        if (timerSlider == null) return;
+
+        // Afficher le slider
+        if (sliderContainer != null)
+            sliderContainer.SetActive(true);
+
+        // Configurer comme pourcentage (0-1)
+        timerSlider.minValue = 0f;
+        timerSlider.maxValue = 1f;
+        timerSlider.value = Mathf.Clamp01(progress);
+
+        UpdateSliderColor(progress);
+    }
 }

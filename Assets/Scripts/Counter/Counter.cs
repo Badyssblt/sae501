@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using CookMoiCa.Network;
 
@@ -35,6 +36,9 @@ public class Counter : MonoBehaviour, IInteractable
     [SerializeField] private string networkId;
     private static int counterIdCounter = 0;
 
+    // Registre statique de tous les counters pour synchronisation
+    private static Dictionary<string, Counter> counterRegistry = new Dictionary<string, Counter>();
+
     // État de cuisson pour synchronisation
     private string cookingState = "idle"; // idle, cooking, done
     private float cookingProgress = 0f;
@@ -43,6 +47,9 @@ public class Counter : MonoBehaviour, IInteractable
     // Système de lock pour conflits
     private int? lockedByPlayer = null;
     private uint lockTick = 0;
+
+    // Flag pour mode client (pas de logique locale)
+    private bool isNetworkControlled = false;
 
     /// <summary>
     /// ID unique pour la synchronisation réseau
@@ -67,6 +74,9 @@ public class Counter : MonoBehaviour, IInteractable
             networkId = $"counter_{transform.position.x:F1}_{transform.position.y:F1}";
         }
 
+        // Enregistrer dans le registre statique
+        counterRegistry[NetworkId] = this;
+
         Transform itemTransform = transform.Find("ItemDisplayed");
         if (itemTransform != null)
         {
@@ -90,8 +100,89 @@ public class Counter : MonoBehaviour, IInteractable
         }
 
         counterObject.sprite = counterData.counterSprite;
-    }   
 
+        // Vérifier si on est en mode client
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Client)
+        {
+            isNetworkControlled = true;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Retirer du registre
+        if (counterRegistry.ContainsKey(NetworkId))
+        {
+            counterRegistry.Remove(NetworkId);
+        }
+    }
+
+    // ============================================================
+    // NETWORK - Méthodes statiques pour accès aux counters
+    // ============================================================
+
+    /// <summary>
+    /// Retrouve un counter par son ID réseau
+    /// </summary>
+    public static Counter GetCounterById(string counterId)
+    {
+        if (string.IsNullOrEmpty(counterId))
+            return null;
+
+        counterRegistry.TryGetValue(counterId, out Counter counter);
+        return counter;
+    }
+
+    /// <summary>
+    /// Retourne tous les counters enregistrés
+    /// </summary>
+    public static IEnumerable<Counter> GetAllCounters()
+    {
+        return counterRegistry.Values;
+    }
+
+    /// <summary>
+    /// Applique l'état réseau reçu du serveur (mode client uniquement)
+    /// </summary>
+    public void ApplyNetworkState(CounterState state)
+    {
+        if (state == null) return;
+
+        // Mettre à jour l'item sur le counter
+        if (ItemDatabase.Instance != null)
+        {
+            string newItemName = state.currentItem;
+            if (string.IsNullOrEmpty(newItemName))
+            {
+                currentItem = null;
+            }
+            else if (currentItem == null || currentItem.name != newItemName)
+            {
+                currentItem = ItemDatabase.Instance.GetItemByName(newItemName);
+            }
+        }
+
+        // Mettre à jour l'état de cuisson
+        cookingState = state.cookingState ?? "idle";
+        cookingProgress = state.cookingProgress;
+
+        // Mettre à jour le visuel
+        UpdateVisual();
+
+        // Mettre à jour le slider si en cours de cuisson
+        SliderTime sliderTime = GetComponent<SliderTime>();
+        if (sliderTime != null)
+        {
+            if (cookingState == "cooking" && cookingProgress > 0 && cookingProgress < 1)
+            {
+                sliderTime.SetProgress(cookingProgress);
+            }
+            else if (cookingState == "idle" || cookingState == "done")
+            {
+                sliderTime.HideSlider();
+            }
+        }
+    }
 
     private void UpdateVisual()
     {

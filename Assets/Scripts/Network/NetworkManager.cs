@@ -99,6 +99,8 @@ public class NetworkManager : MonoBehaviour
     public event Action<int> OnGameEnded;
     public event Action<StateSnapshot> OnStateReceived; // Client: reçoit état serveur
     public event Action<GameEventMessage> OnGameEvent; // Events instantanés
+    public event Action OnAllPlayersReady; // Tous les joueurs distants sont prêts
+    public event Action<int> OnRemotePlayerReady; // Un joueur distant est prêt (slot)
 
     // ============================================================
     // UNITY LIFECYCLE
@@ -260,6 +262,10 @@ public class NetworkManager : MonoBehaviour
                 {
                     RegisterAsHost();
                 }
+                else if (Role == NetworkRole.Client)
+                {
+                    RegisterAsPlayer();
+                }
             };
 
             websocket.OnError += (e) =>
@@ -346,6 +352,15 @@ public class NetworkManager : MonoBehaviour
                     OnGameStarted?.Invoke();
                     break;
 
+                case "allPlayersReady":
+                    OnAllPlayersReady?.Invoke();
+                    Debug.Log("[Network] Tous les joueurs sont prêts!");
+                    break;
+
+                case "playerReady":
+                    HandleRemotePlayerReady(data);
+                    break;
+
                 case "gameEnded":
                     HandleGameEnded(data);
                     break;
@@ -414,6 +429,16 @@ public class NetworkManager : MonoBehaviour
             OnPlayerLeft?.Invoke(msg.slot);
             remoteInputs.Remove(msg.slot);
             Debug.Log($"[Network] Joueur parti: slot={msg.slot}");
+        }
+    }
+
+    private void HandleRemotePlayerReady(string data)
+    {
+        var msg = JsonUtility.FromJson<PlayerReadyMessage>(data);
+        if (msg != null)
+        {
+            OnRemotePlayerReady?.Invoke(msg.slot);
+            Debug.Log($"[Network] Joueur distant prêt: slot={msg.slot}");
         }
     }
 
@@ -531,6 +556,29 @@ public class NetworkManager : MonoBehaviour
 
         SendSocketIO("registerAsHost");
         Debug.Log("[Network] Enregistré comme host");
+    }
+
+    public void RegisterAsPlayer()
+    {
+        if (!IsConnected || Role != NetworkRole.Client) return;
+        if (LocalPlayerSlot < 0) return;
+
+        var data = new RegisterAsPlayerMessage { slot = LocalPlayerSlot, name = LocalPlayerName };
+        SendSocketIO("registerAsPlayer", data);
+        Debug.Log($"[Network] Enregistré comme joueur: slot={LocalPlayerSlot}, name={LocalPlayerName}");
+    }
+
+    /// <summary>
+    /// Signale au serveur que ce client est prêt à jouer (Client seulement)
+    /// </summary>
+    public void SendPlayerReady()
+    {
+        if (!IsConnected || Role != NetworkRole.Client) return;
+        if (LocalPlayerSlot < 0) return;
+
+        var data = new PlayerReadyMessage { slot = LocalPlayerSlot };
+        SendSocketIO("playerReady", data);
+        Debug.Log($"[Network] Signalé prêt: slot={LocalPlayerSlot}");
     }
 
     public void SetupLobby(string mapName)

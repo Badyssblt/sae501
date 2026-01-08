@@ -8,6 +8,7 @@ public enum GameState
 {
     Waiting,
     Ready,
+    Loading,  // En attente que tous les joueurs soient prêts
     Playing,
     GameOver
 }
@@ -120,6 +121,7 @@ public class GameManager : MonoBehaviour
         NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
         NetworkManager.Instance.OnStateReceived += OnServerStateReceived;
         NetworkManager.Instance.OnGameEvent += OnGameEvent;
+        NetworkManager.Instance.OnAllPlayersReady += OnAllPlayersReady;
 
         // Utiliser la map demandée
         if (!string.IsNullOrEmpty(NetworkManager.Instance.RequestedMap))
@@ -127,12 +129,38 @@ public class GameManager : MonoBehaviour
             mapName = NetworkManager.Instance.RequestedMap;
         }
 
-        // Démarrer directement en mode Playing
-        currentState = GameState.Playing;
+        // Commencer en mode Loading (attente de tous les joueurs)
+        currentState = GameState.Loading;
         timeLeft = gameTime;
         score = 0;
 
-        Debug.Log($"[GameManager] Client prêt - Slot local: {localSlot}");
+        Debug.Log($"[GameManager] Client initialisé - Slot local: {localSlot}");
+
+        // Signaler au serveur qu'on est prêt
+        NetworkManager.Instance.SendPlayerReady();
+        Debug.Log("[GameManager] Signal playerReady envoyé");
+    }
+
+    /// <summary>
+    /// Callback quand tous les joueurs sont prêts
+    /// </summary>
+    private void OnAllPlayersReady()
+    {
+        Debug.Log("[GameManager] Tous les joueurs sont prêts - Démarrage de la partie!");
+
+        if (currentState == GameState.Loading || currentState == GameState.Ready)
+        {
+            currentState = GameState.Playing;
+
+            // Démarrer le spawn des PNJ (host seulement)
+            if (NetworkManager.Instance?.Role == NetworkRole.Host)
+            {
+                if (PNJSpawner.Instance != null)
+                {
+                    PNJSpawner.Instance.StartSpawning();
+                }
+            }
+        }
     }
 
     public void StartMenu()
@@ -152,6 +180,8 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.OnPlayerJoined += OnPlayerJoined;
             NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
             NetworkManager.Instance.OnGameStarted += StartGame;
+            NetworkManager.Instance.OnAllPlayersReady += OnAllPlayersReady;
+            NetworkManager.Instance.OnRemotePlayerReady += OnRemotePlayerReady;
         }
 
         GameObject mainMenu = GameObject.FindWithTag("MainMenu");
@@ -160,6 +190,15 @@ public class GameManager : MonoBehaviour
 
         if (gameUI != null)
             gameUI.SetActive(true);
+    }
+
+    /// <summary>
+    /// Callback quand un joueur distant signale qu'il est prêt (Host seulement)
+    /// </summary>
+    private void OnRemotePlayerReady(int slot)
+    {
+        Debug.Log($"[GameManager] Joueur distant {slot} est prêt");
+        // Optionnel: afficher un indicateur visuel
     }
 
     private void InitializeGame()
@@ -183,18 +222,16 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.Ready) return;
         if (NetworkManager.Instance?.Role != NetworkRole.Host) return;
 
-        currentState = GameState.Playing;
+        // Passer en mode Loading (attente des joueurs distants)
+        currentState = GameState.Loading;
         timeLeft = gameTime;
         score = 0;
 
-        // Démarrer le spawn des PNJ
-        if (PNJSpawner.Instance != null)
-        {
-            PNJSpawner.Instance.StartSpawning();
-        }
-
+        // Envoyer startGame au serveur - le serveur décidera si on attend les joueurs ou pas
         NetworkManager.Instance?.StartGame(mapName);
-        Debug.Log("Partie démarrée!");
+        Debug.Log("Partie en cours de lancement - Attente des joueurs distants...");
+
+        // Note: Le spawn des PNJ sera déclenché par OnAllPlayersReady
     }
 
     private void SpawnPlayer(int playerId, bool isLocal)
@@ -305,8 +342,59 @@ public class GameManager : MonoBehaviour
         timeLeft = serverState.TimeLeft;
         score = serverState.Score;
 
-        // Vérifier la désynchronisation pour le joueur local
+        // Mettre à jour l'UI
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.SetScore(score);
+            UIManager.Instance.SetTimer(timeLeft);
+        }
+
         int localSlot = NetworkManager.Instance.LocalPlayerSlot;
+
+        // Mettre à jour les joueurs distants (carry/inventory)
+        foreach (var kvp in serverState.Players)
+        {
+            int playerId = kvp.Key;
+            PlayerState playerState = kvp.Value;
+
+            // Ne pas mettre à jour le joueur local via le réseau (on utilise la prédiction)
+            if (playerId == localSlot) continue;
+
+            // Mettre à jour l'inventaire des joueurs distants
+            if (activePlayers.TryGetValue(playerId, out GameObject playerObj))
+            {
+                var inventory = playerObj.GetComponent<InventorySystem>();
+                if (inventory != null)
+                {
+                    string currentCarry = inventory.currentItem?.name;
+                    if (currentCarry != playerState.carry)
+                    {
+                        inventory.SetItemByName(playerState.carry);
+
+                        // Mettre à jour l'UI d'inventaire
+                        if (InventoryUI.Instance != null)
+                        {
+                            InventoryUI.Instance.UpdatePlayerInventory(playerId, inventory);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Mettre à jour les counters
+        foreach (var kvp in serverState.Counters)
+        {
+            string counterId = kvp.Key;
+            CounterState counterState = kvp.Value;
+
+            Counter counter = Counter.GetCounterById(counterId);
+            if (counter != null)
+            {
+                counter.ApplyNetworkState(counterState);
+            }
+        }
+
+        // Vérifier la désynchronisation pour le joueur local
         if (activePlayers.TryGetValue(localSlot, out GameObject localPlayer))
         {
             Vector2 localPos = localPlayer.transform.position;
@@ -321,8 +409,6 @@ public class GameManager : MonoBehaviour
                 PerformRollback(serverState, localSlot);
             }
         }
-
-        // Mettre à jour les joueurs distants (interpolation gérée par PlayerController)
     }
 
     /// <summary>
@@ -639,6 +725,8 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.OnGameStarted -= StartGame;
             NetworkManager.Instance.OnStateReceived -= OnServerStateReceived;
             NetworkManager.Instance.OnGameEvent -= OnGameEvent;
+            NetworkManager.Instance.OnAllPlayersReady -= OnAllPlayersReady;
+            NetworkManager.Instance.OnRemotePlayerReady -= OnRemotePlayerReady;
         }
     }
 }
