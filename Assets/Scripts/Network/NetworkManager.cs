@@ -37,7 +37,7 @@ public class NetworkManager : MonoBehaviour
     // ============================================================
 
     [Header("Network Settings")]
-    [SerializeField] private string serverUrl = "ws://localhost:4000";
+    [SerializeField] private string serverUrl = "wss://cook.wevora.fr";
     [SerializeField] private float deltaSendRate = 20f; // 20 FPS pour les deltas
     [SerializeField] private float fullStateSendRate = 2f; // Full state toutes les 500ms
 
