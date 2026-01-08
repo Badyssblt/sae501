@@ -16,6 +16,7 @@ public class PNJSpawner : MonoBehaviour
     [Header("Espacement PNJ")]
     [SerializeField] private float offsetEntreClients = 0.5f; // Distance entre chaque client au comptoir
     [SerializeField] private DirectionAlignement directionAlignement = DirectionAlignement.Vertical; // Direction d'alignement des clients
+    [SerializeField] private Vector2 directionAttenteClients = Vector2.up; // Direction dans laquelle les clients regardent au comptoir
 
     [Header("Timing")]
     [SerializeField] private float intervalSpawn = 10f;
@@ -129,6 +130,7 @@ public class PNJSpawner : MonoBehaviour
             client.positionIndex = positionIndex;
             client.offsetEntreClients = offsetEntreClients;
             client.directionAlignement = directionAlignement;
+            client.directionAttente = directionAttenteClients;
 
             // Marquer la position comme occupée
             positionsOccupees[positionIndex] = true;

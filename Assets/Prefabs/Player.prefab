@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 7241820277188107740}
   - component: {fileID: 1750373611411239103}
   - component: {fileID: 6655942743651994179}
+  - component: {fileID: 1118244662189672399}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -523,6 +524,29 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1118244662189672399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905632694918771176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9482b58b42a1ad43ab35fa7aa7504d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SprintSmokeEffect
+  smokeSprites:
+  - {fileID: -9087577266532155448, guid: db7e694d23c65ef449fd2daf8cd21ff4, type: 3}
+  - {fileID: -1106684591460216115, guid: db7e694d23c65ef449fd2daf8cd21ff4, type: 3}
+  - {fileID: -5983078005227543334, guid: db7e694d23c65ef449fd2daf8cd21ff4, type: 3}
+  - {fileID: 7818055727696256662, guid: db7e694d23c65ef449fd2daf8cd21ff4, type: 3}
+  - {fileID: 8013849657407384527, guid: db7e694d23c65ef449fd2daf8cd21ff4, type: 3}
+  smokePrefab: {fileID: 0}
+  smokeSpawnInterval: 0.1
+  maxSmokes: 5
+  smokeAnimationSpeed: 0.1
+  smokeOffset: {x: 0, y: -0.3}
 --- !u!1 &4989551150907249365
 GameObject:
   m_ObjectHideFlags: 0

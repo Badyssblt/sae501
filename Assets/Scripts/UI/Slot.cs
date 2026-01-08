@@ -11,8 +11,17 @@ public class Slot : MonoBehaviour
     {
         if (itemIcon == null)
         {
-            // Cherche automatiquement un enfant nomm� "ItemIcon"
+            // Cherche automatiquement un enfant nomm� "ItemIcon"
             itemIcon = transform.Find("ItemIcon")?.GetComponent<Image>();
+        }
+    }
+
+    private void Start()
+    {
+        // Masquer l'icône au démarrage si aucun item n'est défini
+        if (item == null)
+        {
+            Clear();
         }
     }
 
