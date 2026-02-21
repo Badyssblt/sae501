@@ -13,6 +13,9 @@ public class PNJClient : MonoBehaviour, IInteractable
     [Tooltip("Direction dans laquelle le PNJ regarde quand il attend au comptoir")]
     public Vector2 directionAttente = Vector2.up; // Par défaut, regarde vers le haut
 
+    [Header("Son")]
+    [SerializeField] private AudioClip servedSound;
+
     [HideInInspector]
     public int positionIndex = -1;     // Index de la position au comptoir (assign� par le spawner)
     [HideInInspector]
@@ -29,6 +32,7 @@ public class PNJClient : MonoBehaviour, IInteractable
     private bool commandeRecue = false;
     private Vector2 positionFinale; // Position finale avec offset appliqu�
     private Vector2 lastDirection = Vector2.right; // Dernière direction regardée (par défaut : droite)
+    private PNJOrderDisplay orderDisplay; // Affichage de la commande au-dessus du PNJ
 
     private enum EtatClient
     {
@@ -193,12 +197,40 @@ public class PNJClient : MonoBehaviour, IInteractable
         // Cr�er une commande via OrderManager
         if (OrderManager.Instance != null)
         {
-            OrderManager.Instance.CreatePNJOrder(this);
+            RecipeData recipe = OrderManager.Instance.CreatePNJOrder(this);
 
+            // Créer l'affichage de la commande au-dessus du PNJ
+            if (recipe != null)
+            {
+                CreateOrderDisplay(recipe);
+            }
         }
         else
         {
             Debug.LogWarning("OrderManager introuvable !");
+        }
+    }
+
+    void CreateOrderDisplay(RecipeData recipe)
+    {
+        if (recipe == null)
+        {
+            Debug.LogError($"PNJ {name}: Impossible de créer l'affichage avec une recette null!");
+            return;
+        }
+
+        // Créer un GameObject pour l'affichage
+        GameObject displayObject = new GameObject("OrderDisplay");
+        orderDisplay = displayObject.AddComponent<PNJOrderDisplay>();
+
+        if (orderDisplay != null)
+        {
+            orderDisplay.Initialize(recipe, transform);
+        }
+        else
+        {
+            Debug.LogError($"PNJ {name}: Échec de l'ajout du composant PNJOrderDisplay!");
+            Destroy(displayObject);
         }
     }
 
@@ -207,11 +239,30 @@ public class PNJClient : MonoBehaviour, IInteractable
     {
         commandeRecue = true;
         etat = EtatClient.Satisfait;
+
+        if (servedSound != null)
+        {
+            AudioSource.PlayClipAtPoint(servedSound, transform.position);
+        }
+
+        // Détruire l'affichage de la commande
+        if (orderDisplay != null)
+        {
+            Destroy(orderDisplay.gameObject);
+            orderDisplay = null;
+        }
     }
 
     void PartirInsatisfait()
     {
         etat = EtatClient.Insatisfait;
+
+        // Détruire l'affichage de la commande
+        if (orderDisplay != null)
+        {
+            Destroy(orderDisplay.gameObject);
+            orderDisplay = null;
+        }
 
         // Retirer la commande de l'OrderManager
         if (OrderManager.Instance != null)
@@ -227,6 +278,13 @@ public class PNJClient : MonoBehaviour, IInteractable
         // Quand il quitte l'�cran, on le d�truit
         if (transform.position.x > 10f)
         {
+            // Nettoyer l'affichage avant de détruire le PNJ
+            if (orderDisplay != null)
+            {
+                Destroy(orderDisplay.gameObject);
+                orderDisplay = null;
+            }
+
             Destroy(gameObject);
 
             if (!satisfait)

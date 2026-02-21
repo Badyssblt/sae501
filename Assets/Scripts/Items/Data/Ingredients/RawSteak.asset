@@ -17,4 +17,6 @@ MonoBehaviour:
   counterType: 0
   secondsToTransform: 3
   itemCrafted: {fileID: 11400000, guid: 938c1684a4ac9d34684e2b67cc3aa3a0, type: 2}
+  soundToTransform: {fileID: 8300000, guid: d80a07b4110a6ba4ca9c3bf5d3dfe633, type: 3}
   category: 0
+  scoreCount: 1

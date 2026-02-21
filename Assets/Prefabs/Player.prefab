@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b7371f2dccb7d4a963c4cd15a54cd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  interactionDistance: 0.3
+  interactionDistance: 0.6
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -547,6 +547,7 @@ MonoBehaviour:
   maxSmokes: 5
   smokeAnimationSpeed: 0.1
   smokeOffset: {x: 0, y: -0.3}
+  smokeScale: 0.5
 --- !u!1 &4989551150907249365
 GameObject:
   m_ObjectHideFlags: 0

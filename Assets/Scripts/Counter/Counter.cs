@@ -181,7 +181,8 @@ public class Counter : MonoBehaviour, IInteractable
         if (playerInventory.currentItem == null && currentItem != null)
         {
             playerInventory.AddItem(currentItem);
-            // Ne touche pas ingredientsOnCounter pour garder la trace
+            // Vider les ingrédients quand le joueur prend l'item
+            ingredientsOnCounter.Clear();
             currentItem = null;
             UpdateVisual();
             // Mettre à jour l'UI pour ce joueur
@@ -342,10 +343,12 @@ public class Counter : MonoBehaviour, IInteractable
 
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
-        AudioSource audioClip = playerMovement.GetComponent<AudioSource>();
-        if (audioClip != null && itemToTransform.soundToTransform != null)
+        AudioSource audioSource = playerMovement.GetComponent<AudioSource>();
+        if (audioSource != null && itemToTransform.soundToTransform != null)
         {
-            audioClip.PlayOneShot(itemToTransform.soundToTransform);
+            audioSource.clip = itemToTransform.soundToTransform;
+            audioSource.loop = true;
+            audioSource.Play();
         }
 
         float elapsed = 0f;
@@ -354,6 +357,14 @@ public class Counter : MonoBehaviour, IInteractable
             elapsed += Time.deltaTime;
             cookingProgress = elapsed / itemToTransform.secondsToTransform;
             yield return null;
+        }
+
+        // Arrêter le son de cuisson
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+            audioSource.clip = null;
         }
 
         // Transformation finie

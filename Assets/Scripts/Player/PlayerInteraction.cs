@@ -10,6 +10,7 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("Raycast Settings")]
     [SerializeField] private float interactionDistance = 1.5f;
+    [SerializeField] private float proximityRadius = 0.8f; // Rayon de détection par proximité
     [SerializeField] private LayerMask interactableLayer;
     private Vector2 lastFacingDirection = Vector2.down; // Direction par défaut
 
@@ -54,12 +55,40 @@ public class PlayerInteraction : MonoBehaviour
             if (interactable != null)
             {
                 currentInteractable = interactable;
-
                 return;
             }
         }
 
-        // Priorité 2 : Trigger (pour les PNJ)
+        // Priorité 2 : Détection par proximité (si raycast ne trouve rien)
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, proximityRadius, interactableLayer);
+        if (nearbyColliders.Length > 0)
+        {
+            // Trouver le plus proche
+            float closestDistance = float.MaxValue;
+            IInteractable closestInteractable = null;
+
+            foreach (Collider2D col in nearbyColliders)
+            {
+                IInteractable interactable = col.GetComponent<IInteractable>();
+                if (interactable != null)
+                {
+                    float dist = Vector2.Distance(transform.position, col.transform.position);
+                    if (dist < closestDistance)
+                    {
+                        closestDistance = dist;
+                        closestInteractable = interactable;
+                    }
+                }
+            }
+
+            if (closestInteractable != null)
+            {
+                currentInteractable = closestInteractable;
+                return;
+            }
+        }
+
+        // Priorité 3 : Trigger (pour les PNJ)
         if (triggerInteractable != null)
         {
             currentInteractable = triggerInteractable;
