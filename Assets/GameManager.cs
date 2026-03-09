@@ -172,7 +172,33 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        InitializeGame();
+        // Cacher le menu principal et afficher le lobby
+        GameObject mainMenu = GameObject.FindWithTag("MainMenu");
+        if (mainMenu != null)
+            mainMenu.SetActive(false);
+
+        if (gameUI != null)
+            gameUI.SetActive(true);
+
+        // Afficher la waiting room avec les slots
+        LobbyUI lobby = LobbyUI.Instance ?? FindObjectOfType<LobbyUI>(true);
+        Debug.Log($"[GameManager] StartMenu - gameUI active: {gameUI?.activeSelf}, LobbyUI found: {lobby != null}");
+        if (lobby != null)
+        {
+            lobby.EnterLobby();
+        }
+        else
+        {
+            Debug.LogError("[GameManager] LobbyUI introuvable!");
+        }
+    }
+
+    /// <summary>
+    /// Appelé quand le joueur valide dans le lobby pour lancer la partie
+    /// </summary>
+    public void LaunchGame(int localPlayerCount)
+    {
+        InitializeGame(localPlayerCount);
 
         // S'abonner aux événements réseau
         if (NetworkManager.Instance != null)
@@ -184,12 +210,8 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.OnRemotePlayerReady += OnRemotePlayerReady;
         }
 
-        GameObject mainMenu = GameObject.FindWithTag("MainMenu");
-        if (mainMenu != null)
-            mainMenu.SetActive(false);
-
-        if (gameUI != null)
-            gameUI.SetActive(true);
+        SetupLobby();
+        StartGame();
     }
 
     /// <summary>
@@ -201,11 +223,14 @@ public class GameManager : MonoBehaviour
         // Optionnel: afficher un indicateur visuel
     }
 
-    private void InitializeGame()
+    private void InitializeGame(int localPlayerCount)
     {
-        // Host: Spawner les joueurs locaux (slots 1-2)
+        // Host: Spawner les joueurs locaux selon le nombre dans le lobby
         SpawnPlayer(1, true);
-        SpawnPlayer(2, true);
+        if (localPlayerCount >= 2)
+        {
+            SpawnPlayer(2, true);
+        }
     }
 
     public void SetupLobby()
