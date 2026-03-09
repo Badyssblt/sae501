@@ -2717,7 +2717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad33b3bf8965e2a49a6c95abf5596934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkManager
-  serverUrl: ws://localhost:4000
+  serverUrl: wss://cook.wevora.fr
   gameStateSendRate: 30
 --- !u!4 &525655067
 Transform:

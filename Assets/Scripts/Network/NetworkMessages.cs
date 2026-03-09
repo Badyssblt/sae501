@@ -236,6 +236,21 @@ namespace CookMoiCa.Network
     }
 
     [Serializable]
+    public class RegisterAsPlayerMessage
+    {
+        public string type = "registerAsPlayer";
+        public int slot;
+        public string name;
+    }
+
+    [Serializable]
+    public class PlayerReadyMessage
+    {
+        public string type = "playerReady";
+        public int slot;
+    }
+
+    [Serializable]
     public class PlayerLeftMessage
     {
         public int slot;
