@@ -28,6 +28,9 @@ public class Counter : MonoBehaviour, IInteractable
     private bool wasItemCrafted = false;
     private bool wasReadyIconShown = false;
 
+    // Effet de fumée pendant la cuisson
+    private CookingSmokeEffect cookingSmokeEffect;
+
     // ============================================================
     // NETWORK - ID et état pour synchronisation
     // ============================================================
@@ -99,7 +102,11 @@ public class Counter : MonoBehaviour, IInteractable
             readyIcon = null;
         }
 
-        counterObject.sprite = counterData.counterSprite;
+        cookingSmokeEffect = GetComponentInChildren<CookingSmokeEffect>();
+
+        if (counterObject != null && counterData != null)
+            counterObject.sprite = counterData.counterSprite;
+
 
         // Vérifier si on est en mode client
         if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Client)
@@ -195,11 +202,38 @@ public class Counter : MonoBehaviour, IInteractable
             if(!counterData.itemNeedHidden)
             {
                 itemToDisplay.sprite = currentItem.sprite;
+                PunchItemScale();
             }else
             {
                 itemToDisplay.sprite = null;
             }
         }
+    }
+
+    private Coroutine punchCoroutine;
+
+    private void PunchItemScale()
+    {
+        if (itemToDisplay == null) return;
+        if (punchCoroutine != null) StopCoroutine(punchCoroutine);
+        punchCoroutine = StartCoroutine(PunchScaleCoroutine(itemToDisplay.transform, 1.4f, 0.2f));
+    }
+
+    private IEnumerator PunchScaleCoroutine(Transform target, float intensity, float duration)
+    {
+        Vector3 original = target.localScale;
+        Vector3 big = original * intensity;
+        target.localScale = big;
+
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            float n = t / duration;
+            float eased = 1f - Mathf.Pow(1f - n, 3f);
+            target.localScale = Vector3.Lerp(big, original, eased);
+            yield return null;
+        }
+        target.localScale = original;
+        punchCoroutine = null;
     }
 
     private void UpdateReadyIcon()
@@ -434,6 +468,8 @@ public class Counter : MonoBehaviour, IInteractable
 
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
+        Debug.Log($"[Counter] WaitForTransform - smokeEffect: {(cookingSmokeEffect != null ? "TROUVÉ" : "NULL")}");
+        cookingSmokeEffect?.Play();
         AudioSource audioSource = playerMovement.GetComponent<AudioSource>();
         if (audioSource != null && itemToTransform.soundToTransform != null)
         {
@@ -459,6 +495,7 @@ public class Counter : MonoBehaviour, IInteractable
         }
 
         // Transformation finie
+        cookingSmokeEffect?.Stop();
         sliderTime.HideSlider();
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;

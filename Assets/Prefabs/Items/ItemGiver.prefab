@@ -192,6 +192,7 @@ GameObject:
   - component: {fileID: 2493409052593133374}
   - component: {fileID: 7336832694084433194}
   - component: {fileID: 6925463975529642366}
+  - component: {fileID: 1476969002176675494}
   m_Layer: 0
   m_Name: ItemGiver
   m_TagString: Untagged
@@ -321,3 +322,28 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1.3866963}
   m_EdgeRadius: 0
+--- !u!114 &1476969002176675494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8173235878801148111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd28dbd280256d48b8ac593ef518c11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CookingSmokeEffect
+  smokeFrames:
+  - {fileID: 7332429124783556027, guid: 79d7aca25def1be4b81fe619795a971c, type: 3}
+  - {fileID: -4931588185476187501, guid: 79d7aca25def1be4b81fe619795a971c, type: 3}
+  - {fileID: 7610930204718435096, guid: 79d7aca25def1be4b81fe619795a971c, type: 3}
+  - {fileID: -5822104362322622342, guid: 79d7aca25def1be4b81fe619795a971c, type: 3}
+  - {fileID: -8639396953634894559, guid: 79d7aca25def1be4b81fe619795a971c, type: 3}
+  - {fileID: -236134038323931329, guid: 79d7aca25def1be4b81fe619795a971c, type: 3}
+  frameRate: 0.1
+  spawnInterval: 0.3
+  maxSmokes: 3
+  smokeScale: 0.5
+  offset: {x: 0, y: 0.4}
+  randomSpread: 0.15
