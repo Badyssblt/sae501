@@ -311,8 +311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
   interactionDistance: 0.6
-  proximityRadius: 1
-  proximityAngleThreshold: 110
+  boxCastSize: {x: 0.5, y: 0.5}
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -453,7 +452,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0

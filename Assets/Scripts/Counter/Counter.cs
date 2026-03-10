@@ -28,6 +28,13 @@ public class Counter : MonoBehaviour, IInteractable
     private bool wasItemCrafted = false;
     private bool wasReadyIconShown = false;
 
+    // Son de pose d'item
+    [SerializeField] private AudioClip placeItemSound;
+    [SerializeField] [Range(0f, 1f)] private float placeSoundVolume = 0.5f;
+    [SerializeField] private float placeSoundPitchMin = 0.9f;
+    [SerializeField] private float placeSoundPitchMax = 1.1f;
+    private AudioSource counterAudioSource;
+
     // Effet de fumée pendant la cuisson
     private CookingSmokeEffect cookingSmokeEffect;
 
@@ -103,6 +110,10 @@ public class Counter : MonoBehaviour, IInteractable
         }
 
         cookingSmokeEffect = GetComponentInChildren<CookingSmokeEffect>();
+
+        counterAudioSource = GetComponent<AudioSource>();
+        if (counterAudioSource == null)
+            counterAudioSource = gameObject.AddComponent<AudioSource>();
 
         if (counterObject != null && counterData != null)
             counterObject.sprite = counterData.counterSprite;
@@ -208,6 +219,13 @@ public class Counter : MonoBehaviour, IInteractable
                 itemToDisplay.sprite = null;
             }
         }
+    }
+
+    private void PlayPlaceSound()
+    {
+        if (placeItemSound == null || counterAudioSource == null) return;
+        counterAudioSource.pitch = Random.Range(placeSoundPitchMin, placeSoundPitchMax);
+        counterAudioSource.PlayOneShot(placeItemSound, placeSoundVolume);
     }
 
     private Coroutine punchCoroutine;
@@ -386,6 +404,7 @@ public class Counter : MonoBehaviour, IInteractable
                 }
             }
 
+            PlayPlaceSound();
             UpdateVisual();
             // Mettre à jour l'UI pour ce joueur
             var playerController = player.GetComponent<PlayerController>();
@@ -410,6 +429,9 @@ public class Counter : MonoBehaviour, IInteractable
         // Vérifie si le précédent item a été finit de craft
         if (wasItemCrafted)
         {
+            // Bloquer si le joueur a déjà un item en main
+            if (playerInventory.currentItem != null) return;
+
             playerInventory.AddItem(currentItem);
             currentItem = null;
             UpdateVisual();
@@ -439,6 +461,7 @@ public class Counter : MonoBehaviour, IInteractable
         currentItem = itemToTransform;
         playerInventory.RemoveItem(itemToTransform);
         InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
+        PlayPlaceSound();
         UpdateVisual();
 
         if (itemToTransform && itemToTransform.counterType == CounterType.Assemblage) return;
@@ -517,6 +540,21 @@ public class Counter : MonoBehaviour, IInteractable
     {
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+        // Bonus livraison instantanée : n'importe quel comptoir peut servir un plat
+        if (EffectManager.Instance != null && EffectManager.Instance.LivraisonInstantaneeActif
+            && counterData.type != CounterType.Service
+            && playerInventory.currentItem != null)
+        {
+            foreach (RecipeData order in OrderManager.Instance.currentOrders)
+            {
+                if (order.result == playerInventory.currentItem)
+                {
+                    OrderManager.Instance.CompletePNJOrder(order, playerInventory, player);
+                    return;
+                }
+            }
+        }
 
         if (counterData.type == CounterType.Assemblage)
         {

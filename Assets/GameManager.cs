@@ -685,8 +685,10 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int points)
     {
-        score += points;
-        UIManager.Instance?.UpdateScore(points);
+        int multiplier = EffectManager.Instance != null ? EffectManager.Instance.ScoreMultiplier : 1;
+        int totalPoints = points * multiplier;
+        score += totalPoints;
+        UIManager.Instance?.UpdateScore(totalPoints);
 
         // Envoyer l'événement aux clients
         if (NetworkManager.Instance?.Role == NetworkRole.Host)

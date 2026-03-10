@@ -166,6 +166,9 @@ public class OrderManager : MonoBehaviour
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
             }
 
+            // Notifier l'EffectManager du succès
+            EffectManager.Instance?.NotifierSucces();
+
             Debug.Log("Commande livrée au PNJ " + pnjOrder.client.name);
         }
         else
@@ -188,6 +191,9 @@ public class OrderManager : MonoBehaviour
             {
                 Destroy(pnjOrder.orderUI);
             }
+
+            // Notifier l'EffectManager de l'échec
+            EffectManager.Instance?.NotifierEchec();
 
             Debug.Log("Commande expirée pour " + client.name);
         }

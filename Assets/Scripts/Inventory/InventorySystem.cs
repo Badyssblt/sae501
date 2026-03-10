@@ -4,6 +4,7 @@ public class InventorySystem : MonoBehaviour
 {
     // Le joueur ne peut avoir qu'un seul item sur lui.
     public ItemData currentItem;
+    public bool itemIsFromGiver { get; private set; }
     [SerializeField] private AudioClip pickupSound;
     private AudioSource audioSource;
 
@@ -13,9 +14,10 @@ public class InventorySystem : MonoBehaviour
 
     }
 
-    public void AddItem(ItemData item)
+    public void AddItem(ItemData item, bool fromGiver = false)
     {
         currentItem = item;
+        itemIsFromGiver = fromGiver;
         if (audioSource != null && pickupSound != null)
         {
             audioSource.PlayOneShot(pickupSound);

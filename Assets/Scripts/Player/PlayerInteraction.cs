@@ -83,6 +83,10 @@ public class PlayerInteraction : MonoBehaviour
 
     public void OnInteract()
     {
+        // Malus objets collants : interactions bloquées
+        if (EffectManager.Instance != null && EffectManager.Instance.ObjetsCollantsActif)
+            return;
+
         // Raycast au moment exact de l'interaction
         IInteractable target = FindBestInteractable();
         lastDetected = target;
