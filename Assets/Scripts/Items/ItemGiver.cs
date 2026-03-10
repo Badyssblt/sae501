@@ -11,30 +11,6 @@ public class ItemGiver : MonoBehaviour, IInteractable
         spriteRenderer.sprite = itemToGive.sprite;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            var playerInteraction = collision.GetComponent<PlayerInteraction>();
-            if (playerInteraction != null)
-            {
-                playerInteraction.SetCurrentInteractable(this);
-            }
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            var playerInteraction = collision.GetComponent<PlayerInteraction>();
-            if (playerInteraction != null)
-            {
-                playerInteraction.ClearCurrentInteractable(this);
-            }
-        }
-    }
-
     public void Interact(PlayerInteraction player)
     {
         // Récupérer l'inventaire du joueur qui interagit

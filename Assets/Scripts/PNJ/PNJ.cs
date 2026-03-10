@@ -24,6 +24,7 @@ public class PNJClient : MonoBehaviour, IInteractable
     public DirectionAlignement directionAlignement = DirectionAlignement.Vertical; // Direction d'alignement des clients
 
     private int indexPoint = 0;
+    private int indexRetour; // Index pour le chemin retour (parcours inversé)
     private Rigidbody2D rb;
     private Animator anim;
 
@@ -33,6 +34,7 @@ public class PNJClient : MonoBehaviour, IInteractable
     private Vector2 positionFinale; // Position finale avec offset appliqu�
     private Vector2 lastDirection = Vector2.right; // Dernière direction regardée (par défaut : droite)
     private PNJOrderDisplay orderDisplay; // Affichage de la commande au-dessus du PNJ
+    private Vector2 spawnPosition; // Position de départ pour y retourner
 
     private enum EtatClient
     {
@@ -47,6 +49,7 @@ public class PNJClient : MonoBehaviour, IInteractable
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        spawnPosition = transform.position;
         if (chemin.Length == 0)
         {
             Debug.LogWarning("Aucun point de chemin d�fini pour le PNJ " + name);
@@ -234,11 +237,17 @@ public class PNJClient : MonoBehaviour, IInteractable
         }
     }
 
+    void InitRetour()
+    {
+        indexRetour = chemin.Length - 1; // Commencer par le dernier point du chemin
+    }
+
     // M�thode appel�e par OrderManager quand la commande est livr�e
     public void RecevoirCommande()
     {
         commandeRecue = true;
         etat = EtatClient.Satisfait;
+        InitRetour();
 
         if (servedSound != null)
         {
@@ -256,6 +265,7 @@ public class PNJClient : MonoBehaviour, IInteractable
     void PartirInsatisfait()
     {
         etat = EtatClient.Insatisfait;
+        InitRetour();
 
         // Détruire l'affichage de la commande
         if (orderDisplay != null)
@@ -273,25 +283,45 @@ public class PNJClient : MonoBehaviour, IInteractable
 
     void Partir(bool satisfait)
     {
-        rb.linearVelocity = Vector2.right * vitesse;
+        // Suivre le chemin à l'envers
+        Vector2 target;
 
-        // Quand il quitte l'�cran, on le d�truit
-        if (transform.position.x > 10f)
+        if (indexRetour >= 0)
         {
-            // Nettoyer l'affichage avant de détruire le PNJ
-            if (orderDisplay != null)
+            target = chemin[indexRetour].position;
+        }
+        else
+        {
+            // Tous les points du chemin sont parcourus, retourner au spawn
+            target = spawnPosition;
+        }
+
+        Vector2 pos = transform.position;
+        Vector2 dir = (target - pos).normalized;
+        rb.linearVelocity = dir * vitesse;
+
+        float dist = Vector2.Distance(pos, target);
+        if (dist < distanceArret)
+        {
+            if (indexRetour >= 0)
             {
-                Destroy(orderDisplay.gameObject);
-                orderDisplay = null;
+                indexRetour--;
             }
-
-            Destroy(gameObject);
-
-            if (!satisfait)
+            else
             {
-                Debug.Log(name + " est parti insatisfait !");
-                // Optionnel : p�nalit� de score
-                // GameManager.Instance.AddScore(-10);
+                // Arrivé au point de départ, détruire le PNJ
+                if (orderDisplay != null)
+                {
+                    Destroy(orderDisplay.gameObject);
+                    orderDisplay = null;
+                }
+
+                Destroy(gameObject);
+
+                if (!satisfait)
+                {
+                    Debug.Log(name + " est parti insatisfait !");
+                }
             }
         }
     }

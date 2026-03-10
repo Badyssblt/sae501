@@ -3,21 +3,19 @@ using UnityEngine;
 [RequireComponent(typeof(InventorySystem))]
 public class PlayerInteraction : MonoBehaviour
 {
-    private IInteractable currentInteractable;
     private IInteractable triggerInteractable; // Pour les PNJ qui utilisent des triggers
     private InventorySystem inventory;
     private PlayerController playerController;
 
     [Header("Raycast Settings")]
     [SerializeField] private float interactionDistance = 1.5f;
-    [SerializeField] private float proximityRadius = 1.0f;
-
-    // Angle max (en degrés) entre la direction du regard et la direction vers un interactable proche
-    // pour qu'il soit considéré comme valide. 90° = devant + côtés, 120° = plus tolérant.
-    [SerializeField] private float proximityAngleThreshold = 110f;
+    [SerializeField] private Vector2 boxCastSize = new Vector2(0.5f, 0.5f);
 
     [SerializeField] private LayerMask interactableLayer;
-    private Vector2 lastFacingDirection = Vector2.down; // Direction par défaut
+    private Vector2 facingDirection = Vector2.down;
+
+    // Pour le gizmo uniquement
+    private IInteractable lastDetected;
 
     private void Awake()
     {
@@ -32,90 +30,67 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        // Mettre à jour la direction du regard uniquement quand le joueur se déplace
         Vector2 movement = playerController.GetCurrentMovement();
         if (movement != Vector2.zero)
         {
-            lastFacingDirection = movement.normalized;
-        }
-
-        DetectInteractable();
-    }
-
-    private void DetectInteractable()
-    {
-        IInteractable best = FindBestInteractable();
-
-        // Gérer le highlight : retirer le highlight de l'ancien, l'appliquer au nouveau
-        if (best != currentInteractable)
-        {
-            (currentInteractable as IHighlightable)?.SetHighlight(false);
-            (best as IHighlightable)?.SetHighlight(true);
-            currentInteractable = best;
+            if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
+                facingDirection = movement.x > 0 ? Vector2.right : Vector2.left;
+            else
+                facingDirection = movement.y > 0 ? Vector2.up : Vector2.down;
         }
     }
 
     private IInteractable FindBestInteractable()
     {
-        // Priorité 1 : Trigger (PNJ) – ils se gèrent eux-mêmes
+        // Priorité 1 : Trigger (PNJ)
         if (triggerInteractable != null)
             return triggerInteractable;
 
-        // Priorité 2 : Raycast dans la direction du regard (précis, longue portée)
-        RaycastHit2D hit = Physics2D.Raycast(
+        // Priorité 2 : Raycast fin (précis)
+        RaycastHit2D rayHit = Physics2D.Raycast(
             transform.position,
-            lastFacingDirection,
+            facingDirection,
             interactionDistance,
             interactableLayer
         );
 
-        if (hit.collider != null)
+        if (rayHit.collider != null)
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            IInteractable interactable = rayHit.collider.GetComponent<IInteractable>();
             if (interactable != null)
                 return interactable;
         }
 
-        // Priorité 3 : Proximité avec filtre angulaire
-        // Trouve le comptoir le plus proche devant le joueur (dans le cône de direction)
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, proximityRadius, interactableLayer);
+        // Priorité 3 : BoxCast (fallback)
+        RaycastHit2D boxHit = Physics2D.BoxCast(
+            transform.position,
+            boxCastSize,
+            0f,
+            facingDirection,
+            interactionDistance,
+            interactableLayer
+        );
 
-        float bestScore = float.MaxValue; // score = distance pondérée par angle
-        IInteractable closestInteractable = null;
-
-        foreach (Collider2D col in nearbyColliders)
+        if (boxHit.collider != null)
         {
-            IInteractable interactable = col.GetComponent<IInteractable>();
-            if (interactable == null) continue;
-
-            Vector2 dirToTarget = ((Vector2)col.transform.position - (Vector2)transform.position).normalized;
-            float angle = Vector2.Angle(lastFacingDirection, dirToTarget);
-
-            // Ignorer les interactables hors du cône de tolérance angulaire
-            if (angle > proximityAngleThreshold) continue;
-
-            float dist = Vector2.Distance(transform.position, col.transform.position);
-
-            // Score : combinaison distance + angle (favorise ce qui est devant ET proche)
-            float score = dist + angle * 0.02f;
-
-            if (score < bestScore)
-            {
-                bestScore = score;
-                closestInteractable = interactable;
-            }
+            IInteractable interactable = boxHit.collider.GetComponent<IInteractable>();
+            if (interactable != null)
+                return interactable;
         }
 
-        return closestInteractable;
+        return null;
     }
 
     public void OnInteract()
     {
-        if (currentInteractable != null)
-        {
-            currentInteractable.Interact(this);
+        // Raycast au moment exact de l'interaction
+        IInteractable target = FindBestInteractable();
+        lastDetected = target;
 
-            // Mettre à jour l'UI pour ce joueur spécifique
+        if (target != null)
+        {
+            target.Interact(this);
+
             if (InventoryUI.Instance != null && playerController != null)
             {
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
@@ -123,43 +98,56 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Permet aux objets interactables d'accéder à l'inventaire du joueur.
-    /// </summary>
     public InventorySystem GetInventory()
     {
         return inventory;
     }
 
-    /// <summary>
-    /// Retourne l'interactable actuellement ciblé.
-    /// </summary>
     public IInteractable GetCurrentInteractable()
     {
-        return currentInteractable;
+        // Raycast à la demande pour le réseau
+        return FindBestInteractable();
     }
 
-    /// <summary>
-    /// Enregistre un interactable via trigger (PNJ).
-    /// </summary>
     public void SetCurrentInteractable(IInteractable interactable)
     {
         triggerInteractable = interactable;
     }
 
-    /// <summary>
-    /// Retire un interactable enregistré via trigger (PNJ).
-    /// </summary>
     public void ClearCurrentInteractable(IInteractable interactable)
     {
         if (triggerInteractable == interactable)
             triggerInteractable = null;
     }
 
-    private void OnDisable()
+    private void OnDrawGizmos()
     {
-        // Nettoyer le highlight si le joueur est désactivé
-        (currentInteractable as IHighlightable)?.SetHighlight(false);
-        currentInteractable = null;
+        Vector2 origin = transform.position;
+        Vector2 end = origin + facingDirection * interactionDistance;
+
+        Gizmos.color = lastDetected != null ? Color.green : Color.red;
+
+        // Raycast line
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(origin, end);
+
+        // BoxCast fallback
+        Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
+        Gizmos.DrawWireCube(origin, boxCastSize);
+        Gizmos.DrawWireCube((Vector3)end, boxCastSize);
+
+        Vector2 halfSize = boxCastSize * 0.5f;
+        Vector2[] corners = new Vector2[]
+        {
+            new Vector2(-halfSize.x, -halfSize.y),
+            new Vector2( halfSize.x, -halfSize.y),
+            new Vector2( halfSize.x,  halfSize.y),
+            new Vector2(-halfSize.x,  halfSize.y),
+        };
+
+        for (int i = 0; i < corners.Length; i++)
+        {
+            Gizmos.DrawLine(origin + corners[i], end + corners[i]);
+        }
     }
 }
