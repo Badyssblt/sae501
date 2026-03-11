@@ -98,26 +98,6 @@ public class GameManager : MonoBehaviour
         if (gameUI != null)
             gameUI.SetActive(true);
 
-        // Spawner tous les joueurs (même simulation que le host)
-        SpawnPlayer(1, false); // Distant pour ce client
-        SpawnPlayer(2, false); // Distant pour ce client
-
-        // Le joueur local de ce client
-        int localSlot = NetworkManager.Instance.LocalPlayerSlot;
-        if (localSlot >= 3 && localSlot <= 4)
-        {
-            // Reconfigurer le joueur local
-            if (activePlayers.ContainsKey(localSlot))
-            {
-                var controller = playerControllers[localSlot];
-                controller.isLocalPlayer = true;
-            }
-            else
-            {
-                SpawnPlayer(localSlot, true);
-            }
-        }
-
         // S'abonner aux événements réseau
         NetworkManager.Instance.OnPlayerJoined += OnPlayerJoined;
         NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
@@ -126,11 +106,12 @@ public class GameManager : MonoBehaviour
         NetworkManager.Instance.OnAllPlayersReady += OnAllPlayersReady;
 
         // Commencer en mode Loading (attente de tous les joueurs)
+        // Les joueurs seront spawnés dans OnAllPlayersReady
         currentState = GameState.Loading;
         timeLeft = gameTime;
         score = 0;
 
-        Debug.Log($"[GameManager] Client initialisé - Slot local: {localSlot}");
+        Debug.Log($"[GameManager] Client initialisé - En attente de allPlayersReady");
     }
 
     /// <summary>
@@ -138,10 +119,37 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void OnAllPlayersReady()
     {
-        Debug.Log("[GameManager] Tous les joueurs sont prêts - Lancement du countdown!");
+        Debug.Log("[GameManager] Tous les joueurs sont prêts - Spawn et countdown!");
 
         if (currentState == GameState.Loading || currentState == GameState.Ready)
         {
+            if (NetworkManager.Instance?.Role == NetworkRole.Host)
+            {
+                // Host : spawner les joueurs locaux + distants
+                InitializeGame(pendingLocalPlayerCount);
+
+                foreach (var kvp in pendingRemotePlayers)
+                {
+                    if (!activePlayers.ContainsKey(kvp.Key))
+                    {
+                        SpawnPlayer(kvp.Key, false);
+                    }
+                }
+                pendingRemotePlayers.Clear();
+            }
+            else if (NetworkManager.Instance?.Role == NetworkRole.Client)
+            {
+                // Client : spawner tous les joueurs
+                SpawnPlayer(1, false);
+                SpawnPlayer(2, false);
+
+                int localSlot = NetworkManager.Instance.LocalPlayerSlot;
+                if (localSlot >= 3 && localSlot <= 4)
+                {
+                    SpawnPlayer(localSlot, true);
+                }
+            }
+
             StartCoroutine(CountdownCoroutine());
         }
     }
@@ -247,9 +255,11 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Appelé quand le joueur valide dans le lobby pour lancer la partie
     /// </summary>
+    private int pendingLocalPlayerCount = 1;
+
     public void LaunchGame(int localPlayerCount)
     {
-        InitializeGame(localPlayerCount);
+        pendingLocalPlayerCount = localPlayerCount;
 
         // S'abonner aux événements réseau
         if (NetworkManager.Instance != null)
@@ -367,12 +377,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Joueurs distants en attente de spawn (rejoints pendant le lobby)
+    private Dictionary<int, string> pendingRemotePlayers = new Dictionary<int, string>();
+
     private void OnPlayerJoined(int slot, string playerName)
     {
         if (slot >= 3 && slot <= 4)
         {
-            // En mode Host, spawner comme joueur distant
-            // En mode Client, c'est peut-être nous ou un autre joueur distant
+            // Si la partie n'a pas encore commencé, stocker pour spawn plus tard
+            if (currentState == GameState.Ready || currentState == GameState.Loading)
+            {
+                pendingRemotePlayers[slot] = playerName;
+                Debug.Log($"{playerName} a rejoint en slot {slot} (en attente de spawn)");
+                return;
+            }
+
+            // Partie déjà en cours, spawner directement
             bool isLocal = NetworkManager.Instance?.Role == NetworkRole.Client &&
                           NetworkManager.Instance.LocalPlayerSlot == slot;
 
@@ -382,7 +402,6 @@ public class GameManager : MonoBehaviour
             }
             else if (isLocal)
             {
-                // Reconfigurer comme local
                 playerControllers[slot].isLocalPlayer = true;
             }
 
