@@ -186,4 +186,27 @@ public class OrderUI : MonoBehaviour
             return timer.value;
         return 0f;
     }
+
+    /// <summary>
+    /// Met à jour le temps restant depuis le serveur (mode client)
+    /// Arrête le timer local et affiche la valeur du serveur
+    /// </summary>
+    public void SetTimeRemaining(float timeRemaining)
+    {
+        if (timer == null) return;
+
+        // Arrêter le timer local (le serveur fait autorité)
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+            timerCoroutine = null;
+        }
+
+        if (sliderContainer != null)
+            sliderContainer.SetActive(true);
+
+        timer.value = timeRemaining;
+        float percentage = timer.maxValue > 0 ? timeRemaining / timer.maxValue : 0f;
+        UpdateSliderColor(percentage);
+    }
 }

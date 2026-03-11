@@ -419,6 +419,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // Synchroniser les commandes depuis le serveur
+        if (serverState.Orders != null && serverState.Orders.Count > 0 && OrderManager.Instance != null)
+        {
+            OrderManager.Instance.ApplyNetworkOrders(serverState.Orders);
+        }
+
         // Vérifier la désynchronisation pour le joueur local
         if (activePlayers.TryGetValue(localSlot, out GameObject localPlayer))
         {
@@ -439,33 +445,45 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Effectue un rollback de l'état local vers l'état serveur
     /// </summary>
+    private const float TICK_RATE = 1f / 30f;
+
     private void PerformRollback(StateSnapshot serverState, int localPlayerId)
     {
         Debug.Log($"[GameManager] Rollback pour joueur {localPlayerId}");
 
-        // Restaurer la position du serveur
-        if (serverState.Players.TryGetValue(localPlayerId, out PlayerState serverPlayer))
-        {
-            if (activePlayers.TryGetValue(localPlayerId, out GameObject player))
-            {
-                Vector2 serverPos = new Vector2(serverPlayer.x, serverPlayer.y);
+        if (!serverState.Players.TryGetValue(localPlayerId, out PlayerState serverPlayer))
+            return;
+        if (!activePlayers.TryGetValue(localPlayerId, out GameObject player))
+            return;
 
-                // Correction douce au lieu de téléportation brutale
-                Vector2 currentPos = player.transform.position;
-                Vector2 correctedPos = RollbackHelper.SmoothCorrection(currentPos, serverPos, 0.1f);
-                player.transform.position = correctedPos;
+        Vector2 serverPos = new Vector2(serverPlayer.x, serverPlayer.y);
 
-                // Restaurer l'inventaire si différent
-                // Note: à implémenter avec le système d'inventaire
-            }
-        }
+        // Récupérer la vitesse du joueur pour le replay
+        var movement = player.GetComponent<PlayerMovement>();
+        float moveSpeed = movement != null ? movement.moveSpeed : 5f;
 
-        // Rejouer les inputs non confirmés
+        // Rejouer les inputs non confirmés depuis la position serveur
         var inputsToReplay = NetworkManager.Instance.PredictionSystem.GetInputsToReplay();
-        foreach (var input in inputsToReplay)
+        Vector2 replayedPos = RollbackHelper.ReplayMovementInputs(
+            serverPos, inputsToReplay, moveSpeed, TICK_RATE
+        );
+
+        // Appliquer la position corrigée
+        player.transform.position = replayedPos;
+
+        // Synchroniser l'inventaire depuis l'état serveur
+        var inventory = player.GetComponent<InventorySystem>();
+        if (inventory != null)
         {
-            // Les inputs seront appliqués naturellement au prochain Update
-            // car ils sont toujours dans le buffer
+            string currentCarry = inventory.currentItem?.name;
+            if (currentCarry != serverPlayer.carry)
+            {
+                inventory.SetItemByName(serverPlayer.carry);
+                if (InventoryUI.Instance != null)
+                {
+                    InventoryUI.Instance.UpdatePlayerInventory(localPlayerId, inventory);
+                }
+            }
         }
     }
 
@@ -573,7 +591,7 @@ public class GameManager : MonoBehaviour
                     currentItem = counter.GetCurrentItemName(),
                     cookingState = counter.GetCookingState(),
                     cookingProgress = counter.GetCookingProgress(),
-                    lockedBy = counter.GetLockedByPlayer()
+                    lockedBy = counter.GetLockedByPlayer() ?? -1
                 });
             }
         }

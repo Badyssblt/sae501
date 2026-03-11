@@ -83,7 +83,7 @@ namespace CookMoiCa.Network
         public string currentItem; // Nom de l'item ou null
         public string cookingState; // "idle", "cooking", "done"
         public float cookingProgress; // 0.0 à 1.0
-        public int? lockedBy; // playerId qui utilise ce counter
+        public int lockedBy = -1; // playerId qui utilise ce counter (-1 = aucun)
 
         public CounterState() { }
     }
@@ -120,10 +120,13 @@ namespace CookMoiCa.Network
     {
         public string type = "delta";
         public uint tick;
-        public float? timeLeft;
-        public int? score;
+        public float timeLeft;
+        public bool hasTimeLeft;
+        public int score;
+        public bool hasScore;
         public List<PlayerState> players; // Seulement ceux qui ont changé
         public List<CounterState> counters; // Seulement ceux qui ont changé
+        public List<OrderState> orders; // Commandes actives
 
         public DeltaStateMessage() { }
     }
@@ -266,6 +269,7 @@ namespace CookMoiCa.Network
         public float Timestamp { get; set; }
         public Dictionary<int, PlayerState> Players { get; set; } = new Dictionary<int, PlayerState>();
         public Dictionary<string, CounterState> Counters { get; set; } = new Dictionary<string, CounterState>();
+        public Dictionary<string, OrderState> Orders { get; set; } = new Dictionary<string, OrderState>();
         public float TimeLeft { get; set; }
         public int Score { get; set; }
 
@@ -309,6 +313,17 @@ namespace CookMoiCa.Network
                     cookingState = kvp.Value.cookingState,
                     cookingProgress = kvp.Value.cookingProgress,
                     lockedBy = kvp.Value.lockedBy
+                };
+            }
+
+            foreach (var kvp in Orders)
+            {
+                clone.Orders[kvp.Key] = new OrderState
+                {
+                    id = kvp.Value.id,
+                    recipeName = kvp.Value.recipeName,
+                    timeRemaining = kvp.Value.timeRemaining,
+                    status = kvp.Value.status
                 };
             }
 

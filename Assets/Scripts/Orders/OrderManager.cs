@@ -256,4 +256,89 @@ public class OrderManager : MonoBehaviour
 
         return orders;
     }
+
+    // ============================================================
+    // NETWORK - Synchronisation des commandes côté client
+    // ============================================================
+
+    // Commandes réseau trackées par ID pour sync
+    private Dictionary<string, GameObject> networkOrderUIs = new Dictionary<string, GameObject>();
+
+    /// <summary>
+    /// Applique l'état des commandes reçu du serveur (mode client uniquement)
+    /// </summary>
+    public void ApplyNetworkOrders(Dictionary<string, CookMoiCa.Network.OrderState> serverOrders)
+    {
+        if (recipes == null) recipes = GameManager.Instance.recipes;
+        if (hb == null) hb = GetComponent<HorizontalLayoutGroup>();
+        if (hb == null || orderPrefab == null) return;
+
+        // Supprimer les commandes qui n'existent plus sur le serveur
+        var toRemove = new List<string>();
+        foreach (var kvp in networkOrderUIs)
+        {
+            if (!serverOrders.ContainsKey(kvp.Key))
+            {
+                if (kvp.Value != null) Destroy(kvp.Value);
+                toRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var key in toRemove)
+        {
+            networkOrderUIs.Remove(key);
+        }
+
+        // Ajouter ou mettre à jour les commandes du serveur
+        foreach (var kvp in serverOrders)
+        {
+            string orderId = kvp.Key;
+            var orderState = kvp.Value;
+
+            if (!networkOrderUIs.ContainsKey(orderId) || networkOrderUIs[orderId] == null)
+            {
+                // Nouvelle commande - trouver la recette correspondante
+                RecipeData matchingRecipe = FindRecipeByResultName(orderState.recipeName);
+                if (matchingRecipe == null) continue;
+
+                // Créer l'UI
+                var newOrderGO = Instantiate(orderPrefab, hb.transform);
+                OrderUI orderUI = newOrderGO.GetComponent<OrderUI>();
+                orderUI.recipe = matchingRecipe;
+                orderUI.maxDelay = orderState.timeRemaining;
+                orderUI.UpdateRecipe();
+
+                networkOrderUIs[orderId] = newOrderGO;
+
+                // Ajouter à la liste des commandes courantes si pas déjà présent
+                if (!currentOrders.Contains(matchingRecipe))
+                {
+                    currentOrders.Add(matchingRecipe);
+                }
+            }
+            else
+            {
+                // Commande existante - mettre à jour le timer
+                var existingUI = networkOrderUIs[orderId].GetComponent<OrderUI>();
+                if (existingUI != null)
+                {
+                    existingUI.SetTimeRemaining(orderState.timeRemaining);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Trouve une recette par le nom de son résultat
+    /// </summary>
+    private RecipeData FindRecipeByResultName(string resultName)
+    {
+        if (recipes == null || string.IsNullOrEmpty(resultName)) return null;
+
+        foreach (var recipe in recipes)
+        {
+            if (recipe.result != null && recipe.result.name == resultName)
+                return recipe;
+        }
+        return null;
+    }
 }

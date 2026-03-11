@@ -302,36 +302,11 @@ public class NetworkManager : MonoBehaviour
         try
         {
             string message = rawMessage;
-            string eventName = "";
-            string data = "{}";
 
-            // Format Socket.IO: 42["eventName",{data}]
-            if (message.StartsWith("42"))
-            {
-                message = message.Substring(2);
-            }
-
-            if (message.StartsWith("["))
-            {
-                // Parser le tableau ["eventName", {data}]
-                int firstComma = message.IndexOf(',');
-                if (firstComma > 0)
-                {
-                    eventName = message.Substring(1, firstComma - 1).Trim('"');
-                    data = message.Substring(firstComma + 1).TrimEnd(']');
-                }
-                else
-                {
-                    eventName = message.Trim('[', ']', '"');
-                }
-            }
-            else
-            {
-                // Format JSON direct
-                var baseMsg = JsonUtility.FromJson<NetworkMessageBase>(message);
-                eventName = baseMsg?.type ?? "";
-                data = message;
-            }
+            // Parser le JSON standard
+            var baseMsg = JsonUtility.FromJson<NetworkMessageBase>(message);
+            string eventName = baseMsg?.type ?? "";
+            string data = message;
 
             // Router vers le bon handler
             switch (eventName)
@@ -485,6 +460,14 @@ public class NetworkManager : MonoBehaviour
             snapshot.Counters[counter.id] = counter;
         }
 
+        if (state.orders != null)
+        {
+            foreach (var order in state.orders)
+            {
+                snapshot.Orders[order.id] = order;
+            }
+        }
+
         // Ajouter au buffer d'interpolation
         InterpolationBuffer.AddSnapshot(snapshot);
 
@@ -511,11 +494,11 @@ public class NetworkManager : MonoBehaviour
         snapshot.Tick = delta.tick;
         snapshot.Timestamp = Time.time;
 
-        if (delta.timeLeft.HasValue)
-            snapshot.TimeLeft = delta.timeLeft.Value;
+        if (delta.hasTimeLeft)
+            snapshot.TimeLeft = delta.timeLeft;
 
-        if (delta.score.HasValue)
-            snapshot.Score = delta.score.Value;
+        if (delta.hasScore)
+            snapshot.Score = delta.score;
 
         if (delta.players != null)
         {
@@ -530,6 +513,15 @@ public class NetworkManager : MonoBehaviour
             foreach (var counter in delta.counters)
             {
                 snapshot.Counters[counter.id] = counter;
+            }
+        }
+
+        if (delta.orders != null)
+        {
+            snapshot.Orders.Clear();
+            foreach (var order in delta.orders)
+            {
+                snapshot.Orders[order.id] = order;
             }
         }
 
@@ -554,7 +546,7 @@ public class NetworkManager : MonoBehaviour
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        SendSocketIO("registerAsHost");
+        SendJSON(new RegisterHostMessage());
         Debug.Log("[Network] Enregistré comme host");
     }
 
@@ -564,7 +556,7 @@ public class NetworkManager : MonoBehaviour
         if (LocalPlayerSlot < 0) return;
 
         var data = new RegisterAsPlayerMessage { slot = LocalPlayerSlot, name = LocalPlayerName };
-        SendSocketIO("registerAsPlayer", data);
+        SendJSON(data);
         Debug.Log($"[Network] Enregistré comme joueur: slot={LocalPlayerSlot}, name={LocalPlayerName}");
     }
 
@@ -577,7 +569,7 @@ public class NetworkManager : MonoBehaviour
         if (LocalPlayerSlot < 0) return;
 
         var data = new PlayerReadyMessage { slot = LocalPlayerSlot };
-        SendSocketIO("playerReady", data);
+        SendJSON(data);
         Debug.Log($"[Network] Signalé prêt: slot={LocalPlayerSlot}");
     }
 
@@ -585,8 +577,8 @@ public class NetworkManager : MonoBehaviour
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        var data = new { map = mapName };
-        SendSocketIO("setupLobby", data);
+        var data = new SetupLobbyMessage { map = mapName };
+        SendJSON(data);
         Debug.Log($"[Network] Lobby configuré: {mapName}");
     }
 
@@ -594,8 +586,8 @@ public class NetworkManager : MonoBehaviour
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        var data = new { map = mapName };
-        SendSocketIO("startGame", data);
+        var data = new StartGameMessage { map = mapName };
+        SendJSON(data);
         Debug.Log("[Network] Partie lancée!");
     }
 
@@ -603,8 +595,8 @@ public class NetworkManager : MonoBehaviour
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        var data = new { score = finalScore };
-        SendSocketIO("endGame", data);
+        var data = new EndGameMessage { score = finalScore };
+        SendJSON(data);
         Debug.Log($"[Network] Partie terminée: {finalScore}");
     }
 
@@ -620,7 +612,7 @@ public class NetworkManager : MonoBehaviour
             return;
 
         state.tick = CurrentTick;
-        SendSocketIO("fullState", state);
+        SendJSON(state);
         lastFullStateSent = Time.time;
 
         // Stocker pour le delta
@@ -652,12 +644,14 @@ public class NetworkManager : MonoBehaviour
             if (Mathf.Abs(currentState.timeLeft - lastSentState.TimeLeft) > 0.1f)
             {
                 delta.timeLeft = currentState.timeLeft;
+                delta.hasTimeLeft = true;
                 hasChanges = true;
             }
 
             if (currentState.score != lastSentState.Score)
             {
                 delta.score = currentState.score;
+                delta.hasScore = true;
                 hasChanges = true;
             }
 
@@ -707,20 +701,36 @@ public class NetworkManager : MonoBehaviour
                     hasChanges = true;
                 }
             }
+
+            // Orders - toujours envoyer la liste complète (petite taille, changements fréquents)
+            if (currentState.orders != null && currentState.orders.Count > 0)
+            {
+                delta.orders = currentState.orders;
+                hasChanges = true;
+            }
+            else if (lastSentState.Orders.Count > 0)
+            {
+                // Les commandes ont toutes été supprimées, envoyer une liste vide
+                delta.orders = new List<OrderState>();
+                hasChanges = true;
+            }
         }
         else
         {
             // Premier envoi, tout est un changement
             delta.timeLeft = currentState.timeLeft;
+            delta.hasTimeLeft = true;
             delta.score = currentState.score;
+            delta.hasScore = true;
             delta.players = currentState.players;
             delta.counters = currentState.counters;
+            delta.orders = currentState.orders;
             hasChanges = true;
         }
 
         if (hasChanges)
         {
-            SendSocketIO("delta", delta);
+            SendJSON(delta);
             lastDeltaSent = Time.time;
             lastSentState = ConvertToSnapshot(currentState);
         }
@@ -734,7 +744,7 @@ public class NetworkManager : MonoBehaviour
         if (!IsConnected || Role != NetworkRole.Host) return;
 
         var evt = new GameEventMessage(CurrentTick, eventName, eventData);
-        SendSocketIO("event", evt);
+        SendJSON(evt);
     }
 
     private StateSnapshot ConvertToSnapshot(FullStateMessage state)
@@ -753,6 +763,14 @@ public class NetworkManager : MonoBehaviour
         foreach (var counter in state.counters)
         {
             snapshot.Counters[counter.id] = counter;
+        }
+
+        if (state.orders != null)
+        {
+            foreach (var order in state.orders)
+            {
+                snapshot.Orders[order.id] = order;
+            }
         }
 
         return snapshot;
@@ -781,9 +799,8 @@ public class NetworkManager : MonoBehaviour
             targetId
         ));
 
-        // Envoyer au serveur (format JSON standard pour clients web)
-        string json = JsonUtility.ToJson(input);
-        SendRaw(json);
+        // Envoyer au serveur
+        SendJSON(input);
     }
 
     // ============================================================
@@ -808,33 +825,15 @@ public class NetworkManager : MonoBehaviour
     // HELPERS ENVOI
     // ============================================================
 
-    private void SendSocketIO(string eventName, object data = null)
+    private void SendJSON(object data)
     {
         if (websocket == null || websocket.State != WebSocketState.Open) return;
 
-        string message;
-        if (data != null)
-        {
-            string json = JsonUtility.ToJson(data);
-            message = $"42[\"{eventName}\",{json}]";
-        }
-        else
-        {
-            message = $"42[\"{eventName}\"]";
-        }
-
-        websocket.SendText(message);
+        string json = JsonUtility.ToJson(data);
+        websocket.SendText(json);
     }
 
-    private void SendRaw(string message)
-    {
-        if (websocket != null && websocket.State == WebSocketState.Open)
-        {
-            websocket.SendText(message);
-        }
-    }
-
-    // ============================================================
+// ============================================================
     // INTERPOLATION HELPERS (Client)
     // ============================================================
 

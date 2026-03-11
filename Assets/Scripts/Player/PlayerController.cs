@@ -32,6 +32,12 @@ public class PlayerController : MonoBehaviour
     private Vector2 interpolatedPosition;
     private bool useInterpolation = false;
 
+    // Throttle des inputs envoyés au serveur (client)
+    private Vector2 lastSentMovement = Vector2.zero;
+    private ActionType lastSentAction = ActionType.None;
+    private float lastInputSendTime = 0f;
+    private const float MIN_INPUT_SEND_INTERVAL = 1f / 30f;
+
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
@@ -203,6 +209,8 @@ public class PlayerController : MonoBehaviour
             {
                 currentMovement = new Vector2(input.horizontal, input.vertical).normalized;
                 actionPressed = input.action == "interact" || input.action == "grab";
+                // Consommer l'input pour éviter qu'il soit réappliqué indéfiniment
+                NetworkManager.Instance.ClearRemoteInput(playerId);
             }
             else
             {
@@ -248,8 +256,18 @@ public class PlayerController : MonoBehaviour
         if (NetworkManager.Instance == null) return;
         if (NetworkManager.Instance.Role != NetworkRole.Client) return;
 
-        // Envoyer l'input au serveur
-        NetworkManager.Instance.SendInput(currentMovement, currentAction, GetTargetId());
+        // Les actions (Interact, Grab, Drop) sont envoyées immédiatement sans throttle
+        bool hasAction = currentAction != ActionType.None;
+        bool inputChanged = currentMovement != lastSentMovement || currentAction != lastSentAction;
+        bool intervalElapsed = Time.time - lastInputSendTime >= MIN_INPUT_SEND_INTERVAL;
+
+        if (hasAction || (inputChanged && intervalElapsed))
+        {
+            NetworkManager.Instance.SendInput(currentMovement, currentAction, GetTargetId());
+            lastSentMovement = currentMovement;
+            lastSentAction = currentAction;
+            lastInputSendTime = Time.time;
+        }
     }
 
     private string GetTargetId()

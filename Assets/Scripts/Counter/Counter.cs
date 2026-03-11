@@ -70,7 +70,8 @@ public class Counter : MonoBehaviour, IInteractable
         {
             if (string.IsNullOrEmpty(networkId))
             {
-                networkId = $"counter_{counterIdCounter++}_{gameObject.name}";
+                // Utiliser le même format position que Awake pour la cohérence
+                networkId = $"counter_{transform.position.x:F1}_{transform.position.y:F1}";
             }
             return networkId;
         }
@@ -200,17 +201,36 @@ public class Counter : MonoBehaviour, IInteractable
                 sliderTime.HideSlider();
             }
         }
+
+        // Dériver l'état de craft depuis le cookingState pour les visuels (icône prêt)
+        bool shouldBeItemCrafted = (cookingState == "done");
+        if (shouldBeItemCrafted != wasItemCrafted)
+        {
+            wasItemCrafted = shouldBeItemCrafted;
+            UpdateReadyIcon();
+        }
+
+        // Gérer l'effet de fumée selon l'état de cuisson
+        if (cookingSmokeEffect != null)
+        {
+            if (cookingState == "cooking")
+                cookingSmokeEffect.Play();
+            else
+                cookingSmokeEffect.Stop();
+        }
     }
 
     private void UpdateVisual()
     {
+        if (itemToDisplay == null) return;
+
         if (currentItem == null)
         {
             itemToDisplay.sprite = null;
         }
         else
         {
-            if(!counterData.itemNeedHidden)
+            if(counterData != null && !counterData.itemNeedHidden)
             {
                 itemToDisplay.sprite = currentItem.sprite;
                 PunchItemScale();
@@ -259,7 +279,7 @@ public class Counter : MonoBehaviour, IInteractable
         if (readyIcon != null)
         {
             // L'icône ne s'affiche que si l'item est crafté ET que ce n'est pas un comptoir d'assemblage
-            bool shouldShowIcon = wasItemCrafted && counterData.type != CounterType.Assemblage;
+            bool shouldShowIcon = wasItemCrafted && counterData != null && counterData.type != CounterType.Assemblage;
             readyIcon.enabled = shouldShowIcon;
 
             if (shouldShowIcon)
