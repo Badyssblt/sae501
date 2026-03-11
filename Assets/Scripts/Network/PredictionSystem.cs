@@ -77,11 +77,12 @@ namespace CookMoiCa.Network
                 return true;
             }
 
-            // Vérifier l'inventaire
-            string serverCarry = serverPlayer.carry;
-            if (localCarry != serverCarry)
+            // Vérifier l'inventaire (null et "" sont équivalents = pas d'item)
+            string normalizedLocal = string.IsNullOrEmpty(localCarry) ? null : localCarry;
+            string normalizedServer = string.IsNullOrEmpty(serverPlayer.carry) ? null : serverPlayer.carry;
+            if (normalizedLocal != normalizedServer)
             {
-                Debug.Log($"[Prediction] Désync inventaire détecté: local={localCarry ?? "null"}, server={serverCarry ?? "null"}");
+                Debug.Log($"[Prediction] Désync inventaire détecté: local={normalizedLocal ?? "null"}, server={normalizedServer ?? "null"}");
                 RollbackCount++;
                 return true;
             }

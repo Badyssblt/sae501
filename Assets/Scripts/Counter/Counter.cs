@@ -167,9 +167,27 @@ public class Counter : MonoBehaviour, IInteractable
     /// <summary>
     /// Applique l'état réseau reçu du serveur (mode client uniquement)
     /// </summary>
+    private void Update()
+    {
+        if (localInteractionCooldown > 0f)
+            localInteractionCooldown -= Time.deltaTime;
+    }
+
+    /// <summary>
+    /// Marque ce counter comme récemment utilisé localement (empêche le réseau d'écraser l'état)
+    /// </summary>
+    public void MarkLocalInteraction()
+    {
+        localInteractionCooldown = LOCAL_INTERACTION_COOLDOWN_TIME;
+    }
+
     public void ApplyNetworkState(CounterState state)
     {
         if (state == null) return;
+
+        // Si le client vient d'interagir localement, ignorer la mise à jour réseau
+        // pour éviter que le host écrase l'action avant d'avoir traité l'input
+        if (localInteractionCooldown > 0f) return;
 
         // Mettre à jour l'item sur le counter
         if (ItemDatabase.Instance != null)
@@ -563,6 +581,10 @@ public class Counter : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction player)
     {
+        // Marquer l'interaction locale pour empêcher le réseau d'écraser l'état
+        if (isNetworkControlled)
+            MarkLocalInteraction();
+
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
