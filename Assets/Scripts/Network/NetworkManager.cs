@@ -265,6 +265,8 @@ public class NetworkManager : MonoBehaviour
                 else if (Role == NetworkRole.Client)
                 {
                     RegisterAsPlayer();
+                    // Signaler immédiatement qu'on est prêt après l'enregistrement
+                    SendPlayerReady();
                 }
             };
 

@@ -131,10 +131,6 @@ public class GameManager : MonoBehaviour
         score = 0;
 
         Debug.Log($"[GameManager] Client initialisé - Slot local: {localSlot}");
-
-        // Signaler au serveur qu'on est prêt
-        NetworkManager.Instance.SendPlayerReady();
-        Debug.Log("[GameManager] Signal playerReady envoyé");
     }
 
     /// <summary>
