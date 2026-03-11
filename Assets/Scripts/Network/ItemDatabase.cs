@@ -7,7 +7,28 @@ using UnityEngine;
 /// </summary>
 public class ItemDatabase : MonoBehaviour
 {
-    public static ItemDatabase Instance { get; private set; }
+    private static ItemDatabase _instance;
+    public static ItemDatabase Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                // Chercher dans la scène
+                _instance = FindFirstObjectByType<ItemDatabase>();
+
+                // Si toujours null, créer automatiquement
+                if (_instance == null)
+                {
+                    GameObject go = new GameObject("ItemDatabase (Auto)");
+                    _instance = go.AddComponent<ItemDatabase>();
+                    _instance.BuildDatabase();
+                    Debug.Log("[ItemDatabase] Créé automatiquement");
+                }
+            }
+            return _instance;
+        }
+    }
 
     [Header("All Items")]
     [SerializeField] private ItemData[] allItems;
@@ -16,13 +37,13 @@ public class ItemDatabase : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
+        _instance = this;
 
         // Construire le dictionnaire
         BuildDatabase();
@@ -32,7 +53,7 @@ public class ItemDatabase : MonoBehaviour
     {
         itemsByName.Clear();
 
-        // Ajouter les items sérialisés
+        // Ajouter les items sérialisés dans l'Inspector
         if (allItems != null)
         {
             foreach (var item in allItems)
@@ -44,7 +65,7 @@ public class ItemDatabase : MonoBehaviour
             }
         }
 
-        // Charger aussi tous les ItemData des Resources si disponibles
+        // Charger depuis Resources
         var resourceItems = Resources.LoadAll<ItemData>("");
         foreach (var item in resourceItems)
         {
@@ -52,6 +73,20 @@ public class ItemDatabase : MonoBehaviour
             {
                 itemsByName[item.name] = item;
             }
+        }
+
+        // Fallback: chercher TOUS les ItemData chargés en mémoire (ScriptableObjects référencés dans la scène)
+        if (itemsByName.Count == 0)
+        {
+            var allLoadedItems = Resources.FindObjectsOfTypeAll<ItemData>();
+            foreach (var item in allLoadedItems)
+            {
+                if (item != null && !string.IsNullOrEmpty(item.name) && !itemsByName.ContainsKey(item.name))
+                {
+                    itemsByName[item.name] = item;
+                }
+            }
+            Debug.Log($"[ItemDatabase] Fallback: {allLoadedItems.Length} ItemData trouvés en mémoire");
         }
 
         Debug.Log($"[ItemDatabase] {itemsByName.Count} items chargés");

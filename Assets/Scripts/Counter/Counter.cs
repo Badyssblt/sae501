@@ -61,6 +61,10 @@ public class Counter : MonoBehaviour, IInteractable
     // Flag pour mode client (pas de logique locale)
     private bool isNetworkControlled = false;
 
+    // Cooldown après interaction locale (client) pour éviter que le réseau écrase l'état
+    private float localInteractionCooldown = 0f;
+    private const float LOCAL_INTERACTION_COOLDOWN_TIME = 1.0f;
+
     /// <summary>
     /// ID unique pour la synchronisation réseau
     /// </summary>
@@ -177,14 +181,8 @@ public class Counter : MonoBehaviour, IInteractable
             }
             else if (currentItem == null || currentItem.name != newItemName)
             {
-                var foundItem = ItemDatabase.Instance.GetItemByName(newItemName);
-                Debug.Log($"[Counter] ApplyNetworkState {NetworkId}: item='{newItemName}' → found={foundItem != null}, sprite={foundItem?.sprite != null}, itemToDisplay={itemToDisplay != null}, hidden={counterData?.itemNeedHidden}");
-                currentItem = foundItem;
+                currentItem = ItemDatabase.Instance.GetItemByName(newItemName);
             }
-        }
-        else
-        {
-            Debug.LogWarning($"[Counter] ItemDatabase.Instance est NULL!");
         }
 
         // Mettre à jour l'état de cuisson

@@ -230,13 +230,10 @@ public class GameManager : MonoBehaviour
         // Démarrer la partie
         currentState = GameState.Playing;
 
-        // Démarrer le spawn des PNJ (host seulement)
-        if (NetworkManager.Instance?.Role == NetworkRole.Host)
+        // Démarrer le spawn des PNJ
+        if (PNJSpawner.Instance != null)
         {
-            if (PNJSpawner.Instance != null)
-            {
-                PNJSpawner.Instance.StartSpawning();
-            }
+            PNJSpawner.Instance.StartSpawning();
         }
 
         Debug.Log("[GameManager] Countdown terminé - Partie lancée!");
@@ -515,10 +512,6 @@ public class GameManager : MonoBehaviour
         }
 
         // Mettre à jour les counters
-        if (serverState.Counters.Count > 0)
-        {
-            Debug.Log($"[Client] Syncing {serverState.Counters.Count} counters, ItemDatabase={ItemDatabase.Instance != null}");
-        }
         foreach (var kvp in serverState.Counters)
         {
             string counterId = kvp.Key;
@@ -527,15 +520,7 @@ public class GameManager : MonoBehaviour
             Counter counter = Counter.GetCounterById(counterId);
             if (counter != null)
             {
-                if (!string.IsNullOrEmpty(counterState.currentItem))
-                {
-                    Debug.Log($"[Client] Counter {counterId}: item={counterState.currentItem}, cooking={counterState.cookingState}");
-                }
                 counter.ApplyNetworkState(counterState);
-            }
-            else
-            {
-                Debug.LogWarning($"[Client] Counter introuvable: {counterId}");
             }
         }
 
