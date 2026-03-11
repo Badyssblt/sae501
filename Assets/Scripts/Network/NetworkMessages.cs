@@ -219,6 +219,7 @@ namespace CookMoiCa.Network
     public class StartGameMessage
     {
         public string type = "startGame";
+        public int localPlayerCount = 1;
     }
 
     [Serializable]

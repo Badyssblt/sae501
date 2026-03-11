@@ -97,6 +97,9 @@ public class NetworkManager : MonoBehaviour
     public event Action<InputMessage> OnInputReceived;
     public event Action OnGameStarted;
     public event Action<int> OnGameEnded;
+
+    // Nombre de joueurs locaux sur le host (reçu via gameStarted)
+    public int HostLocalPlayerCount { get; private set; } = 1;
     public event Action<StateSnapshot> OnStateReceived; // Client: reçoit état serveur
     public event Action<GameEventMessage> OnGameEvent; // Events instantanés
     public event Action OnAllPlayersReady; // Tous les joueurs distants sont prêts
@@ -326,7 +329,7 @@ public class NetworkManager : MonoBehaviour
                     break;
 
                 case "gameStarted":
-                    OnGameStarted?.Invoke();
+                    HandleGameStarted(data);
                     break;
 
                 case "allPlayersReady":
@@ -386,6 +389,23 @@ public class NetworkManager : MonoBehaviour
             OnInputReceived?.Invoke(input);
             Debug.Log($"[Network] Input reçu: P{input.playerId} H={input.horizontal} V={input.vertical}");
         }
+    }
+
+    private void HandleGameStarted(string data)
+    {
+        var msg = JsonUtility.FromJson<GameStartedMessage>(data);
+        if (msg != null)
+        {
+            HostLocalPlayerCount = msg.localPlayerCount > 0 ? msg.localPlayerCount : 1;
+            Debug.Log($"[Network] Game started - Host a {HostLocalPlayerCount} joueur(s) local/locaux");
+        }
+        OnGameStarted?.Invoke();
+    }
+
+    [Serializable]
+    private class GameStartedMessage
+    {
+        public int localPlayerCount;
     }
 
     private void HandlePlayerJoined(string data)
@@ -583,12 +603,12 @@ public class NetworkManager : MonoBehaviour
         Debug.Log("[Network] Lobby configuré");
     }
 
-    public void StartGame()
+    public void StartGame(int localPlayerCount = 1)
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        SendJSON(new StartGameMessage());
-        Debug.Log("[Network] Partie lancée!");
+        SendJSON(new StartGameMessage { localPlayerCount = localPlayerCount });
+        Debug.Log($"[Network] Partie lancée! ({localPlayerCount} joueur(s) local/locaux)");
     }
 
     public void EndGame(int finalScore)

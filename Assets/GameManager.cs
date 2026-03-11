@@ -146,12 +146,15 @@ public class GameManager : MonoBehaviour
             }
             else if (NetworkManager.Instance?.Role == NetworkRole.Client)
             {
-                // Client : spawner les joueurs en fonction de l'état serveur
-                // Le host a toujours au moins le joueur 1, potentiellement le 2
+                // Client : spawner les joueurs locaux du host selon le nombre reçu
+                int hostLocalCount = NetworkManager.Instance.HostLocalPlayerCount;
                 SpawnPlayer(1, false);
-                SpawnPlayer(2, false);
+                if (hostLocalCount >= 2)
+                {
+                    SpawnPlayer(2, false);
+                }
 
-                // Spawner les joueurs distants connus
+                // Spawner les joueurs distants connus (autres que nous)
                 foreach (var kvp in pendingRemotePlayers)
                 {
                     int slot = kvp.Key;
@@ -268,6 +271,15 @@ public class GameManager : MonoBehaviour
             Debug.LogError("[GameManager] LobbyUI introuvable!");
         }
 
+        // S'abonner aux événements réseau dès le lobby pour capter les joueurs qui rejoignent
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.OnPlayerJoined -= OnPlayerJoined;
+            NetworkManager.Instance.OnPlayerLeft -= OnPlayerLeft;
+            NetworkManager.Instance.OnPlayerJoined += OnPlayerJoined;
+            NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
+        }
+
         // Ouvrir le lobby réseau pour que les joueurs distants puissent rejoindre
         SetupLobby();
     }
@@ -339,8 +351,8 @@ public class GameManager : MonoBehaviour
         timeLeft = gameTime;
         score = 0;
 
-        // Envoyer startGame au serveur - le serveur décidera si on attend les joueurs ou pas
-        NetworkManager.Instance?.StartGame();
+        // Envoyer startGame au serveur avec le nombre de joueurs locaux
+        NetworkManager.Instance?.StartGame(pendingLocalPlayerCount);
         Debug.Log("Partie en cours de lancement - Attente des joueurs distants...");
 
         // Note: Le spawn des PNJ sera déclenché par OnAllPlayersReady
