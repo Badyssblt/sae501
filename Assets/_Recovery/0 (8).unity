@@ -1121,7 +1121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f2e2b4c8170d934b93d77b590a6b5a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EffectManager
-  seuilConsecutif: 1
+  seuilConsecutif: 3
   dureeEffet: 5
   bonusSound: {fileID: 8300000, guid: 6e512741747cc4247a7c9c7cd4dbbb32, type: 3}
   malusSound: {fileID: 8300000, guid: 21d983b851fabfe499ff4bbbd79b5a32, type: 3}
@@ -8736,8 +8736,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c527411a2ef94d64aa588a5ecf31e053, type: 2}
   - {fileID: 11400000, guid: 20cabc6128f7b8149bf7dbaf0b5333ad, type: 2}
   - {fileID: 11400000, guid: 9825735b59714ba09c00c278516698df, type: 2}
-  mapName: italie
-  gameTime: 50
+  gameTime: 120
   maxPlayers: 4
   playerPrefab: {fileID: 4905632694918771176, guid: 32381048c916c7a418fd00328bdb609e, type: 3}
   spawnPoints:
@@ -15212,7 +15211,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LobbyUI
   mainMenuPanel: {fileID: 52934395}
   lobbyPanel: {fileID: 1555452618}
-  mapSelectionPanel: {fileID: 0}
   waitingRoomPanel: {fileID: 271380736}
   gamePanel: {fileID: 1870895329}
   selectedColors:
