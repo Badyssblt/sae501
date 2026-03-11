@@ -100,6 +100,21 @@ namespace CookMoiCa.Network
     }
 
     [Serializable]
+    public class PNJState
+    {
+        public string id;
+        public float x;
+        public float y;
+        public string etat; // "arrive", "attendCommande", "attendService", "satisfait", "insatisfait"
+        public string recipeName; // Nom de la recette commandée (si en attente de service)
+        public float lastMoveX;
+        public float lastMoveY;
+        public bool isMoving;
+
+        public PNJState() { }
+    }
+
+    [Serializable]
     public class FullStateMessage
     {
         public string type = "fullState";
@@ -110,6 +125,7 @@ namespace CookMoiCa.Network
         public List<PlayerState> players = new List<PlayerState>();
         public List<CounterState> counters = new List<CounterState>();
         public List<OrderState> orders = new List<OrderState>();
+        public List<PNJState> pnjs = new List<PNJState>();
 
         public FullStateMessage() { }
     }
@@ -126,6 +142,7 @@ namespace CookMoiCa.Network
         public List<PlayerState> players; // Seulement ceux qui ont changé
         public List<CounterState> counters; // Seulement ceux qui ont changé
         public List<OrderState> orders; // Commandes actives
+        public List<PNJState> pnjs; // PNJ actifs
 
         public DeltaStateMessage() { }
     }
@@ -275,6 +292,7 @@ namespace CookMoiCa.Network
         public Dictionary<int, PlayerState> Players { get; set; } = new Dictionary<int, PlayerState>();
         public Dictionary<string, CounterState> Counters { get; set; } = new Dictionary<string, CounterState>();
         public Dictionary<string, OrderState> Orders { get; set; } = new Dictionary<string, OrderState>();
+        public Dictionary<string, PNJState> PNJs { get; set; } = new Dictionary<string, PNJState>();
         public float TimeLeft { get; set; }
         public int Score { get; set; }
 
@@ -329,6 +347,21 @@ namespace CookMoiCa.Network
                     recipeName = kvp.Value.recipeName,
                     timeRemaining = kvp.Value.timeRemaining,
                     status = kvp.Value.status
+                };
+            }
+
+            foreach (var kvp in PNJs)
+            {
+                clone.PNJs[kvp.Key] = new PNJState
+                {
+                    id = kvp.Value.id,
+                    x = kvp.Value.x,
+                    y = kvp.Value.y,
+                    etat = kvp.Value.etat,
+                    recipeName = kvp.Value.recipeName,
+                    lastMoveX = kvp.Value.lastMoveX,
+                    lastMoveY = kvp.Value.lastMoveY,
+                    isMoving = kvp.Value.isMoving
                 };
             }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using CookMoiCa.Network;
 
 public class PNJClient : MonoBehaviour, IInteractable
 {
@@ -22,6 +23,11 @@ public class PNJClient : MonoBehaviour, IInteractable
     public float offsetEntreClients = 0.5f; // Espacement entre les clients
     [HideInInspector]
     public DirectionAlignement directionAlignement = DirectionAlignement.Vertical; // Direction d'alignement des clients
+
+    // ID unique pour la synchronisation réseau
+    [HideInInspector]
+    public string networkId;
+    private static int nextNetworkId = 0;
 
     private int indexPoint = 0;
     private int indexRetour; // Index pour le chemin retour (parcours inversé)
@@ -50,6 +56,12 @@ public class PNJClient : MonoBehaviour, IInteractable
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spawnPosition = transform.position;
+
+        // Générer un ID réseau unique
+        if (string.IsNullOrEmpty(networkId))
+        {
+            networkId = $"pnj_{nextNetworkId++}";
+        }
         if (chemin.Length == 0)
         {
             Debug.LogWarning("Aucun point de chemin d�fini pour le PNJ " + name);
@@ -197,6 +209,11 @@ public class PNJClient : MonoBehaviour, IInteractable
         etat = EtatClient.AttendService;
         timer = tempsPourManger;
 
+        // Les commandes ne doivent être créées que côté Host
+        // Côté Client, les orders arrivent via le réseau (ApplyNetworkOrders)
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
+            return;
+
         // Cr�er une commande via OrderManager
         if (OrderManager.Instance != null)
         {
@@ -323,6 +340,50 @@ public class PNJClient : MonoBehaviour, IInteractable
                     Debug.Log(name + " est parti insatisfait !");
                 }
             }
+        }
+    }
+
+    // === NETWORK ===
+
+    /// <summary>
+    /// Retourne l'état du PNJ pour la synchronisation réseau
+    /// </summary>
+    public PNJState GetNetworkState()
+    {
+        // Trouver le nom de la recette commandée si en attente de service
+        string recipeName = null;
+        if (etat == EtatClient.AttendService && OrderManager.Instance != null)
+        {
+            var pnjOrder = OrderManager.Instance.pnjOrders.Find(o => o.client == this);
+            if (pnjOrder != null && pnjOrder.recipe != null && pnjOrder.recipe.result != null)
+            {
+                recipeName = pnjOrder.recipe.result.name;
+            }
+        }
+
+        return new PNJState
+        {
+            id = networkId,
+            x = transform.position.x,
+            y = transform.position.y,
+            etat = GetEtatString(),
+            recipeName = recipeName,
+            lastMoveX = lastDirection.x,
+            lastMoveY = lastDirection.y,
+            isMoving = rb != null && rb.linearVelocity.magnitude > 0.1f
+        };
+    }
+
+    private string GetEtatString()
+    {
+        switch (etat)
+        {
+            case EtatClient.Arrive: return "arrive";
+            case EtatClient.AttendCommande: return "attendCommande";
+            case EtatClient.AttendService: return "attendService";
+            case EtatClient.Satisfait: return "satisfait";
+            case EtatClient.Insatisfait: return "insatisfait";
+            default: return "arrive";
         }
     }
 

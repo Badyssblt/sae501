@@ -490,6 +490,14 @@ public class NetworkManager : MonoBehaviour
             }
         }
 
+        if (state.pnjs != null)
+        {
+            foreach (var pnj in state.pnjs)
+            {
+                snapshot.PNJs[pnj.id] = pnj;
+            }
+        }
+
         // Ajouter au buffer d'interpolation
         InterpolationBuffer.AddSnapshot(snapshot);
 
@@ -544,6 +552,15 @@ public class NetworkManager : MonoBehaviour
             foreach (var order in delta.orders)
             {
                 snapshot.Orders[order.id] = order;
+            }
+        }
+
+        if (delta.pnjs != null)
+        {
+            snapshot.PNJs.Clear();
+            foreach (var pnj in delta.pnjs)
+            {
+                snapshot.PNJs[pnj.id] = pnj;
             }
         }
 
@@ -734,6 +751,18 @@ public class NetworkManager : MonoBehaviour
                 delta.orders = new List<OrderState>();
                 hasChanges = true;
             }
+
+            // PNJ - toujours envoyer la liste complète (positions changent souvent)
+            if (currentState.pnjs != null && currentState.pnjs.Count > 0)
+            {
+                delta.pnjs = currentState.pnjs;
+                hasChanges = true;
+            }
+            else if (lastSentState.PNJs.Count > 0)
+            {
+                delta.pnjs = new List<PNJState>();
+                hasChanges = true;
+            }
         }
         else
         {
@@ -745,6 +774,7 @@ public class NetworkManager : MonoBehaviour
             delta.players = currentState.players;
             delta.counters = currentState.counters;
             delta.orders = currentState.orders;
+            delta.pnjs = currentState.pnjs;
             hasChanges = true;
         }
 
@@ -790,6 +820,14 @@ public class NetworkManager : MonoBehaviour
             foreach (var order in state.orders)
             {
                 snapshot.Orders[order.id] = order;
+            }
+        }
+
+        if (state.pnjs != null)
+        {
+            foreach (var pnj in state.pnjs)
+            {
+                snapshot.PNJs[pnj.id] = pnj;
             }
         }
 

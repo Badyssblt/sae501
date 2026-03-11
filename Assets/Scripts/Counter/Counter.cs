@@ -190,16 +190,19 @@ public class Counter : MonoBehaviour, IInteractable
         if (localInteractionCooldown > 0f) return;
 
         // Mettre à jour l'item sur le counter
+        bool itemChanged = false;
         if (ItemDatabase.Instance != null)
         {
             string newItemName = state.currentItem;
             if (string.IsNullOrEmpty(newItemName))
             {
+                if (currentItem != null) itemChanged = true;
                 currentItem = null;
             }
             else if (currentItem == null || currentItem.name != newItemName)
             {
                 currentItem = ItemDatabase.Instance.GetItemByName(newItemName);
+                itemChanged = true;
             }
         }
 
@@ -207,8 +210,8 @@ public class Counter : MonoBehaviour, IInteractable
         cookingState = state.cookingState ?? "idle";
         cookingProgress = state.cookingProgress;
 
-        // Mettre à jour le visuel
-        UpdateVisual();
+        // Mettre à jour le visuel (animation seulement si l'item a changé)
+        UpdateVisual(itemChanged);
 
         // Mettre à jour le slider si en cours de cuisson
         SliderTime sliderTime = GetComponent<SliderTime>();
@@ -242,7 +245,7 @@ public class Counter : MonoBehaviour, IInteractable
         }
     }
 
-    private void UpdateVisual()
+    private void UpdateVisual(bool itemChanged = true)
     {
         if (itemToDisplay == null) return;
 
@@ -255,7 +258,7 @@ public class Counter : MonoBehaviour, IInteractable
             if(counterData != null && !counterData.itemNeedHidden)
             {
                 itemToDisplay.sprite = currentItem.sprite;
-                PunchItemScale();
+                if (itemChanged) PunchItemScale();
             }else
             {
                 itemToDisplay.sprite = null;
@@ -281,7 +284,7 @@ public class Counter : MonoBehaviour, IInteractable
 
     private IEnumerator PunchScaleCoroutine(Transform target, float intensity, float duration)
     {
-        Vector3 original = target.localScale;
+        Vector3 original = Vector3.one;
         Vector3 big = original * intensity;
         target.localScale = big;
 

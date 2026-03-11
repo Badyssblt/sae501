@@ -56,6 +56,10 @@ public class PNJSpawner : MonoBehaviour
     {
         if (!isSpawning) return;
 
+        // Les PNJ ne doivent spawner que côté Host (source de vérité pour les commandes)
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
+            return;
+
         timerSpawn -= Time.deltaTime;
 
         if (timerSpawn <= 0 && pnjActifs < maxPNJSimultanes)

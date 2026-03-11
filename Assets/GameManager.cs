@@ -46,6 +46,10 @@ public class GameManager : MonoBehaviour
     // Référence aux counters pour la synchronisation
     private Counter[] allCounters;
 
+    [Header("PNJ Network")]
+    [SerializeField] private GameObject pnjPrefab; // Prefab PNJ pour le client
+    private Dictionary<string, GameObject> networkPNJs = new Dictionary<string, GameObject>();
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -524,10 +528,16 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Synchroniser les commandes depuis le serveur
-        if (serverState.Orders != null && serverState.Orders.Count > 0 && OrderManager.Instance != null)
+        // Synchroniser les commandes depuis le serveur (même si la liste est vide, pour nettoyer les orders expirées)
+        if (serverState.Orders != null && OrderManager.Instance != null)
         {
             OrderManager.Instance.ApplyNetworkOrders(serverState.Orders);
+        }
+
+        // Synchroniser les PNJ depuis le serveur
+        if (serverState.PNJs != null)
+        {
+            ApplyNetworkPNJs(serverState.PNJs);
         }
 
         // Vérifier la désynchronisation pour le joueur local
@@ -716,7 +726,125 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // Ajouter les PNJ
+        PNJClient[] allPNJ = FindObjectsByType<PNJClient>(FindObjectsSortMode.None);
+        foreach (var pnj in allPNJ)
+        {
+            if (pnj != null)
+            {
+                state.pnjs.Add(pnj.GetNetworkState());
+            }
+        }
+
         return state;
+    }
+
+    // ============================================================
+    // PNJ NETWORK - Synchronisation côté client
+    // ============================================================
+
+    private void ApplyNetworkPNJs(Dictionary<string, PNJState> serverPNJs)
+    {
+        if (pnjPrefab == null) return;
+
+        // Supprimer les PNJ qui n'existent plus sur le serveur
+        var toRemove = new List<string>();
+        foreach (var kvp in networkPNJs)
+        {
+            if (!serverPNJs.ContainsKey(kvp.Key))
+            {
+                if (kvp.Value != null) Destroy(kvp.Value);
+                toRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var key in toRemove)
+        {
+            networkPNJs.Remove(key);
+        }
+
+        // Ajouter ou mettre à jour les PNJ du serveur
+        foreach (var kvp in serverPNJs)
+        {
+            string pnjId = kvp.Key;
+            PNJState pnjState = kvp.Value;
+
+            if (!networkPNJs.ContainsKey(pnjId) || networkPNJs[pnjId] == null)
+            {
+                // Nouveau PNJ - instancier un ghost
+                var newPNJ = Instantiate(pnjPrefab, new Vector3(pnjState.x, pnjState.y, 0), Quaternion.identity);
+                newPNJ.name = $"NetworkPNJ_{pnjId}";
+
+                // Désactiver la logique locale du PNJ (il est piloté par le réseau)
+                var pnjClient = newPNJ.GetComponent<PNJClient>();
+                if (pnjClient != null) pnjClient.enabled = false;
+
+                // Désactiver le Rigidbody (pas de physique locale)
+                var rb = newPNJ.GetComponent<Rigidbody2D>();
+                if (rb != null) rb.simulated = false;
+
+                networkPNJs[pnjId] = newPNJ;
+            }
+
+            // Mettre à jour la position (interpolation douce)
+            GameObject pnjObj = networkPNJs[pnjId];
+            if (pnjObj != null)
+            {
+                Vector3 targetPos = new Vector3(pnjState.x, pnjState.y, 0);
+                pnjObj.transform.position = Vector3.Lerp(pnjObj.transform.position, targetPos, 10f * Time.deltaTime);
+
+                // Mettre à jour les animations
+                var anim = pnjObj.GetComponent<Animator>();
+                if (anim != null)
+                {
+                    anim.SetBool("IsMoving", pnjState.isMoving);
+                    if (pnjState.isMoving)
+                    {
+                        anim.SetFloat("MoveX", pnjState.lastMoveX);
+                        anim.SetFloat("MoveY", pnjState.lastMoveY);
+                    }
+                    else
+                    {
+                        anim.SetFloat("MoveX", 0);
+                        anim.SetFloat("MoveY", 0);
+                    }
+                    anim.SetFloat("LastMoveX", pnjState.lastMoveX);
+                    anim.SetFloat("LastMoveY", pnjState.lastMoveY);
+                }
+
+                // Gérer l'affichage de la commande au-dessus du PNJ
+                var orderDisplay = pnjObj.GetComponentInChildren<PNJOrderDisplay>();
+                if (!string.IsNullOrEmpty(pnjState.recipeName) && pnjState.etat == "attendService")
+                {
+                    if (orderDisplay == null)
+                    {
+                        // Créer l'affichage de la commande
+                        RecipeData recipe = FindRecipeByResultName(pnjState.recipeName);
+                        if (recipe != null)
+                        {
+                            GameObject displayObject = new GameObject("OrderDisplay");
+                            var display = displayObject.AddComponent<PNJOrderDisplay>();
+                            display.Initialize(recipe, pnjObj.transform);
+                        }
+                    }
+                }
+                else if (orderDisplay != null)
+                {
+                    Destroy(orderDisplay.gameObject);
+                }
+            }
+        }
+    }
+
+    private RecipeData FindRecipeByResultName(string resultName)
+    {
+        if (recipes == null || string.IsNullOrEmpty(resultName)) return null;
+
+        foreach (var recipe in recipes)
+        {
+            if (recipe.result != null && recipe.result.name == resultName)
+                return recipe;
+        }
+        return null;
     }
 
     public void EndGame()
@@ -733,6 +861,13 @@ public class GameManager : MonoBehaviour
         {
             OrderManager.Instance.ClearAllOrders();
         }
+
+        // Nettoyer les PNJ réseau (côté client)
+        foreach (var kvp in networkPNJs)
+        {
+            if (kvp.Value != null) Destroy(kvp.Value);
+        }
+        networkPNJs.Clear();
 
         DisableAllPlayerControls();
 
