@@ -260,6 +260,7 @@ GameObject:
   - component: {fileID: 1750373611411239103}
   - component: {fileID: 6655942743651994179}
   - component: {fileID: 1118244662189672399}
+  - component: {fileID: 7676735884480162198}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -640,6 +641,33 @@ MonoBehaviour:
   smokeAnimationSpeed: 0.1
   smokeOffset: {x: 0, y: -0.3}
   smokeScale: 0.5
+--- !u!114 &7676735884480162198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905632694918771176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc170cd55263dbf4aab81751d5f92cc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawnEffect
+  dropHeight: 8
+  dropDuration: 2
+  dropCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  squashAmount: 0.3
+  squashDuration: 0.15
+  stretchBackDuration: 0.1
+  fallingSound: {fileID: 0}
+  landingSound: {fileID: 8300000, guid: e6896014004b0d141ba0bf84620901db, type: 3}
+  soundVolume: 1
+  shadowPrefab: {fileID: 0}
 --- !u!1 &4989551150907249365
 GameObject:
   m_ObjectHideFlags: 0

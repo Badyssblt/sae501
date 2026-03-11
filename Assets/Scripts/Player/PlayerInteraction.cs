@@ -3,12 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(InventorySystem))]
 public class PlayerInteraction : MonoBehaviour
 {
-    private IInteractable triggerInteractable; // Pour les PNJ qui utilisent des triggers
     private InventorySystem inventory;
     private PlayerController playerController;
 
     [Header("Raycast Settings")]
-    [SerializeField] private float interactionDistance = 1.5f;
+    [SerializeField] private float interactionDistance = 0.7f;
     [SerializeField] private Vector2 boxCastSize = new Vector2(0.5f, 0.5f);
 
     [SerializeField] private LayerMask interactableLayer;
@@ -42,11 +41,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private IInteractable FindBestInteractable()
     {
-        // Priorité 1 : Trigger (PNJ)
-        if (triggerInteractable != null)
-            return triggerInteractable;
-
-        // Priorité 2 : Raycast fin (précis)
+        // Priorité 1 : Raycast fin (précis)
         RaycastHit2D rayHit = Physics2D.Raycast(
             transform.position,
             facingDirection,
@@ -61,7 +56,7 @@ public class PlayerInteraction : MonoBehaviour
                 return interactable;
         }
 
-        // Priorité 3 : BoxCast (fallback)
+        // Priorité 2 : BoxCast (fallback)
         RaycastHit2D boxHit = Physics2D.BoxCast(
             transform.position,
             boxCastSize,
@@ -111,17 +106,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Raycast à la demande pour le réseau
         return FindBestInteractable();
-    }
-
-    public void SetCurrentInteractable(IInteractable interactable)
-    {
-        triggerInteractable = interactable;
-    }
-
-    public void ClearCurrentInteractable(IInteractable interactable)
-    {
-        if (triggerInteractable == interactable)
-            triggerInteractable = null;
     }
 
     private void OnDrawGizmos()

@@ -9,6 +9,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreTextAdded;
     [SerializeField] private TextMeshProUGUI timerText;
 
+    [Header("Countdown")]
+    [SerializeField] private TextMeshProUGUI countdownText;
+
     [Header("Score Juice")]
     [SerializeField] private float rollDuration = 0.4f;
     [SerializeField] private float punchScale = 1.4f;
@@ -73,6 +76,47 @@ public class UIManager : MonoBehaviour
             displayedScore = score;
             scoreText.text = score.ToString();
         }
+    }
+
+    public void ShowCountdown(string text)
+    {
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(true);
+            countdownText.text = text;
+
+            // Punch scale effect
+            countdownText.transform.localScale = Vector3.one * 1.5f;
+            StartCoroutine(PunchCountdown());
+        }
+    }
+
+    public void HideCountdown()
+    {
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator PunchCountdown()
+    {
+        if (countdownText == null) yield break;
+
+        Vector3 big = Vector3.one * 1.5f;
+        Vector3 normal = Vector3.one;
+        float duration = 0.2f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f - Mathf.Pow(1f - (elapsed / duration), 3f);
+            countdownText.transform.localScale = Vector3.Lerp(big, normal, t);
+            yield return null;
+        }
+
+        countdownText.transform.localScale = normal;
     }
 
     /// <summary>

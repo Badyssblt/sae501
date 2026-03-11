@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform[] spawnPoints = new Transform[4];
 
+    [Header("Countdown")]
+    [SerializeField] private float countdownStepDuration = 0.5f;
+
     [Header("Game State")]
     private GameState currentState = GameState.Waiting;
     private float timeLeft;
@@ -146,21 +149,77 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void OnAllPlayersReady()
     {
-        Debug.Log("[GameManager] Tous les joueurs sont prêts - Démarrage de la partie!");
+        Debug.Log("[GameManager] Tous les joueurs sont prêts - Lancement du countdown!");
 
         if (currentState == GameState.Loading || currentState == GameState.Ready)
         {
-            currentState = GameState.Playing;
+            StartCoroutine(CountdownCoroutine());
+        }
+    }
 
-            // Démarrer le spawn des PNJ (host seulement)
-            if (NetworkManager.Instance?.Role == NetworkRole.Host)
+    private IEnumerator CountdownCoroutine()
+    {
+        // Freeze tous les joueurs et préparer le drop
+        // La chute dure 2 steps (3 → 2 → atterrit au début du "1")
+        float fallDuration = countdownStepDuration * 2f;
+
+        foreach (var kvp in activePlayers)
+        {
+            GameObject playerObj = kvp.Value;
+            if (playerObj == null) continue;
+
+            PlayerMovement movement = playerObj.GetComponent<PlayerMovement>();
+            if (movement != null)
+                movement.Freeze();
+
+            PlayerSpawnEffect spawnEffect = playerObj.GetComponent<PlayerSpawnEffect>();
+            if (spawnEffect == null)
+                spawnEffect = playerObj.AddComponent<PlayerSpawnEffect>();
+
+            spawnEffect.PlayDropEffect(0f, fallDuration);
+        }
+
+        // 3
+        UIManager.Instance?.ShowCountdown("3");
+        yield return new WaitForSeconds(countdownStepDuration);
+
+        // 2
+        UIManager.Instance?.ShowCountdown("2");
+        yield return new WaitForSeconds(countdownStepDuration);
+
+        // 1 (les joueurs atterrissent ici)
+        UIManager.Instance?.ShowCountdown("1");
+        yield return new WaitForSeconds(countdownStepDuration);
+
+        // GO!
+        UIManager.Instance?.ShowCountdown("GO!");
+        yield return new WaitForSeconds(0.4f);
+        UIManager.Instance?.HideCountdown();
+
+        // Unfreeze tous les joueurs
+        foreach (var kvp in activePlayers)
+        {
+            GameObject playerObj = kvp.Value;
+            if (playerObj == null) continue;
+
+            PlayerMovement movement = playerObj.GetComponent<PlayerMovement>();
+            if (movement != null)
+                movement.Unfreeze();
+        }
+
+        // Démarrer la partie
+        currentState = GameState.Playing;
+
+        // Démarrer le spawn des PNJ (host seulement)
+        if (NetworkManager.Instance?.Role == NetworkRole.Host)
+        {
+            if (PNJSpawner.Instance != null)
             {
-                if (PNJSpawner.Instance != null)
-                {
-                    PNJSpawner.Instance.StartSpawning();
-                }
+                PNJSpawner.Instance.StartSpawning();
             }
         }
+
+        Debug.Log("[GameManager] Countdown terminé - Partie lancée!");
     }
 
     public void StartMenu()

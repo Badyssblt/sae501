@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SoftDrinkGreen
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   name: Soft Drink Green
-  sprite: {fileID: -6693338232475307115, guid: ec49d5c7372848341990ed057868b6c6, type: 3}
+  sprite: {fileID: 21300000, guid: ec49d5c7372848341990ed057868b6c6, type: 3}
   counterType: 2
   secondsToTransform: 0
   itemCrafted: {fileID: 0}

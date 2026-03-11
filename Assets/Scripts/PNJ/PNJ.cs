@@ -326,30 +326,7 @@ public class PNJClient : MonoBehaviour, IInteractable
         }
     }
 
-    // === INTERACTION AVEC LE JOUEUR ===
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            PlayerInteraction player = collision.GetComponent<PlayerInteraction>();
-            if (player != null)
-            {
-                player.SetCurrentInteractable(this);
-            }
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            PlayerInteraction player = collision.GetComponent<PlayerInteraction>();
-            if (player != null)
-            {
-                player.ClearCurrentInteractable(this);
-            }
-        }
-    }
+    // Interaction gérée par le raycast du PlayerInteraction
 
     public void Interact(PlayerInteraction player)
     {
