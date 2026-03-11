@@ -5,35 +5,8 @@ public class TrashBin : MonoBehaviour, IInteractable
     [SerializeField] private AudioClip trashSound;
     [SerializeField] private SpriteRenderer trashSprite;
 
-    private bool inRange = false;
-    private PlayerInteraction player;
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            inRange = true;
-            player = collision.GetComponent<PlayerInteraction>();
-            if (player != null)
-                player.SetCurrentInteractable(this);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            inRange = false;
-            PlayerInteraction exitPlayer = collision.GetComponent<PlayerInteraction>();
-            if (exitPlayer != null)
-                exitPlayer.ClearCurrentInteractable(this);
-        }
-    }
-
     public void Interact(PlayerInteraction player)
     {
-        if (!inRange) return;
-
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
 
         // Si le joueur a un item, on le jette

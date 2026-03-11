@@ -3,15 +3,19 @@ using UnityEngine;
 [RequireComponent(typeof(InventorySystem))]
 public class PlayerInteraction : MonoBehaviour
 {
-    private IInteractable currentInteractable;
     private IInteractable triggerInteractable; // Pour les PNJ qui utilisent des triggers
     private InventorySystem inventory;
     private PlayerController playerController;
 
     [Header("Raycast Settings")]
     [SerializeField] private float interactionDistance = 1.5f;
+    [SerializeField] private Vector2 boxCastSize = new Vector2(0.5f, 0.5f);
+
     [SerializeField] private LayerMask interactableLayer;
-    private Vector2 lastFacingDirection = Vector2.down; // Direction par défaut
+    private Vector2 facingDirection = Vector2.down;
+
+    // Pour le gizmo uniquement
+    private IInteractable lastDetected;
 
     private void Awake()
     {
@@ -26,56 +30,71 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        // Mettre à jour la direction du regard
         Vector2 movement = playerController.GetCurrentMovement();
         if (movement != Vector2.zero)
         {
-            lastFacingDirection = movement.normalized;
+            if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
+                facingDirection = movement.x > 0 ? Vector2.right : Vector2.left;
+            else
+                facingDirection = movement.y > 0 ? Vector2.up : Vector2.down;
         }
-
-        // Détecter l'interactable avec raycast
-        DetectInteractable();
     }
 
-    private void DetectInteractable()
+    private IInteractable FindBestInteractable()
     {
-        // Priorité 1 : Raycast (pour les Counters)
-        RaycastHit2D hit = Physics2D.Raycast(
+        // Priorité 1 : Trigger (PNJ)
+        if (triggerInteractable != null)
+            return triggerInteractable;
+
+        // Priorité 2 : Raycast fin (précis)
+        RaycastHit2D rayHit = Physics2D.Raycast(
             transform.position,
-            lastFacingDirection,
+            facingDirection,
             interactionDistance,
             interactableLayer
         );
 
-        if (hit.collider != null)
+        if (rayHit.collider != null)
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-
+            IInteractable interactable = rayHit.collider.GetComponent<IInteractable>();
             if (interactable != null)
-            {
-                currentInteractable = interactable;
-
-                return;
-            }
+                return interactable;
         }
 
-        // Priorité 2 : Trigger (pour les PNJ)
-        if (triggerInteractable != null)
+        // Priorité 3 : BoxCast (fallback)
+        RaycastHit2D boxHit = Physics2D.BoxCast(
+            transform.position,
+            boxCastSize,
+            0f,
+            facingDirection,
+            interactionDistance,
+            interactableLayer
+        );
+
+        if (boxHit.collider != null)
         {
-            currentInteractable = triggerInteractable;
-            return;
+            IInteractable interactable = boxHit.collider.GetComponent<IInteractable>();
+            if (interactable != null)
+                return interactable;
         }
 
-        currentInteractable = null;
+        return null;
     }
 
     public void OnInteract()
     {
-        if (currentInteractable != null)
-        {
-            currentInteractable.Interact(this);
+        // Malus objets collants : interactions bloquées
+        if (EffectManager.Instance != null && EffectManager.Instance.ObjetsCollantsActif)
+            return;
 
-            // Mettre à jour l'UI pour ce joueur spécifique
+        // Raycast au moment exact de l'interaction
+        IInteractable target = FindBestInteractable();
+        lastDetected = target;
+
+        if (target != null)
+        {
+            target.Interact(this);
+
             if (InventoryUI.Instance != null && playerController != null)
             {
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
@@ -83,19 +102,17 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // Permet aux objets interactables d'accéder à l'inventaire du joueur
     public InventorySystem GetInventory()
     {
         return inventory;
     }
 
-    // Retourne l'interactable actuellement ciblé
     public IInteractable GetCurrentInteractable()
     {
-        return currentInteractable;
+        // Raycast à la demande pour le réseau
+        return FindBestInteractable();
     }
 
-    // Méthodes pour les triggers (utilisées par les PNJ)
     public void SetCurrentInteractable(IInteractable interactable)
     {
         triggerInteractable = interactable;
@@ -105,5 +122,36 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (triggerInteractable == interactable)
             triggerInteractable = null;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Vector2 origin = transform.position;
+        Vector2 end = origin + facingDirection * interactionDistance;
+
+        Gizmos.color = lastDetected != null ? Color.green : Color.red;
+
+        // Raycast line
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(origin, end);
+
+        // BoxCast fallback
+        Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
+        Gizmos.DrawWireCube(origin, boxCastSize);
+        Gizmos.DrawWireCube((Vector3)end, boxCastSize);
+
+        Vector2 halfSize = boxCastSize * 0.5f;
+        Vector2[] corners = new Vector2[]
+        {
+            new Vector2(-halfSize.x, -halfSize.y),
+            new Vector2( halfSize.x, -halfSize.y),
+            new Vector2( halfSize.x,  halfSize.y),
+            new Vector2(-halfSize.x,  halfSize.y),
+        };
+
+        for (int i = 0; i < corners.Length; i++)
+        {
+            Gizmos.DrawLine(origin + corners[i], end + corners[i]);
+        }
     }
 }

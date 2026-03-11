@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -6255053329844864323}
   - component: {fileID: 999986179839143147}
   - component: {fileID: 2155477535415175686}
+  - component: {fileID: 7574445519586060816}
   m_Layer: 0
   m_Name: PNJ
   m_TagString: Untagged
@@ -139,6 +140,7 @@ MonoBehaviour:
   tempsAttenteCommande: 2
   tempsPourManger: 15
   directionAttente: {x: 0, y: -1}
+  servedSound: {fileID: 8300000, guid: 23e50c5584ef80245a943d5a2ebef14b, type: 3}
   positionIndex: -1
   offsetEntreClients: 0.5
   directionAlignement: 0
@@ -210,3 +212,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7574445519586060816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6839045485094437664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 079e0cad8167ec445a1cd0488eec3b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PNJOrderDisplay
+  offsetY: 1.5
+  iconSize: 0.5
+  bounceHeight: 0.15
+  bounceSpeed: 3

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using CookMoiCa.Network;
 
@@ -27,6 +28,16 @@ public class Counter : MonoBehaviour, IInteractable
     private bool wasItemCrafted = false;
     private bool wasReadyIconShown = false;
 
+    // Son de pose d'item
+    [SerializeField] private AudioClip placeItemSound;
+    [SerializeField] [Range(0f, 1f)] private float placeSoundVolume = 0.5f;
+    [SerializeField] private float placeSoundPitchMin = 0.9f;
+    [SerializeField] private float placeSoundPitchMax = 1.1f;
+    private AudioSource counterAudioSource;
+
+    // Effet de fumée pendant la cuisson
+    private CookingSmokeEffect cookingSmokeEffect;
+
     // ============================================================
     // NETWORK - ID et état pour synchronisation
     // ============================================================
@@ -34,6 +45,9 @@ public class Counter : MonoBehaviour, IInteractable
     [Header("Network")]
     [SerializeField] private string networkId;
     private static int counterIdCounter = 0;
+
+    // Registre statique de tous les counters pour synchronisation
+    private static Dictionary<string, Counter> counterRegistry = new Dictionary<string, Counter>();
 
     // État de cuisson pour synchronisation
     private string cookingState = "idle"; // idle, cooking, done
@@ -43,6 +57,9 @@ public class Counter : MonoBehaviour, IInteractable
     // Système de lock pour conflits
     private int? lockedByPlayer = null;
     private uint lockTick = 0;
+
+    // Flag pour mode client (pas de logique locale)
+    private bool isNetworkControlled = false;
 
     /// <summary>
     /// ID unique pour la synchronisation réseau
@@ -67,6 +84,9 @@ public class Counter : MonoBehaviour, IInteractable
             networkId = $"counter_{transform.position.x:F1}_{transform.position.y:F1}";
         }
 
+        // Enregistrer dans le registre statique
+        counterRegistry[NetworkId] = this;
+
         Transform itemTransform = transform.Find("ItemDisplayed");
         if (itemTransform != null)
         {
@@ -89,9 +109,98 @@ public class Counter : MonoBehaviour, IInteractable
             readyIcon = null;
         }
 
-        counterObject.sprite = counterData.counterSprite;
-    }   
+        cookingSmokeEffect = GetComponentInChildren<CookingSmokeEffect>();
 
+        counterAudioSource = GetComponent<AudioSource>();
+        if (counterAudioSource == null)
+            counterAudioSource = gameObject.AddComponent<AudioSource>();
+
+        if (counterObject != null && counterData != null)
+            counterObject.sprite = counterData.counterSprite;
+
+
+        // Vérifier si on est en mode client
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Client)
+        {
+            isNetworkControlled = true;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Retirer du registre
+        if (counterRegistry.ContainsKey(NetworkId))
+        {
+            counterRegistry.Remove(NetworkId);
+        }
+    }
+
+    // ============================================================
+    // NETWORK - Méthodes statiques pour accès aux counters
+    // ============================================================
+
+    /// <summary>
+    /// Retrouve un counter par son ID réseau
+    /// </summary>
+    public static Counter GetCounterById(string counterId)
+    {
+        if (string.IsNullOrEmpty(counterId))
+            return null;
+
+        counterRegistry.TryGetValue(counterId, out Counter counter);
+        return counter;
+    }
+
+    /// <summary>
+    /// Retourne tous les counters enregistrés
+    /// </summary>
+    public static IEnumerable<Counter> GetAllCounters()
+    {
+        return counterRegistry.Values;
+    }
+
+    /// <summary>
+    /// Applique l'état réseau reçu du serveur (mode client uniquement)
+    /// </summary>
+    public void ApplyNetworkState(CounterState state)
+    {
+        if (state == null) return;
+
+        // Mettre à jour l'item sur le counter
+        if (ItemDatabase.Instance != null)
+        {
+            string newItemName = state.currentItem;
+            if (string.IsNullOrEmpty(newItemName))
+            {
+                currentItem = null;
+            }
+            else if (currentItem == null || currentItem.name != newItemName)
+            {
+                currentItem = ItemDatabase.Instance.GetItemByName(newItemName);
+            }
+        }
+
+        // Mettre à jour l'état de cuisson
+        cookingState = state.cookingState ?? "idle";
+        cookingProgress = state.cookingProgress;
+
+        // Mettre à jour le visuel
+        UpdateVisual();
+
+        // Mettre à jour le slider si en cours de cuisson
+        SliderTime sliderTime = GetComponent<SliderTime>();
+        if (sliderTime != null)
+        {
+            if (cookingState == "cooking" && cookingProgress > 0 && cookingProgress < 1)
+            {
+                sliderTime.SetProgress(cookingProgress);
+            }
+            else if (cookingState == "idle" || cookingState == "done")
+            {
+                sliderTime.HideSlider();
+            }
+        }
+    }
 
     private void UpdateVisual()
     {
@@ -104,11 +213,45 @@ public class Counter : MonoBehaviour, IInteractable
             if(!counterData.itemNeedHidden)
             {
                 itemToDisplay.sprite = currentItem.sprite;
+                PunchItemScale();
             }else
             {
                 itemToDisplay.sprite = null;
             }
         }
+    }
+
+    private void PlayPlaceSound()
+    {
+        if (placeItemSound == null || counterAudioSource == null) return;
+        counterAudioSource.pitch = Random.Range(placeSoundPitchMin, placeSoundPitchMax);
+        counterAudioSource.PlayOneShot(placeItemSound, placeSoundVolume);
+    }
+
+    private Coroutine punchCoroutine;
+
+    private void PunchItemScale()
+    {
+        if (itemToDisplay == null) return;
+        if (punchCoroutine != null) StopCoroutine(punchCoroutine);
+        punchCoroutine = StartCoroutine(PunchScaleCoroutine(itemToDisplay.transform, 1.4f, 0.2f));
+    }
+
+    private IEnumerator PunchScaleCoroutine(Transform target, float intensity, float duration)
+    {
+        Vector3 original = target.localScale;
+        Vector3 big = original * intensity;
+        target.localScale = big;
+
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            float n = t / duration;
+            float eased = 1f - Mathf.Pow(1f - n, 3f);
+            target.localScale = Vector3.Lerp(big, original, eased);
+            yield return null;
+        }
+        target.localScale = original;
+        punchCoroutine = null;
     }
 
     private void UpdateReadyIcon()
@@ -181,7 +324,8 @@ public class Counter : MonoBehaviour, IInteractable
         if (playerInventory.currentItem == null && currentItem != null)
         {
             playerInventory.AddItem(currentItem);
-            // Ne touche pas ingredientsOnCounter pour garder la trace
+            // Vider les ingrédients quand le joueur prend l'item
+            ingredientsOnCounter.Clear();
             currentItem = null;
             UpdateVisual();
             // Mettre à jour l'UI pour ce joueur
@@ -260,6 +404,7 @@ public class Counter : MonoBehaviour, IInteractable
                 }
             }
 
+            PlayPlaceSound();
             UpdateVisual();
             // Mettre à jour l'UI pour ce joueur
             var playerController = player.GetComponent<PlayerController>();
@@ -284,6 +429,9 @@ public class Counter : MonoBehaviour, IInteractable
         // Vérifie si le précédent item a été finit de craft
         if (wasItemCrafted)
         {
+            // Bloquer si le joueur a déjà un item en main
+            if (playerInventory.currentItem != null) return;
+
             playerInventory.AddItem(currentItem);
             currentItem = null;
             UpdateVisual();
@@ -313,6 +461,7 @@ public class Counter : MonoBehaviour, IInteractable
         currentItem = itemToTransform;
         playerInventory.RemoveItem(itemToTransform);
         InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
+        PlayPlaceSound();
         UpdateVisual();
 
         if (itemToTransform && itemToTransform.counterType == CounterType.Assemblage) return;
@@ -342,10 +491,14 @@ public class Counter : MonoBehaviour, IInteractable
 
         // Démarrer le slider timer
         sliderTime.StartTimer(itemToTransform.secondsToTransform);
-        AudioSource audioClip = playerMovement.GetComponent<AudioSource>();
-        if (audioClip != null && itemToTransform.soundToTransform != null)
+        Debug.Log($"[Counter] WaitForTransform - smokeEffect: {(cookingSmokeEffect != null ? "TROUVÉ" : "NULL")}");
+        cookingSmokeEffect?.Play();
+        AudioSource audioSource = playerMovement.GetComponent<AudioSource>();
+        if (audioSource != null && itemToTransform.soundToTransform != null)
         {
-            audioClip.PlayOneShot(itemToTransform.soundToTransform);
+            audioSource.clip = itemToTransform.soundToTransform;
+            audioSource.loop = true;
+            audioSource.Play();
         }
 
         float elapsed = 0f;
@@ -356,7 +509,16 @@ public class Counter : MonoBehaviour, IInteractable
             yield return null;
         }
 
+        // Arrêter le son de cuisson
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+            audioSource.clip = null;
+        }
+
         // Transformation finie
+        cookingSmokeEffect?.Stop();
         sliderTime.HideSlider();
         currentItem = itemToTransform.itemCrafted;
         wasItemCrafted = true;
@@ -378,6 +540,21 @@ public class Counter : MonoBehaviour, IInteractable
     {
         InventorySystem playerInventory = player.GetComponent<InventorySystem>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+        // Bonus livraison instantanée : n'importe quel comptoir peut servir un plat
+        if (EffectManager.Instance != null && EffectManager.Instance.LivraisonInstantaneeActif
+            && counterData.type != CounterType.Service
+            && playerInventory.currentItem != null)
+        {
+            foreach (RecipeData order in OrderManager.Instance.currentOrders)
+            {
+                if (order.result == playerInventory.currentItem)
+                {
+                    OrderManager.Instance.CompletePNJOrder(order, playerInventory, player);
+                    return;
+                }
+            }
+        }
 
         if (counterData.type == CounterType.Assemblage)
         {

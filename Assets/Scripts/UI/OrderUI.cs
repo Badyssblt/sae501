@@ -9,6 +9,7 @@ public class OrderUI : MonoBehaviour
     [SerializeField] private GameObject sliderContainer;
     [SerializeField] private HorizontalLayoutGroup hb;
     [SerializeField] private GameObject ingredientPrefab;
+    [SerializeField] private float backgroundPadding = 60f;
     [SerializeField] private Color colorGreen = Color.green;
     [SerializeField] private Color colorOrange = new Color(1f, 0.65f, 0f); // orange
     [SerializeField] private Color colorRed = Color.red;
@@ -42,19 +43,59 @@ public class OrderUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Instancie un prefab pour chaque ingrédient
+        // Instancie un prefab pour chaque ingrédient (expand si c'est un résultat de recette)
         foreach (ItemData ingredient in recipe.ingredients)
         {
-            GameObject go = Instantiate(ingredientPrefab, hb.transform);
-            Image img = go.GetComponent<Image>();
-            if (img != null)
+            RecipeData subRecipe = FindRecipeByResult(ingredient);
+            if (subRecipe != null)
             {
-                img.sprite = ingredient.sprite;
+                foreach (ItemData subIngredient in subRecipe.ingredients)
+                    SpawnIngredientIcon(subIngredient);
+            }
+            else
+            {
+                SpawnIngredientIcon(ingredient);
             }
         }
 
+        // Redimensionne le background selon les ingrédients
+        StartCoroutine(FitBackgroundToIngredients());
+
         // Lance le timer de décompte
         StartTimer(maxDelay);
+    }
+
+    private IEnumerator FitBackgroundToIngredients()
+    {
+        yield return null; // attendre que Destroy/Instantiate soient appliqués
+        Canvas.ForceUpdateCanvases();
+
+        RectTransform hbRect = hb.GetComponent<RectTransform>();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(hbRect);
+
+        float preferredWidth = LayoutUtility.GetPreferredWidth(hbRect);
+        LayoutElement le = GetComponent<LayoutElement>();
+        if (le != null)
+            le.preferredWidth = preferredWidth + backgroundPadding;
+    }
+
+    private RecipeData FindRecipeByResult(ItemData item)
+    {
+        foreach (RecipeData r in GameManager.Instance.recipes)
+        {
+            if (r.result == item)
+                return r;
+        }
+        return null;
+    }
+
+    private void SpawnIngredientIcon(ItemData ingredient)
+    {
+        GameObject go = Instantiate(ingredientPrefab, hb.transform);
+        Transform iconTransform = go.transform.Find("IngredientIcon");
+        Image img = iconTransform != null ? iconTransform.GetComponent<Image>() : null;
+        if (img != null)
+            img.sprite = ingredient.sprite;
     }
 
     public void ResetSlider()

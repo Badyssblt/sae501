@@ -1,0 +1,149 @@
+using System.Collections;
+using UnityEngine;
+
+public enum EffectType
+{
+    // Malus
+    SolGlissant,
+    ObjetsCollants,
+    // Bonus
+    SprintBoost,
+    MultiplicateurPoints,
+    LivraisonInstantanee
+}
+
+/// <summary>
+/// Gère les bonus/malus déclenchés par les séries de commandes réussies ou ratées.
+/// Placer ce script sur un GameObject vide dans la scène.
+/// </summary>
+public class EffectManager : MonoBehaviour
+{
+    public static EffectManager Instance;
+
+    [Header("Paramètres")]
+    [SerializeField] private int seuilConsecutif = 3;  // Nb de commandes d'affilée pour déclencher
+    [SerializeField] private float dureeEffet = 5f;
+
+    [Header("Sons")]
+    [SerializeField] private AudioClip bonusSound;
+    [SerializeField] private AudioClip malusSound;
+
+    // --- États actifs ---
+    public bool SolGlissantActif     { get; private set; }
+    public bool ObjetsCollantsActif  { get; private set; }
+    public bool SprintBoostActif     { get; private set; }
+    public bool LivraisonInstantaneeActif { get; private set; }
+    public int  ScoreMultiplier      { get; private set; } = 1;
+
+    private int successConsecutifs = 0;
+    private int echecConsecutifs   = 0;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void Update()
+    {
+        // Tests rapides (à retirer en prod)
+        if (Input.GetKeyDown(KeyCode.F1)) DeclencherMalusAleatoire();
+        if (Input.GetKeyDown(KeyCode.F2)) DeclencherBonusAleatoire();
+    }
+
+    // ----------------------------------------------------------------
+    // Appelé par OrderManager
+    // ----------------------------------------------------------------
+
+    public void NotifierSucces()
+    {
+        echecConsecutifs = 0;
+        successConsecutifs++;
+        if (successConsecutifs >= seuilConsecutif)
+        {
+            successConsecutifs = 0;
+            DeclencherBonusAleatoire();
+        }
+    }
+
+    public void NotifierEchec()
+    {
+        successConsecutifs = 0;
+        echecConsecutifs++;
+        if (echecConsecutifs >= seuilConsecutif)
+        {
+            echecConsecutifs = 0;
+            DeclencherMalusAleatoire();
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // Déclenchement
+    // ----------------------------------------------------------------
+
+    private void DeclencherBonusAleatoire()
+    {
+        if (bonusSound != null) AudioSource.PlayClipAtPoint(bonusSound, Camera.main.transform.position);
+        EffectType[] bonus = { EffectType.SprintBoost, EffectType.MultiplicateurPoints, EffectType.LivraisonInstantanee };
+        StartCoroutine(AppliquerEffet(bonus[Random.Range(0, bonus.Length)]));
+    }
+
+    private void DeclencherMalusAleatoire()
+    {
+        if (malusSound != null) AudioSource.PlayClipAtPoint(malusSound, Camera.main.transform.position);
+        EffectType[] malus = { EffectType.SolGlissant, EffectType.ObjetsCollants };
+        StartCoroutine(AppliquerEffet(malus[Random.Range(0, malus.Length)]));
+    }
+
+    private IEnumerator AppliquerEffet(EffectType type)
+    {
+        ActiverEffet(type, true);
+        AfficherNotification(type);
+        yield return new WaitForSeconds(dureeEffet);
+        ActiverEffet(type, false);
+    }
+
+    private void ActiverEffet(EffectType type, bool actif)
+    {
+        switch (type)
+        {
+            case EffectType.SolGlissant:
+                SolGlissantActif = actif;
+                break;
+            case EffectType.ObjetsCollants:
+                ObjetsCollantsActif = actif;
+                break;
+            case EffectType.SprintBoost:
+                SprintBoostActif = actif;
+                break;
+            case EffectType.MultiplicateurPoints:
+                ScoreMultiplier = actif ? 2 : 1;
+                break;
+            case EffectType.LivraisonInstantanee:
+                LivraisonInstantaneeActif = actif;
+                break;
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // Notification
+    // ----------------------------------------------------------------
+
+    private void AfficherNotification(EffectType type)
+    {
+        bool isBonus = type == EffectType.SprintBoost
+                    || type == EffectType.MultiplicateurPoints
+                    || type == EffectType.LivraisonInstantanee;
+
+        string message = type switch
+        {
+            EffectType.SolGlissant          => "MALUS : Sol glissant !",
+            EffectType.ObjetsCollants        => "MALUS : Objets collants !",
+            EffectType.SprintBoost           => "BONUS : Sprint x2 !",
+            EffectType.MultiplicateurPoints  => "BONUS : Score x2 !",
+            EffectType.LivraisonInstantanee  => "BONUS : Livraison instantanee !",
+            _                                => ""
+        };
+
+        EffectNotificationUI.Instance?.ShowNotification(message, isBonus, dureeEffet);
+    }
+}

@@ -111,9 +111,9 @@ public class OrderManager : MonoBehaviour
     }
 
     // Crée une commande spécifique pour un PNJ
-    public void CreatePNJOrder(PNJClient client)
+    public RecipeData CreatePNJOrder(PNJClient client)
     {
-        if (recipes.Length == 0) return;
+        if (recipes.Length == 0) return null;
 
         // Choisir une recette aléatoire
         RecipeData randomRecipe = recipes[Random.Range(0, recipes.Length)];
@@ -130,6 +130,8 @@ public class OrderManager : MonoBehaviour
         pnjOrders.Add(new PNJOrder(randomRecipe, client, newOrderGO));
 
         Debug.Log("Commande créée pour " + client.name + " : " + randomRecipe.result.name);
+
+        return randomRecipe;
     }
 
     // Complète une commande de PNJ
@@ -164,6 +166,9 @@ public class OrderManager : MonoBehaviour
                 InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
             }
 
+            // Notifier l'EffectManager du succès
+            EffectManager.Instance?.NotifierSucces();
+
             Debug.Log("Commande livrée au PNJ " + pnjOrder.client.name);
         }
         else
@@ -186,6 +191,9 @@ public class OrderManager : MonoBehaviour
             {
                 Destroy(pnjOrder.orderUI);
             }
+
+            // Notifier l'EffectManager de l'échec
+            EffectManager.Instance?.NotifierEchec();
 
             Debug.Log("Commande expirée pour " + client.name);
         }

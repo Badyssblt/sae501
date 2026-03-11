@@ -57,7 +57,16 @@ public class PlayerMovement : MonoBehaviour
         if (rb != null && !isFrozen)
         {
             float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
-            rb.linearVelocity = movement * currentSpeed;
+
+            // Bonus sprint : vitesse doublée
+            if (EffectManager.Instance != null && EffectManager.Instance.SprintBoostActif)
+                currentSpeed = Mathf.Max(currentSpeed, moveSpeed * 2f);
+
+            // Malus sol glissant : inertie (lerp lent vers la vitesse cible)
+            if (EffectManager.Instance != null && EffectManager.Instance.SolGlissantActif)
+                rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, movement * currentSpeed, 0.06f);
+            else
+                rb.linearVelocity = movement * currentSpeed;
         }
     }
 
