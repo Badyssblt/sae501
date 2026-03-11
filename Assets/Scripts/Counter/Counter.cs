@@ -177,8 +177,14 @@ public class Counter : MonoBehaviour, IInteractable
             }
             else if (currentItem == null || currentItem.name != newItemName)
             {
-                currentItem = ItemDatabase.Instance.GetItemByName(newItemName);
+                var foundItem = ItemDatabase.Instance.GetItemByName(newItemName);
+                Debug.Log($"[Counter] ApplyNetworkState {NetworkId}: item='{newItemName}' → found={foundItem != null}, sprite={foundItem?.sprite != null}, itemToDisplay={itemToDisplay != null}, hidden={counterData?.itemNeedHidden}");
+                currentItem = foundItem;
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[Counter] ItemDatabase.Instance est NULL!");
         }
 
         // Mettre à jour l'état de cuisson

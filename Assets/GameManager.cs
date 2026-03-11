@@ -515,6 +515,10 @@ public class GameManager : MonoBehaviour
         }
 
         // Mettre à jour les counters
+        if (serverState.Counters.Count > 0)
+        {
+            Debug.Log($"[Client] Syncing {serverState.Counters.Count} counters, ItemDatabase={ItemDatabase.Instance != null}");
+        }
         foreach (var kvp in serverState.Counters)
         {
             string counterId = kvp.Key;
@@ -523,7 +527,15 @@ public class GameManager : MonoBehaviour
             Counter counter = Counter.GetCounterById(counterId);
             if (counter != null)
             {
+                if (!string.IsNullOrEmpty(counterState.currentItem))
+                {
+                    Debug.Log($"[Client] Counter {counterId}: item={counterState.currentItem}, cooking={counterState.cookingState}");
+                }
                 counter.ApplyNetworkState(counterState);
+            }
+            else
+            {
+                Debug.LogWarning($"[Client] Counter introuvable: {counterId}");
             }
         }
 
