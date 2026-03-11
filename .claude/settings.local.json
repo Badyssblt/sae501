@@ -9,7 +9,11 @@
       "Bash(git -C /c/Users/badys/OneDrive/Documents/Cours/S5/Overcooked push origin dev)",
       "Bash(git -C /c/Users/badys/OneDrive/Documents/Cours/S5/Overcooked push --force origin dev)",
       "Bash(find \"C:\\\\Users\\\\badys\\\\OneDrive\\\\Documents\\\\Cours\\\\S5\\\\Overcooked\\\\Assets\\\\Animations\" -type f -name \"*.anim\" 2>/dev/null | head -20)",
-      "Bash(find /c/Users/badys/OneDrive/Documents/Cours/S5/Overcooked/Assets/Prefabs -name \"Player*\" 2>/dev/null | head -5)"
+      "Bash(find /c/Users/badys/OneDrive/Documents/Cours/S5/Overcooked/Assets/Prefabs -name \"Player*\" 2>/dev/null | head -5)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
