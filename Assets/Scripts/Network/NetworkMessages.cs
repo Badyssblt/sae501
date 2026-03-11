@@ -106,7 +106,6 @@ namespace CookMoiCa.Network
         public uint tick;
         public float timeLeft;
         public int score;
-        public string map;
         public string gameState; // "waiting", "ready", "playing", "gameover"
         public List<PlayerState> players = new List<PlayerState>();
         public List<CounterState> counters = new List<CounterState>();
@@ -207,14 +206,12 @@ namespace CookMoiCa.Network
     public class SetupLobbyMessage
     {
         public string type = "setupLobby";
-        public string map;
     }
 
     [Serializable]
     public class StartGameMessage
     {
         public string type = "startGame";
-        public string map;
     }
 
     [Serializable]

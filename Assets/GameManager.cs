@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("Game Settings")]
-    [SerializeField] private string mapName = "italie";
     [SerializeField] private float gameTime = 120f;
     [SerializeField] private int maxPlayers = 4;
 
@@ -125,12 +124,6 @@ public class GameManager : MonoBehaviour
         NetworkManager.Instance.OnStateReceived += OnServerStateReceived;
         NetworkManager.Instance.OnGameEvent += OnGameEvent;
         NetworkManager.Instance.OnAllPlayersReady += OnAllPlayersReady;
-
-        // Utiliser la map demandée
-        if (!string.IsNullOrEmpty(NetworkManager.Instance.RequestedMap))
-        {
-            mapName = NetworkManager.Instance.RequestedMap;
-        }
 
         // Commencer en mode Loading (attente de tous les joueurs)
         currentState = GameState.Loading;
@@ -250,6 +243,9 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("[GameManager] LobbyUI introuvable!");
         }
+
+        // Ouvrir le lobby réseau pour que les joueurs distants puissent rejoindre
+        SetupLobby();
     }
 
     /// <summary>
@@ -269,7 +265,6 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.OnRemotePlayerReady += OnRemotePlayerReady;
         }
 
-        SetupLobby();
         StartGame();
     }
 
@@ -297,7 +292,7 @@ public class GameManager : MonoBehaviour
         if (NetworkManager.Instance?.Role != NetworkRole.Host) return;
 
         currentState = GameState.Ready;
-        NetworkManager.Instance?.SetupLobby(mapName);
+        NetworkManager.Instance?.SetupLobby();
         Debug.Log("Lobby configuré, en attente des joueurs distants...");
     }
 
@@ -312,7 +307,7 @@ public class GameManager : MonoBehaviour
         score = 0;
 
         // Envoyer startGame au serveur - le serveur décidera si on attend les joueurs ou pas
-        NetworkManager.Instance?.StartGame(mapName);
+        NetworkManager.Instance?.StartGame();
         Debug.Log("Partie en cours de lancement - Attente des joueurs distants...");
 
         // Note: Le spawn des PNJ sera déclenché par OnAllPlayersReady
@@ -611,7 +606,6 @@ public class GameManager : MonoBehaviour
         {
             timeLeft = timeLeft,
             score = score,
-            map = mapName,
             gameState = currentState.ToString().ToLower()
         };
 
@@ -790,10 +784,6 @@ public class GameManager : MonoBehaviour
     public float GetTimeLeft() => timeLeft;
     public int GetScore() => score;
 
-    public void SetMapName(string newMapName)
-    {
-        mapName = newMapName;
-    }
 
     public void RestartGame()
     {

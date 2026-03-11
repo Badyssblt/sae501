@@ -573,21 +573,19 @@ public class NetworkManager : MonoBehaviour
         Debug.Log($"[Network] Signalé prêt: slot={LocalPlayerSlot}");
     }
 
-    public void SetupLobby(string mapName)
+    public void SetupLobby()
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        var data = new SetupLobbyMessage { map = mapName };
-        SendJSON(data);
-        Debug.Log($"[Network] Lobby configuré: {mapName}");
+        SendJSON(new SetupLobbyMessage());
+        Debug.Log("[Network] Lobby configuré");
     }
 
-    public void StartGame(string mapName)
+    public void StartGame()
     {
         if (!IsConnected || Role != NetworkRole.Host) return;
 
-        var data = new StartGameMessage { map = mapName };
-        SendJSON(data);
+        SendJSON(new StartGameMessage());
         Debug.Log("[Network] Partie lancée!");
     }
 

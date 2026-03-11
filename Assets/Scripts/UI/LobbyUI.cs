@@ -10,7 +10,6 @@ public class LobbyUI : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private GameObject mapSelectionPanel;
     [SerializeField] private GameObject waitingRoomPanel;
     [SerializeField] private GameObject gamePanel;
 
@@ -28,7 +27,6 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI scoreText;
 
-    private string selectedMap = "italie";
     private bool isInWaitingRoom = false;
     private float inputCooldown = 0f;
     private const float INPUT_COOLDOWN_TIME = 0.2f;
@@ -88,12 +86,6 @@ public class LobbyUI : MonoBehaviour
     {
         Debug.Log($"[LobbyUI] EnterLobby - lobbyPanel: {lobbyPanel != null}, waitingRoomPanel: {waitingRoomPanel != null}");
 
-        // Définir la map par défaut
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.SetMapName(selectedMap);
-        }
-
         ShowWaitingRoom();
 
         // P1 rejoint automatiquement
@@ -123,7 +115,6 @@ public class LobbyUI : MonoBehaviour
     {
         if (mainMenuPanel) mainMenuPanel.SetActive(false);
         if (lobbyPanel) lobbyPanel.SetActive(true);
-        if (mapSelectionPanel) mapSelectionPanel.SetActive(false);
         if (waitingRoomPanel) waitingRoomPanel.SetActive(true);
         if (gamePanel) gamePanel.SetActive(false);
         isInWaitingRoom = true;
@@ -132,7 +123,6 @@ public class LobbyUI : MonoBehaviour
     private void ShowGamePanel()
     {
         if (lobbyPanel) lobbyPanel.SetActive(false);
-        if (mapSelectionPanel) mapSelectionPanel.SetActive(false);
         if (waitingRoomPanel) waitingRoomPanel.SetActive(false);
         if (gamePanel) gamePanel.SetActive(true);
         isInWaitingRoom = false;
