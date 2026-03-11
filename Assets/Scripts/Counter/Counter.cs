@@ -480,7 +480,8 @@ public class Counter : MonoBehaviour, IInteractable
 
         currentItem = itemToTransform;
         playerInventory.RemoveItem(itemToTransform);
-        InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
+        if (InventoryUI.Instance != null)
+            InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
         PlayPlaceSound();
         UpdateVisual();
 

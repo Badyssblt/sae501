@@ -192,6 +192,13 @@ namespace CookMoiCa.Network
         public int scoreGained;
     }
 
+    [Serializable]
+    public class ScoreUpdatedEvent
+    {
+        public int points;
+        public int total;
+    }
+
     // ============================================================
     // LOBBY MESSAGES
     // ============================================================

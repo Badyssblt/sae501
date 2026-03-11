@@ -98,6 +98,13 @@ public class GameManager : MonoBehaviour
         if (gameUI != null)
             gameUI.SetActive(true);
 
+        // Se désabonner d'abord pour éviter les doublons
+        NetworkManager.Instance.OnPlayerJoined -= OnPlayerJoined;
+        NetworkManager.Instance.OnPlayerLeft -= OnPlayerLeft;
+        NetworkManager.Instance.OnStateReceived -= OnServerStateReceived;
+        NetworkManager.Instance.OnGameEvent -= OnGameEvent;
+        NetworkManager.Instance.OnAllPlayersReady -= OnAllPlayersReady;
+
         // S'abonner aux événements réseau
         NetworkManager.Instance.OnPlayerJoined += OnPlayerJoined;
         NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
@@ -139,15 +146,28 @@ public class GameManager : MonoBehaviour
             }
             else if (NetworkManager.Instance?.Role == NetworkRole.Client)
             {
-                // Client : spawner tous les joueurs
+                // Client : spawner les joueurs en fonction de l'état serveur
+                // Le host a toujours au moins le joueur 1, potentiellement le 2
                 SpawnPlayer(1, false);
                 SpawnPlayer(2, false);
 
+                // Spawner les joueurs distants connus
+                foreach (var kvp in pendingRemotePlayers)
+                {
+                    int slot = kvp.Key;
+                    if (slot != NetworkManager.Instance.LocalPlayerSlot && !activePlayers.ContainsKey(slot))
+                    {
+                        SpawnPlayer(slot, false);
+                    }
+                }
+
+                // Spawner le joueur local
                 int localSlot = NetworkManager.Instance.LocalPlayerSlot;
-                if (localSlot >= 3 && localSlot <= 4)
+                if (localSlot >= 3 && localSlot <= 4 && !activePlayers.ContainsKey(localSlot))
                 {
                     SpawnPlayer(localSlot, true);
                 }
+                pendingRemotePlayers.Clear();
             }
 
             StartCoroutine(CountdownCoroutine());
@@ -261,9 +281,16 @@ public class GameManager : MonoBehaviour
     {
         pendingLocalPlayerCount = localPlayerCount;
 
-        // S'abonner aux événements réseau
+        // Se désabonner d'abord pour éviter les doublons (ex: restart)
         if (NetworkManager.Instance != null)
         {
+            NetworkManager.Instance.OnPlayerJoined -= OnPlayerJoined;
+            NetworkManager.Instance.OnPlayerLeft -= OnPlayerLeft;
+            NetworkManager.Instance.OnGameStarted -= StartGame;
+            NetworkManager.Instance.OnAllPlayersReady -= OnAllPlayersReady;
+            NetworkManager.Instance.OnRemotePlayerReady -= OnRemotePlayerReady;
+
+            // S'abonner aux événements réseau
             NetworkManager.Instance.OnPlayerJoined += OnPlayerJoined;
             NetworkManager.Instance.OnPlayerLeft += OnPlayerLeft;
             NetworkManager.Instance.OnGameStarted += StartGame;
@@ -779,7 +806,7 @@ public class GameManager : MonoBehaviour
         // Envoyer l'événement aux clients
         if (NetworkManager.Instance?.Role == NetworkRole.Host)
         {
-            NetworkManager.Instance.SendGameEvent("scoreUpdated", new { points = points, total = score });
+            NetworkManager.Instance.SendGameEvent("scoreUpdated", new ScoreUpdatedEvent { points = points, total = score });
         }
     }
 

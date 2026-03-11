@@ -202,6 +202,9 @@ public class PlayerController : MonoBehaviour
         }
 
         // En mode Host: utiliser les inputs reçus des clients distants
+        // On ne clear PAS l'input après consommation : le dernier input reste actif
+        // jusqu'à ce qu'un nouveau le remplace (envoyé à ~30fps par le client).
+        // Cela évite le stutter causé par clear à 60fps vs réception à 30fps.
         if (NetworkManager.Instance.Role == NetworkRole.Host)
         {
             var input = NetworkManager.Instance.GetRemoteInput(playerId);
@@ -209,8 +212,6 @@ public class PlayerController : MonoBehaviour
             {
                 currentMovement = new Vector2(input.horizontal, input.vertical).normalized;
                 actionPressed = input.action == "interact" || input.action == "grab";
-                // Consommer l'input pour éviter qu'il soit réappliqué indéfiniment
-                NetworkManager.Instance.ClearRemoteInput(playerId);
             }
             else
             {
