@@ -43,6 +43,29 @@ public class PNJOrderDisplay : MonoBehaviour
         CreateResultIcon();
     }
 
+    /// <summary>
+    /// Initialise l'affichage directement avec un sprite (fallback quand la recette n'est pas trouvée)
+    /// </summary>
+    public void InitializeFromSprite(Sprite sprite, Transform pnjTransform)
+    {
+        if (sprite == null || pnjTransform == null) return;
+
+        this.pnjTransform = pnjTransform;
+        this.isInitialized = true;
+
+        GameObject icon = new GameObject($"Result_{sprite.name}");
+        icon.transform.SetParent(transform);
+        icon.transform.localPosition = Vector3.zero;
+        icon.transform.localScale = Vector3.one * iconSize;
+
+        SpriteRenderer sr = icon.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite;
+        sr.sortingLayerName = "Main";
+        sr.sortingOrder = 100;
+
+        iconObject = icon;
+    }
+
     private void CreateResultIcon()
     {
         if (recipe == null || recipe.result == null)

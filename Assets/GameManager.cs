@@ -769,8 +769,11 @@ public class GameManager : MonoBehaviour
 
             if (!networkPNJs.ContainsKey(pnjId) || networkPNJs[pnjId] == null)
             {
-                // Nouveau PNJ - instancier un ghost
-                var newPNJ = Instantiate(pnjPrefab, new Vector3(pnjState.x, pnjState.y, 0), Quaternion.identity);
+                // Nouveau PNJ - instancier au spawnPoint pour qu'il traverse la map comme côté host
+                Vector3 spawnPos = PNJSpawner.Instance != null
+                    ? PNJSpawner.Instance.SpawnPosition
+                    : new Vector3(pnjState.x, pnjState.y, 0);
+                var newPNJ = Instantiate(pnjPrefab, spawnPos, Quaternion.identity);
                 newPNJ.name = $"NetworkPNJ_{pnjId}";
 
                 // Désactiver la logique locale du PNJ (il est piloté par le réseau)
@@ -816,14 +819,26 @@ public class GameManager : MonoBehaviour
                 {
                     if (orderDisplay == null)
                     {
-                        // Créer l'affichage de la commande
+                        // Chercher la recette par nom, sinon fallback sur ItemDatabase pour le sprite
                         RecipeData recipe = FindRecipeByResultName(pnjState.recipeName);
-                        Debug.Log($"[PNJ] Commande pour {pnjState.id}: recipeName='{pnjState.recipeName}', found={recipe != null}");
                         if (recipe != null)
                         {
                             GameObject displayObject = new GameObject("OrderDisplay");
+                            displayObject.transform.SetParent(pnjObj.transform);
                             var display = displayObject.AddComponent<PNJOrderDisplay>();
                             display.Initialize(recipe, pnjObj.transform);
+                        }
+                        else
+                        {
+                            // Fallback: créer l'affichage directement depuis ItemDatabase
+                            var item = ItemDatabase.Instance?.GetItemByName(pnjState.recipeName);
+                            if (item != null && item.sprite != null)
+                            {
+                                GameObject displayObject = new GameObject("OrderDisplay");
+                                displayObject.transform.SetParent(pnjObj.transform);
+                                var display = displayObject.AddComponent<PNJOrderDisplay>();
+                                display.InitializeFromSprite(item.sprite, pnjObj.transform);
+                            }
                         }
                     }
                 }

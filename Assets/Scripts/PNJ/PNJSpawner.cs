@@ -11,6 +11,7 @@ public class PNJSpawner : MonoBehaviour
     [Header("Configuration Spawn")]
     [SerializeField] private GameObject pnjPrefab;
     [SerializeField] private Transform spawnPoint;
+    public Vector3 SpawnPosition => spawnPoint != null ? spawnPoint.position : Vector3.zero;
     [SerializeField] private Transform[] cheminPoints;
 
     [Header("Espacement PNJ")]
