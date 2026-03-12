@@ -243,6 +243,13 @@ namespace CookMoiCa.Network
         public string networkId;
     }
 
+    [Serializable]
+    public class EffectActivatedEvent
+    {
+        public string effectType; // "SolGlissant", "ObjetsCollants", "SprintBoost", "MultiplicateurPoints", "LivraisonInstantanee"
+        public float duration;
+    }
+
     // ============================================================
     // LOBBY MESSAGES
     // ============================================================

@@ -626,6 +626,20 @@ public class GameManager : MonoBehaviour
             case "pnjExpired":
                 HandlePNJExpired(evt.data);
                 break;
+            case "effectActivated":
+                HandleEffectActivated(evt.data);
+                break;
+        }
+    }
+
+    private void HandleEffectActivated(string data)
+    {
+        var evt = JsonUtility.FromJson<CookMoiCa.Network.EffectActivatedEvent>(data);
+        if (evt == null || string.IsNullOrEmpty(evt.effectType)) return;
+
+        if (EffectManager.Instance != null)
+        {
+            EffectManager.Instance.ApplyNetworkEffect(evt.effectType, evt.duration);
         }
     }
 

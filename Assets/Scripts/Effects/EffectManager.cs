@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using CookMoiCa.Network;
 
 public enum EffectType
 {
@@ -94,11 +95,41 @@ public class EffectManager : MonoBehaviour
         StartCoroutine(AppliquerEffet(malus[Random.Range(0, malus.Length)]));
     }
 
-    private IEnumerator AppliquerEffet(EffectType type)
+    private IEnumerator AppliquerEffet(EffectType type, bool sendNetwork = true)
     {
         ActiverEffet(type, true);
         AfficherNotification(type);
+
+        // Envoyer l'event au client distant
+        if (sendNetwork && NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Host)
+        {
+            NetworkManager.Instance.SendGameEvent("effectActivated", new EffectActivatedEvent
+            {
+                effectType = type.ToString(),
+                duration = dureeEffet
+            });
+        }
+
         yield return new WaitForSeconds(dureeEffet);
+        ActiverEffet(type, false);
+    }
+
+    /// <summary>
+    /// Appelé côté client quand le host notifie un effet
+    /// </summary>
+    public void ApplyNetworkEffect(string effectTypeName, float duration)
+    {
+        if (System.Enum.TryParse<EffectType>(effectTypeName, out EffectType type))
+        {
+            StartCoroutine(AppliquerEffetReseau(type, duration));
+        }
+    }
+
+    private IEnumerator AppliquerEffetReseau(EffectType type, float duration)
+    {
+        ActiverEffet(type, true);
+        AfficherNotification(type);
+        yield return new WaitForSeconds(duration);
         ActiverEffet(type, false);
     }
 
