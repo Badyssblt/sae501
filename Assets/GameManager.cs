@@ -543,64 +543,67 @@ public class GameManager : MonoBehaviour
         // Vérifier la désynchronisation pour le joueur local
         if (activePlayers.TryGetValue(localSlot, out GameObject localPlayer))
         {
-            Vector2 localPos = localPlayer.transform.position;
-            string localCarry = GetPlayerCarry(localSlot);
-
-            bool needsRollback = NetworkManager.Instance.PredictionSystem.CheckForDesync(
-                serverState, localSlot, localPos, localCarry
-            );
-
-            if (needsRollback)
-            {
-                PerformRollback(serverState, localSlot);
-            }
+            ReconcileLocalPlayer(serverState, localSlot, localPlayer);
         }
     }
 
     /// <summary>
-    /// Effectue un rollback de l'état local vers l'état serveur
+    /// Réconciliation intelligente : compare la position locale avec la position serveur
+    /// APRÈS replay des inputs pendants (évite les faux positifs dus à la latence)
     /// </summary>
     private const float TICK_RATE = 1f / 30f;
+    private const float RECONCILIATION_THRESHOLD = 0.5f;
 
-    private void PerformRollback(StateSnapshot serverState, int localPlayerId)
+    private void ReconcileLocalPlayer(StateSnapshot serverState, int localPlayerId, GameObject player)
     {
         if (!serverState.Players.TryGetValue(localPlayerId, out PlayerState serverPlayer))
             return;
-        if (!activePlayers.TryGetValue(localPlayerId, out GameObject player))
-            return;
+
+        var prediction = NetworkManager.Instance.PredictionSystem;
+
+        // Mettre à jour le tick confirmé et supprimer les inputs confirmés
+        prediction.ConfirmTick(serverState.Tick);
 
         Vector2 serverPos = new Vector2(serverPlayer.x, serverPlayer.y);
+        Vector2 localPos = player.transform.position;
 
-        // Récupérer la vitesse du joueur pour le replay
+        // Récupérer la vitesse du joueur
         var movement = player.GetComponent<PlayerMovement>();
         float moveSpeed = movement != null ? movement.moveSpeed : 5f;
 
         // Rejouer les inputs non confirmés depuis la position serveur
-        var inputsToReplay = NetworkManager.Instance.PredictionSystem.GetInputsToReplay();
-        Vector2 replayedPos = RollbackHelper.ReplayMovementInputs(
+        // C'est la position où le client DEVRAIT être si tout est synchronisé
+        var inputsToReplay = prediction.GetInputsToReplay();
+        Vector2 expectedPos = RollbackHelper.ReplayMovementInputs(
             serverPos, inputsToReplay, moveSpeed, TICK_RATE
         );
 
-        // Correction lissée au lieu d'un snap brutal (évite les saccades visuelles)
-        Vector2 currentPos = player.transform.position;
-        float correctionDist = Vector2.Distance(currentPos, replayedPos);
-        if (correctionDist > 3f)
+        // Comparer la position locale avec la position attendue (pas la position serveur brute)
+        float desyncDist = Vector2.Distance(localPos, expectedPos);
+
+        if (desyncDist > RECONCILIATION_THRESHOLD)
         {
-            // Trop loin → snap direct (téléportation probable)
-            player.transform.position = (Vector3)replayedPos;
-        }
-        else
-        {
-            // Correction douce : interpoler vers la position corrigée
-            player.transform.position = Vector2.Lerp(currentPos, replayedPos, 0.4f);
+            // Vraie desync détectée après compensation de la latence
+            if (desyncDist > 3f)
+            {
+                // Trop loin → snap direct
+                player.transform.position = (Vector3)expectedPos;
+            }
+            else
+            {
+                // Correction douce
+                player.transform.position = Vector2.Lerp(localPos, expectedPos, 0.3f);
+            }
         }
 
-        // Synchroniser l'inventaire depuis l'état serveur
-        var inventory = player.GetComponent<InventorySystem>();
-        if (inventory != null)
+        // Synchroniser l'inventaire
+        string localCarry = GetPlayerCarry(localPlayerId);
+        string normalizedLocal = string.IsNullOrEmpty(localCarry) ? null : localCarry;
+        string normalizedServer = string.IsNullOrEmpty(serverPlayer.carry) ? null : serverPlayer.carry;
+        if (normalizedLocal != normalizedServer)
         {
-            string currentCarry = inventory.currentItem?.name;
-            if (currentCarry != serverPlayer.carry)
+            var inventory = player.GetComponent<InventorySystem>();
+            if (inventory != null)
             {
                 inventory.SetItemByName(serverPlayer.carry);
                 if (InventoryUI.Instance != null)

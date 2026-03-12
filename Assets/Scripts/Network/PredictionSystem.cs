@@ -45,49 +45,14 @@ namespace CookMoiCa.Network
         }
 
         /// <summary>
-        /// Vérifie si l'état du serveur correspond à notre prédiction locale
-        /// Retourne true si rollback nécessaire
+        /// Confirme un tick serveur et supprime les inputs déjà traités
         /// </summary>
-        public bool CheckForDesync(StateSnapshot serverState, int localPlayerId, Vector2 localPosition, string localCarry)
+        public void ConfirmTick(uint tick)
         {
-            if (serverState == null) return false;
-
-            // Mettre à jour le dernier état confirmé
-            lastConfirmedTick = serverState.Tick;
-            lastConfirmedState = serverState;
+            lastConfirmedTick = tick;
 
             // Supprimer les inputs déjà traités par le serveur
-            pendingInputs.RemoveAll(i => i.Tick <= serverState.Tick);
-
-            // Vérifier si le joueur local existe dans l'état serveur
-            if (!serverState.Players.ContainsKey(localPlayerId))
-            {
-                return false;
-            }
-
-            var serverPlayer = serverState.Players[localPlayerId];
-            Vector2 serverPos = new Vector2(serverPlayer.x, serverPlayer.y);
-
-            // Vérifier la position
-            float positionDiff = Vector2.Distance(localPosition, serverPos);
-            if (positionDiff > positionTolerance)
-            {
-                // Debug.Log($"[Prediction] Désync position détectée: local={localPosition}, server={serverPos}, diff={positionDiff}");
-                RollbackCount++;
-                return true;
-            }
-
-            // Vérifier l'inventaire (null et "" sont équivalents = pas d'item)
-            string normalizedLocal = string.IsNullOrEmpty(localCarry) ? null : localCarry;
-            string normalizedServer = string.IsNullOrEmpty(serverPlayer.carry) ? null : serverPlayer.carry;
-            if (normalizedLocal != normalizedServer)
-            {
-                Debug.Log($"[Prediction] Désync inventaire détecté: local={normalizedLocal ?? "null"}, server={normalizedServer ?? "null"}");
-                RollbackCount++;
-                return true;
-            }
-
-            return false;
+            pendingInputs.RemoveAll(i => i.Tick <= tick);
         }
 
         /// <summary>
