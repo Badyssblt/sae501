@@ -18,11 +18,7 @@ public class TrashBin : MonoBehaviour, IInteractable
             // Jouer un son de poubelle si défini
             if (trashSound != null)
             {
-                AudioSource audioSource = GetComponent<AudioSource>();
-                if (audioSource != null)
-                {
-                    audioSource.PlayOneShot(trashSound);
-                }
+                AudioSource.PlayClipAtPoint(trashSound, transform.position);
             }
 
             // Mettre à jour l'UI pour ce joueur

@@ -239,6 +239,9 @@ public class GameManager : MonoBehaviour
         // Démarrer la partie
         currentState = GameState.Playing;
 
+        // Lancer la musique
+        MusicManager.Instance?.Play();
+
         // Démarrer le spawn des PNJ
         if (PNJSpawner.Instance != null)
         {
@@ -755,6 +758,9 @@ public class GameManager : MonoBehaviour
                 SendGameStateToClients();
             }
             // Client: le timer est synchronisé via OnServerStateReceived
+
+            // Accélération musique (Host et Client)
+            MusicManager.Instance?.UpdateTimer(timeLeft);
         }
     }
 
@@ -853,6 +859,8 @@ public class GameManager : MonoBehaviour
     public void EndGame()
     {
         currentState = GameState.GameOver;
+
+        MusicManager.Instance?.Stop();
 
         if (PNJSpawner.Instance != null)
         {

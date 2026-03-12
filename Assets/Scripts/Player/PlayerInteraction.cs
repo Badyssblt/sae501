@@ -9,9 +9,11 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Raycast Settings")]
     [SerializeField] private float interactionDistance = 0.7f;
     [SerializeField] private Vector2 boxCastSize = new Vector2(0.5f, 0.5f);
+    [SerializeField] private float proximityRadius = 1.2f;
 
     [SerializeField] private LayerMask interactableLayer;
     private Vector2 facingDirection = Vector2.down;
+    private const float DIRECTION_CHANGE_THRESHOLD = 0.15f;
 
     // Pour le gizmo uniquement
     private IInteractable lastDetected;
@@ -30,12 +32,16 @@ public class PlayerInteraction : MonoBehaviour
     private void Update()
     {
         Vector2 movement = playerController.GetCurrentMovement();
-        if (movement != Vector2.zero)
+        if (movement.sqrMagnitude > DIRECTION_CHANGE_THRESHOLD * DIRECTION_CHANGE_THRESHOLD)
         {
-            if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
-                facingDirection = movement.x > 0 ? Vector2.right : Vector2.left;
-            else
-                facingDirection = movement.y > 0 ? Vector2.up : Vector2.down;
+            float absDiff = Mathf.Abs(Mathf.Abs(movement.x) - Mathf.Abs(movement.y));
+            if (absDiff > DIRECTION_CHANGE_THRESHOLD)
+            {
+                if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
+                    facingDirection = movement.x > 0 ? Vector2.right : Vector2.left;
+                else
+                    facingDirection = movement.y > 0 ? Vector2.up : Vector2.down;
+            }
         }
     }
 
@@ -56,7 +62,7 @@ public class PlayerInteraction : MonoBehaviour
                 return interactable;
         }
 
-        // Priorité 2 : BoxCast (fallback)
+        // Priorité 2 : BoxCast dans la direction regardée
         RaycastHit2D boxHit = Physics2D.BoxCast(
             transform.position,
             boxCastSize,
@@ -73,15 +79,28 @@ public class PlayerInteraction : MonoBehaviour
                 return interactable;
         }
 
-        return null;
+        // Priorité 3 : OverlapCircle (proximité) — trouve le plus proche dans le rayon
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, proximityRadius, interactableLayer);
+        IInteractable closest = null;
+        float closestDist = float.MaxValue;
+        foreach (var hit in hits)
+        {
+            IInteractable candidate = hit.GetComponent<IInteractable>();
+            if (candidate == null) continue;
+
+            float dist = Vector2.Distance(transform.position, hit.transform.position);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closest = candidate;
+            }
+        }
+
+        return closest;
     }
 
     public void OnInteract()
     {
-        // Malus objets collants : interactions bloquées
-        if (EffectManager.Instance != null && EffectManager.Instance.ObjetsCollantsActif)
-            return;
-
         // Raycast au moment exact de l'interaction
         IInteractable target = FindBestInteractable();
         lastDetected = target;

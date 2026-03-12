@@ -6,7 +6,7 @@ public enum EffectType
 {
     // Malus
     SolGlissant,
-    ObjetsCollants,
+    VitesseReduite,
     // Bonus
     SprintBoost,
     MultiplicateurPoints,
@@ -31,7 +31,7 @@ public class EffectManager : MonoBehaviour
 
     // --- États actifs ---
     public bool SolGlissantActif     { get; private set; }
-    public bool ObjetsCollantsActif  { get; private set; }
+    public bool VitesseReduiteActif { get; private set; }
     public bool SprintBoostActif     { get; private set; }
     public bool LivraisonInstantaneeActif { get; private set; }
     public int  ScoreMultiplier      { get; private set; } = 1;
@@ -91,7 +91,7 @@ public class EffectManager : MonoBehaviour
     private void DeclencherMalusAleatoire()
     {
         if (malusSound != null) AudioSource.PlayClipAtPoint(malusSound, Camera.main.transform.position);
-        EffectType[] malus = { EffectType.SolGlissant, EffectType.ObjetsCollants };
+        EffectType[] malus = { EffectType.SolGlissant, EffectType.VitesseReduite };
         StartCoroutine(AppliquerEffet(malus[Random.Range(0, malus.Length)]));
     }
 
@@ -140,8 +140,8 @@ public class EffectManager : MonoBehaviour
             case EffectType.SolGlissant:
                 SolGlissantActif = actif;
                 break;
-            case EffectType.ObjetsCollants:
-                ObjetsCollantsActif = actif;
+            case EffectType.VitesseReduite:
+                VitesseReduiteActif = actif;
                 break;
             case EffectType.SprintBoost:
                 SprintBoostActif = actif;
@@ -168,7 +168,7 @@ public class EffectManager : MonoBehaviour
         string message = type switch
         {
             EffectType.SolGlissant          => "MALUS : Sol glissant !",
-            EffectType.ObjetsCollants        => "MALUS : Objets collants !",
+            EffectType.VitesseReduite       => "MALUS : Vitesse réduite !",
             EffectType.SprintBoost           => "BONUS : Sprint x2 !",
             EffectType.MultiplicateurPoints  => "BONUS : Score x2 !",
             EffectType.LivraisonInstantanee  => "BONUS : Livraison instantanee !",

@@ -62,6 +62,10 @@ public class PlayerMovement : MonoBehaviour
             if (EffectManager.Instance != null && EffectManager.Instance.SprintBoostActif)
                 currentSpeed = Mathf.Max(currentSpeed, moveSpeed * 2f);
 
+            // Malus vitesse réduite : 60% de la vitesse
+            if (EffectManager.Instance != null && EffectManager.Instance.VitesseReduiteActif)
+                currentSpeed *= 0.6f;
+
             // Malus sol glissant : inertie (lerp lent vers la vitesse cible)
             if (EffectManager.Instance != null && EffectManager.Instance.SolGlissantActif)
                 rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, movement * currentSpeed, 0.06f);
