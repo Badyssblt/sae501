@@ -23,7 +23,7 @@ namespace CookMoiCa.Network
         public int PendingInputCount => pendingInputs.Count;
         public int RollbackCount { get; private set; } = 0;
 
-        public PredictionSystem(int maxPending = 60, float posTolerance = 0.5f)
+        public PredictionSystem(int maxPending = 60, float posTolerance = 1.0f)
         {
             maxPendingInputs = maxPending;
             positionTolerance = posTolerance;
@@ -72,7 +72,7 @@ namespace CookMoiCa.Network
             float positionDiff = Vector2.Distance(localPosition, serverPos);
             if (positionDiff > positionTolerance)
             {
-                Debug.Log($"[Prediction] Désync position détectée: local={localPosition}, server={serverPos}, diff={positionDiff}");
+                // Debug.Log($"[Prediction] Désync position détectée: local={localPosition}, server={serverPos}, diff={positionDiff}");
                 RollbackCount++;
                 return true;
             }

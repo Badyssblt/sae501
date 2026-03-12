@@ -564,8 +564,6 @@ public class GameManager : MonoBehaviour
 
     private void PerformRollback(StateSnapshot serverState, int localPlayerId)
     {
-        Debug.Log($"[GameManager] Rollback pour joueur {localPlayerId}");
-
         if (!serverState.Players.TryGetValue(localPlayerId, out PlayerState serverPlayer))
             return;
         if (!activePlayers.TryGetValue(localPlayerId, out GameObject player))
@@ -583,8 +581,19 @@ public class GameManager : MonoBehaviour
             serverPos, inputsToReplay, moveSpeed, TICK_RATE
         );
 
-        // Appliquer la position corrigée
-        player.transform.position = replayedPos;
+        // Correction lissée au lieu d'un snap brutal (évite les saccades visuelles)
+        Vector2 currentPos = player.transform.position;
+        float correctionDist = Vector2.Distance(currentPos, replayedPos);
+        if (correctionDist > 3f)
+        {
+            // Trop loin → snap direct (téléportation probable)
+            player.transform.position = (Vector3)replayedPos;
+        }
+        else
+        {
+            // Correction douce : interpoler vers la position corrigée
+            player.transform.position = Vector2.Lerp(currentPos, replayedPos, 0.4f);
+        }
 
         // Synchroniser l'inventaire depuis l'état serveur
         var inventory = player.GetComponent<InventorySystem>();
