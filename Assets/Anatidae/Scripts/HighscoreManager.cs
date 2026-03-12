@@ -101,7 +101,7 @@ namespace Anatidae {
         public static IEnumerator FetchHighscores()
         {
             Debug.Log("HighscoreManager: Fetching highscores...");
-            UnityWebRequest request = UnityWebRequest.Get("https://lobby-cook.wevora.fr/api/?game=" + GameName);
+            UnityWebRequest request = AnatidaeProxyWebRequest.Get("https://lobby-cook.wevora.fr/api/?game=" + GameName);
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)

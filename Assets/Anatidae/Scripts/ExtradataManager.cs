@@ -26,7 +26,7 @@ namespace Anatidae {
 
         public static IEnumerator FetchExtraData()
         {
-            UnityWebRequest request = UnityWebRequest.Get("https://lobby-cook.wevora.fr/api/extradata?game=" + HighscoreManager.GameName);
+            UnityWebRequest request = AnatidaeProxyWebRequest.Get("https://lobby-cook.wevora.fr/api/extradata?game=" + HighscoreManager.GameName);
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)

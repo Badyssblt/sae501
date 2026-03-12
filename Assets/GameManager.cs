@@ -121,6 +121,9 @@ public class GameManager : MonoBehaviour
         timeLeft = gameTime;
         score = 0;
 
+        // Afficher l'écran de chargement
+        LoadingScreenUI.Instance?.Show("En attente des joueurs");
+
         Debug.Log($"[GameManager] Client initialisé - En attente de allPlayersReady");
     }
 
@@ -130,6 +133,9 @@ public class GameManager : MonoBehaviour
     private void OnAllPlayersReady()
     {
         Debug.Log("[GameManager] Tous les joueurs sont prêts - Spawn et countdown!");
+
+        // Cacher l'écran de chargement
+        LoadingScreenUI.Instance?.Hide();
 
         if (currentState == GameState.Loading || currentState == GameState.Ready)
         {
@@ -350,6 +356,9 @@ public class GameManager : MonoBehaviour
         currentState = GameState.Loading;
         timeLeft = gameTime;
         score = 0;
+
+        // Afficher l'écran de chargement (multijoueur)
+        LoadingScreenUI.Instance?.Show("En attente des joueurs");
 
         // Envoyer startGame au serveur avec le nombre de joueurs locaux
         NetworkManager.Instance?.StartGame(pendingLocalPlayerCount);
