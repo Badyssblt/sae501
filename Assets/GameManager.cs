@@ -726,9 +726,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Ajouter les PNJ
-        PNJClient[] allPNJ = FindObjectsByType<PNJClient>(FindObjectsSortMode.None);
-        foreach (var pnj in allPNJ)
+        // Ajouter les PNJ (utilise le registre statique pour éviter FindObjectsByType chaque frame)
+        foreach (var pnj in PNJClient.AllPNJs)
         {
             if (pnj != null)
             {

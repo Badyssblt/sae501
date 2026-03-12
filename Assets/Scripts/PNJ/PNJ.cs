@@ -29,6 +29,10 @@ public class PNJClient : MonoBehaviour, IInteractable
     public string networkId;
     private static int nextNetworkId = 0;
 
+    // Registre statique pour accès rapide (évite FindObjectsByType chaque frame)
+    private static readonly System.Collections.Generic.List<PNJClient> allPNJs = new System.Collections.Generic.List<PNJClient>();
+    public static System.Collections.Generic.List<PNJClient> AllPNJs => allPNJs;
+
     private int indexPoint = 0;
     private int indexRetour; // Index pour le chemin retour (parcours inversé)
     private Rigidbody2D rb;
@@ -56,6 +60,10 @@ public class PNJClient : MonoBehaviour, IInteractable
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spawnPosition = transform.position;
+
+        // Enregistrer dans le registre statique
+        if (!allPNJs.Contains(this))
+            allPNJs.Add(this);
 
         // Générer un ID réseau unique
         if (string.IsNullOrEmpty(networkId))
@@ -341,6 +349,11 @@ public class PNJClient : MonoBehaviour, IInteractable
                 }
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        allPNJs.Remove(this);
     }
 
     // === NETWORK ===

@@ -387,7 +387,6 @@ public class NetworkManager : MonoBehaviour
         {
             remoteInputs[input.playerId] = input;
             OnInputReceived?.Invoke(input);
-            Debug.Log($"[Network] Input reçu: P{input.playerId} H={input.horizontal} V={input.vertical}");
         }
     }
 
