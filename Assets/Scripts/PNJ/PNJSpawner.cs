@@ -87,8 +87,8 @@ public class PNJSpawner : MonoBehaviour
     // Détruit tous les PNJ actifs
     public void DestroyAllPNJ()
     {
-        // Trouver tous les PNJ dans la scène
-        PNJClient[] allPNJ = FindObjectsByType<PNJClient>(FindObjectsSortMode.None);
+        // Utiliser le registre statique
+        var allPNJ = new System.Collections.Generic.List<PNJClient>(PNJClient.AllPNJs);
 
         foreach (PNJClient pnj in allPNJ)
         {

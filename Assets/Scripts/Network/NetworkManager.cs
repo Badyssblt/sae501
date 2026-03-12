@@ -80,6 +80,7 @@ public class NetworkManager : MonoBehaviour
 
     private StateSnapshot lastSentState;
     private float lastDeltaSent = 0f;
+    private float _cleanTimer = 0f;
     private float lastFullStateSent = 0f;
 
     // ============================================================
@@ -151,11 +152,16 @@ public class NetworkManager : MonoBehaviour
             websocket.DispatchMessageQueue();
         #endif
 
-        // Nettoyer périodiquement
+        // Nettoyer périodiquement (pas chaque frame)
         if (Role == NetworkRole.Client)
         {
-            InterpolationBuffer.CleanOldSnapshots(Time.time);
-            PredictionSystem.CleanOldInputs(CurrentTick);
+            _cleanTimer += Time.deltaTime;
+            if (_cleanTimer >= 1f)
+            {
+                InterpolationBuffer.CleanOldSnapshots(Time.time);
+                PredictionSystem.CleanOldInputs(CurrentTick);
+                _cleanTimer = 0f;
+            }
         }
     }
 

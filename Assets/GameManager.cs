@@ -667,7 +667,7 @@ public class GameManager : MonoBehaviour
         {
             timeLeft = timeLeft,
             score = score,
-            gameState = currentState.ToString().ToLower()
+            gameState = GetGameStateString()
         };
 
         // Ajouter les joueurs
@@ -966,6 +966,19 @@ public class GameManager : MonoBehaviour
     }
 
     public GameState GetCurrentState() => currentState;
+
+    private string GetGameStateString()
+    {
+        switch (currentState)
+        {
+            case GameState.Waiting: return "waiting";
+            case GameState.Ready: return "ready";
+            case GameState.Loading: return "loading";
+            case GameState.Playing: return "playing";
+            case GameState.GameOver: return "gameover";
+            default: return "waiting";
+        }
+    }
     public float GetTimeLeft() => timeLeft;
     public int GetScore() => score;
 
