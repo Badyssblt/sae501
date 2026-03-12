@@ -8747,6 +8747,7 @@ MonoBehaviour:
   countdownStepDuration: 0.5
   highscoreUI: {fileID: 275998709}
   gamePanelUI: {fileID: 51850659}
+  pnjPrefab: {fileID: 0}
 --- !u!4 &951787708
 Transform:
   m_ObjectHideFlags: 0
@@ -10528,7 +10529,7 @@ PrefabInstance:
     - target: {fileID: 2637176970940771936, guid: 2f71ee19e7444b64c888e6405ab82167, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: d2f019292b0fd1a4d8c3dba741dc0e93, type: 3}
+      objectReference: {fileID: 21300000, guid: ce311a6d598b23b43b9d3d8ea3d15023, type: 3}
     - target: {fileID: 2833389555488213492, guid: 2f71ee19e7444b64c888e6405ab82167, type: 3}
       propertyPath: m_Sprite
       value: 

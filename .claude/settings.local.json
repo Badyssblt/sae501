@@ -13,7 +13,9 @@
       "Bash(git commit:*)",
       "Bash(git pull:*)",
       "Bash(git stash:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git remote:*)",
+      "Bash(git fsck:*)"
     ],
     "deny": [],
     "ask": []
