@@ -46,9 +46,8 @@ public class GameManager : MonoBehaviour
     // Référence aux counters pour la synchronisation
     private Counter[] allCounters;
 
-    [Header("PNJ Network")]
-    [SerializeField] private GameObject pnjPrefab; // Prefab PNJ pour le client
-    private Dictionary<string, GameObject> networkPNJs = new Dictionary<string, GameObject>();
+    // PNJ réseau : mapping networkId → PNJClient (côté client, les PNJ spawned via events)
+    private Dictionary<string, PNJClient> networkPNJs = new Dictionary<string, PNJClient>();
 
     private void Awake()
     {
@@ -534,11 +533,8 @@ public class GameManager : MonoBehaviour
             OrderManager.Instance.ApplyNetworkOrders(serverState.Orders);
         }
 
-        // Synchroniser les PNJ depuis le serveur
-        if (serverState.PNJs != null && serverState.PNJs.Count > 0)
-        {
-            ApplyNetworkPNJs(serverState.PNJs);
-        }
+        // PNJ synchronisés via événements (pnjSpawn, pnjOrder, pnjServed, pnjExpired)
+        // Plus besoin de sync position ici
 
         // Vérifier la désynchronisation pour le joueur local
         if (activePlayers.TryGetValue(localSlot, out GameObject localPlayer))
@@ -616,10 +612,94 @@ public class GameManager : MonoBehaviour
 
     private void OnGameEvent(GameEventMessage evt)
     {
-        // Traiter les événements instantanés du serveur
-        Debug.Log($"[GameManager] Event reçu: {evt.eventName}");
+        switch (evt.eventName)
+        {
+            case "pnjSpawn":
+                HandlePNJSpawn(evt.data);
+                break;
+            case "pnjOrder":
+                HandlePNJOrder(evt.data);
+                break;
+            case "pnjServed":
+                HandlePNJServed(evt.data);
+                break;
+            case "pnjExpired":
+                HandlePNJExpired(evt.data);
+                break;
+        }
+    }
 
-        // À implémenter selon les événements (itemGrabbed, cookingCompleted, etc.)
+    // ============================================================
+    // PNJ EVENTS - Système événementiel côté client
+    // ============================================================
+
+    private void HandlePNJSpawn(string data)
+    {
+        if (PNJSpawner.Instance == null) return;
+
+        var evt = JsonUtility.FromJson<CookMoiCa.Network.PNJSpawnEvent>(data);
+        if (evt == null || string.IsNullOrEmpty(evt.networkId)) return;
+
+        // Ne pas respawner un PNJ déjà existant
+        if (networkPNJs.ContainsKey(evt.networkId) && networkPNJs[evt.networkId] != null)
+            return;
+
+        var spawner = PNJSpawner.Instance;
+        if (spawner.PnjPrefab == null || spawner.CheminPoints == null) return;
+
+        // Instancier un vrai PNJ avec le comportement complet
+        GameObject newPNJ = Instantiate(spawner.PnjPrefab, spawner.SpawnPosition, Quaternion.identity);
+        PNJClient client = newPNJ.GetComponent<PNJClient>();
+
+        if (client != null)
+        {
+            // Configurer comme le host le fait
+            client.chemin = spawner.CheminPoints;
+            client.positionIndex = evt.positionIndex;
+            client.offsetEntreClients = spawner.OffsetEntreClients;
+            client.directionAlignement = spawner.DirectionAlignement;
+            client.directionAttente = spawner.DirectionAttenteClients;
+            client.networkId = evt.networkId;
+
+            networkPNJs[evt.networkId] = client;
+        }
+        else
+        {
+            Destroy(newPNJ);
+        }
+    }
+
+    private void HandlePNJOrder(string data)
+    {
+        var evt = JsonUtility.FromJson<CookMoiCa.Network.PNJOrderEvent>(data);
+        if (evt == null || string.IsNullOrEmpty(evt.networkId)) return;
+
+        if (networkPNJs.TryGetValue(evt.networkId, out PNJClient pnj) && pnj != null)
+        {
+            pnj.ApplyNetworkOrder(evt.recipeName);
+        }
+    }
+
+    private void HandlePNJServed(string data)
+    {
+        var evt = JsonUtility.FromJson<CookMoiCa.Network.PNJServedEvent>(data);
+        if (evt == null || string.IsNullOrEmpty(evt.networkId)) return;
+
+        if (networkPNJs.TryGetValue(evt.networkId, out PNJClient pnj) && pnj != null)
+        {
+            pnj.ApplyNetworkServed();
+        }
+    }
+
+    private void HandlePNJExpired(string data)
+    {
+        var evt = JsonUtility.FromJson<CookMoiCa.Network.PNJExpiredEvent>(data);
+        if (evt == null || string.IsNullOrEmpty(evt.networkId)) return;
+
+        if (networkPNJs.TryGetValue(evt.networkId, out PNJClient pnj) && pnj != null)
+        {
+            pnj.ApplyNetworkExpired();
+        }
     }
 
     private string GetPlayerCarry(int playerId)
@@ -738,167 +818,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Ajouter les PNJ (utilise le registre statique pour éviter FindObjectsByType chaque frame)
-        foreach (var pnj in PNJClient.AllPNJs)
-        {
-            if (pnj != null)
-            {
-                state.pnjs.Add(pnj.GetNetworkState());
-            }
-        }
+        // PNJ synchronisés via événements (pnjSpawn/pnjOrder/pnjServed/pnjExpired)
+        // Plus besoin de les inclure dans le state chaque frame
 
         return state;
     }
 
-    // ============================================================
-    // PNJ NETWORK - Synchronisation côté client
-    // ============================================================
-
-    private void ApplyNetworkPNJs(Dictionary<string, PNJState> serverPNJs)
-    {
-        if (pnjPrefab == null) return;
-
-        // Supprimer les PNJ qui n'existent plus sur le serveur
-        var toRemove = new List<string>();
-        foreach (var kvp in networkPNJs)
-        {
-            if (!serverPNJs.ContainsKey(kvp.Key))
-            {
-                if (kvp.Value != null) Destroy(kvp.Value);
-                toRemove.Add(kvp.Key);
-            }
-        }
-        foreach (var key in toRemove)
-        {
-            networkPNJs.Remove(key);
-        }
-
-        // Ajouter ou mettre à jour les PNJ du serveur
-        foreach (var kvp in serverPNJs)
-        {
-            string pnjId = kvp.Key;
-            PNJState pnjState = kvp.Value;
-
-            if (!networkPNJs.ContainsKey(pnjId) || networkPNJs[pnjId] == null)
-            {
-                // Nouveau PNJ - instancier au spawnPoint pour qu'il traverse la map comme côté host
-                Vector3 spawnPos = PNJSpawner.Instance != null
-                    ? PNJSpawner.Instance.SpawnPosition
-                    : new Vector3(pnjState.x, pnjState.y, 0);
-                var newPNJ = Instantiate(pnjPrefab, spawnPos, Quaternion.identity);
-                newPNJ.name = $"NetworkPNJ_{pnjId}";
-
-                // Désactiver la logique locale du PNJ (il est piloté par le réseau)
-                var pnjClient = newPNJ.GetComponent<PNJClient>();
-                if (pnjClient != null) pnjClient.enabled = false;
-
-                // Désactiver le Rigidbody (pas de physique locale)
-                var rb = newPNJ.GetComponent<Rigidbody2D>();
-                if (rb != null) rb.simulated = false;
-
-                networkPNJs[pnjId] = newPNJ;
-            }
-
-            // Mettre à jour la position (déplacement à vitesse constante pour simuler la marche)
-            GameObject pnjObj = networkPNJs[pnjId];
-            if (pnjObj != null)
-            {
-                Vector3 targetPos = new Vector3(pnjState.x, pnjState.y, 0);
-                float pnjSpeed = pnjPrefab.GetComponent<PNJClient>()?.vitesse ?? 2f;
-                // Vitesse légèrement supérieure pour rattraper le serveur si nécessaire
-                float catchUpSpeed = pnjSpeed * 1.2f;
-                float dist = Vector3.Distance(pnjObj.transform.position, targetPos);
-                // Si très proche, snap directement pour éviter le tremblement
-                if (dist < 0.05f)
-                    pnjObj.transform.position = targetPos;
-                else
-                    pnjObj.transform.position = Vector3.MoveTowards(pnjObj.transform.position, targetPos, catchUpSpeed * Time.deltaTime);
-
-                // Mettre à jour les animations
-                var anim = pnjObj.GetComponent<Animator>();
-                if (anim != null)
-                {
-                    anim.SetBool("IsMoving", pnjState.isMoving);
-                    if (pnjState.isMoving)
-                    {
-                        anim.SetFloat("MoveX", pnjState.lastMoveX);
-                        anim.SetFloat("MoveY", pnjState.lastMoveY);
-                    }
-                    else
-                    {
-                        anim.SetFloat("MoveX", 0);
-                        anim.SetFloat("MoveY", 0);
-                    }
-                    anim.SetFloat("LastMoveX", pnjState.lastMoveX);
-                    anim.SetFloat("LastMoveY", pnjState.lastMoveY);
-                }
-
-                // Gérer l'affichage de la commande au-dessus du PNJ
-                var orderDisplay = pnjObj.GetComponentInChildren<PNJOrderDisplay>(true);
-                bool shouldShowOrder = !string.IsNullOrEmpty(pnjState.recipeName) && pnjState.etat == "attendService";
-
-                if (shouldShowOrder)
-                {
-                    if (orderDisplay == null)
-                    {
-                        Sprite orderSprite = FindOrderSpriteRobust(pnjState.recipeName);
-                        if (orderSprite != null)
-                        {
-                            GameObject displayObject = new GameObject("OrderDisplay");
-                            displayObject.transform.SetParent(pnjObj.transform);
-                            var display = displayObject.AddComponent<PNJOrderDisplay>();
-                            display.InitializeFromSprite(orderSprite, pnjObj.transform);
-                        }
-                    }
-                }
-                else if (orderDisplay != null)
-                {
-                    Destroy(orderDisplay.gameObject);
-                }
-            }
-        }
-    }
-
-    private Sprite FindOrderSpriteRobust(string recipeName)
-    {
-        if (string.IsNullOrEmpty(recipeName)) return null;
-
-        // 1) Utiliser OrderManager.FindRecipeByResultName (même logique que le HUD qui fonctionne)
-        if (OrderManager.Instance != null)
-        {
-            RecipeData recipe = OrderManager.Instance.FindRecipeByResultName(recipeName);
-            if (recipe?.result?.sprite != null)
-                return recipe.result.sprite;
-        }
-
-        // 2) Chercher dans les recettes du GameManager directement
-        if (recipes != null)
-        {
-            foreach (var recipe in recipes)
-            {
-                if (recipe?.result != null && recipe.result.sprite != null && recipe.result.name == recipeName)
-                    return recipe.result.sprite;
-            }
-        }
-
-        // 3) Chercher dans ItemDatabase
-        if (ItemDatabase.Instance != null)
-        {
-            var dbItem = ItemDatabase.Instance.GetItemByName(recipeName);
-            if (dbItem != null && dbItem.sprite != null)
-                return dbItem.sprite;
-        }
-
-        // 4) Dernier recours : chercher tous les ItemData en mémoire
-        var allItems = Resources.FindObjectsOfTypeAll<ItemData>();
-        foreach (var item in allItems)
-        {
-            if (item != null && item.sprite != null && item.name == recipeName)
-                return item.sprite;
-        }
-
-        return null;
-    }
+    // Les anciennes méthodes ApplyNetworkPNJs et FindOrderSpriteRobust ont été remplacées
+    // par le système événementiel (HandlePNJSpawn/Order/Served/Expired) ci-dessus
 
     public void EndGame()
     {
@@ -918,7 +845,7 @@ public class GameManager : MonoBehaviour
         // Nettoyer les PNJ réseau (côté client)
         foreach (var kvp in networkPNJs)
         {
-            if (kvp.Value != null) Destroy(kvp.Value);
+            if (kvp.Value != null) Destroy(kvp.Value.gameObject);
         }
         networkPNJs.Clear();
 

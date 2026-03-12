@@ -216,6 +216,33 @@ namespace CookMoiCa.Network
         public int total;
     }
 
+    // PNJ lifecycle events (Host → Client)
+    [Serializable]
+    public class PNJSpawnEvent
+    {
+        public string networkId;
+        public int positionIndex;
+    }
+
+    [Serializable]
+    public class PNJOrderEvent
+    {
+        public string networkId;
+        public string recipeName;
+    }
+
+    [Serializable]
+    public class PNJServedEvent
+    {
+        public string networkId;
+    }
+
+    [Serializable]
+    public class PNJExpiredEvent
+    {
+        public string networkId;
+    }
+
     // ============================================================
     // LOBBY MESSAGES
     // ============================================================

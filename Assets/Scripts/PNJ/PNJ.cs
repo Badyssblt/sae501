@@ -218,8 +218,8 @@ public class PNJClient : MonoBehaviour, IInteractable
         timer = tempsPourManger;
 
         // Les commandes ne doivent être créées que côté Host
-        // Côté Client, les orders arrivent via le réseau (ApplyNetworkOrders)
-        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
+        // Côté Client, l'affichage arrive via le réseau (pnjOrder event)
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Client)
             return;
 
         // Cr�er une commande via OrderManager
@@ -231,6 +231,16 @@ public class PNJClient : MonoBehaviour, IInteractable
             if (recipe != null)
             {
                 CreateOrderDisplay(recipe);
+
+                // Notifier les clients distants de la commande
+                if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Host)
+                {
+                    NetworkManager.Instance.SendGameEvent("pnjOrder", new PNJOrderEvent
+                    {
+                        networkId = networkId,
+                        recipeName = recipe.result.name
+                    });
+                }
             }
         }
         else
@@ -285,10 +295,23 @@ public class PNJClient : MonoBehaviour, IInteractable
             Destroy(orderDisplay.gameObject);
             orderDisplay = null;
         }
+
+        // Notifier les clients distants
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Host)
+        {
+            NetworkManager.Instance.SendGameEvent("pnjServed", new PNJServedEvent
+            {
+                networkId = networkId
+            });
+        }
     }
 
     void PartirInsatisfait()
     {
+        // Ne pas réagir si on est client et que le host nous a déjà dit de partir
+        if (etat == EtatClient.Satisfait || etat == EtatClient.Insatisfait)
+            return;
+
         etat = EtatClient.Insatisfait;
         InitRetour();
 
@@ -299,11 +322,109 @@ public class PNJClient : MonoBehaviour, IInteractable
             orderDisplay = null;
         }
 
-        // Retirer la commande de l'OrderManager
-        if (OrderManager.Instance != null)
+        // Retirer la commande de l'OrderManager (host seulement)
+        if (OrderManager.Instance != null && (NetworkManager.Instance == null || NetworkManager.Instance.Role == NetworkRole.Host))
         {
             OrderManager.Instance.RemoveExpiredPNJOrder(this);
         }
+
+        // Notifier les clients distants
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Host)
+        {
+            NetworkManager.Instance.SendGameEvent("pnjExpired", new PNJExpiredEvent
+            {
+                networkId = networkId
+            });
+        }
+    }
+
+    // === MÉTHODES RÉSEAU (appelées par GameManager côté client) ===
+
+    /// <summary>
+    /// Appelé côté client quand le host notifie la recette commandée
+    /// </summary>
+    public void ApplyNetworkOrder(string recipeName)
+    {
+        if (string.IsNullOrEmpty(recipeName)) return;
+
+        // Chercher le sprite de la recette
+        Sprite sprite = FindRecipeSprite(recipeName);
+        if (sprite != null)
+        {
+            // Créer l'affichage de la commande
+            GameObject displayObject = new GameObject("OrderDisplay");
+            displayObject.transform.SetParent(transform);
+            orderDisplay = displayObject.AddComponent<PNJOrderDisplay>();
+            orderDisplay.InitializeFromSprite(sprite, transform);
+        }
+    }
+
+    /// <summary>
+    /// Appelé côté client quand le host notifie que le PNJ est servi
+    /// </summary>
+    public void ApplyNetworkServed()
+    {
+        commandeRecue = true;
+        etat = EtatClient.Satisfait;
+        InitRetour();
+
+        if (servedSound != null)
+        {
+            AudioSource.PlayClipAtPoint(servedSound, transform.position);
+        }
+
+        if (orderDisplay != null)
+        {
+            Destroy(orderDisplay.gameObject);
+            orderDisplay = null;
+        }
+    }
+
+    /// <summary>
+    /// Appelé côté client quand le host notifie que le PNJ a expiré
+    /// </summary>
+    public void ApplyNetworkExpired()
+    {
+        if (etat == EtatClient.Satisfait) return; // Déjà servi
+
+        etat = EtatClient.Insatisfait;
+        InitRetour();
+
+        if (orderDisplay != null)
+        {
+            Destroy(orderDisplay.gameObject);
+            orderDisplay = null;
+        }
+    }
+
+    private Sprite FindRecipeSprite(string recipeName)
+    {
+        // Chercher dans les recettes du GameManager
+        if (GameManager.Instance?.recipes != null)
+        {
+            foreach (var recipe in GameManager.Instance.recipes)
+            {
+                if (recipe?.result != null && recipe.result.name == recipeName && recipe.result.sprite != null)
+                    return recipe.result.sprite;
+            }
+        }
+
+        // Fallback : ItemDatabase
+        if (ItemDatabase.Instance != null)
+        {
+            var item = ItemDatabase.Instance.GetItemByName(recipeName);
+            if (item?.sprite != null) return item.sprite;
+        }
+
+        // Dernier recours
+        var allItems = Resources.FindObjectsOfTypeAll<ItemData>();
+        foreach (var item in allItems)
+        {
+            if (item != null && item.name == recipeName && item.sprite != null)
+                return item.sprite;
+        }
+
+        return null;
     }
 
     void Partir(bool satisfait)

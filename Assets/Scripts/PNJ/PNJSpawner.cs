@@ -1,4 +1,5 @@
 using UnityEngine;
+using CookMoiCa.Network;
 
 public enum DirectionAlignement
 {
@@ -14,10 +15,19 @@ public class PNJSpawner : MonoBehaviour
     public Vector3 SpawnPosition => spawnPoint != null ? spawnPoint.position : Vector3.zero;
     [SerializeField] private Transform[] cheminPoints;
 
+    // Accesseurs publics pour que le client puisse configurer les PNJ réseau
+    public GameObject PnjPrefab => pnjPrefab;
+    public Transform[] CheminPoints => cheminPoints;
+
     [Header("Espacement PNJ")]
-    [SerializeField] private float offsetEntreClients = 0.5f; // Distance entre chaque client au comptoir
-    [SerializeField] private DirectionAlignement directionAlignement = DirectionAlignement.Vertical; // Direction d'alignement des clients
-    [SerializeField] private Vector2 directionAttenteClients = Vector2.up; // Direction dans laquelle les clients regardent au comptoir
+    [SerializeField] private float offsetEntreClients = 0.5f;
+    [SerializeField] private DirectionAlignement directionAlignement = DirectionAlignement.Vertical;
+    [SerializeField] private Vector2 directionAttenteClients = Vector2.up;
+
+    // Accesseurs pour la config client
+    public float OffsetEntreClients => offsetEntreClients;
+    public DirectionAlignement DirectionAlignement => directionAlignement;
+    public Vector2 DirectionAttenteClients => directionAttenteClients;
 
     [Header("Timing")]
     [SerializeField] private float intervalSpawn = 10f;
@@ -143,6 +153,16 @@ public class PNJSpawner : MonoBehaviour
 
             // S'abonner à la destruction du PNJ pour libérer la position
             StartCoroutine(SurveillerPNJ(newPNJ, positionIndex));
+
+            // Notifier les clients distants du spawn
+            if (NetworkManager.Instance != null && NetworkManager.Instance.Role == NetworkRole.Host)
+            {
+                NetworkManager.Instance.SendGameEvent("pnjSpawn", new PNJSpawnEvent
+                {
+                    networkId = client.networkId,
+                    positionIndex = positionIndex
+                });
+            }
 
             Debug.Log("PNJ spawné : " + newPNJ.name + " à la position " + positionIndex + " (" + pnjActifs + "/" + maxPNJSimultanes + ")");
         }
