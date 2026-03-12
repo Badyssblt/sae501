@@ -818,6 +818,7 @@ public class GameManager : MonoBehaviour
                     {
                         // Créer l'affichage de la commande
                         RecipeData recipe = FindRecipeByResultName(pnjState.recipeName);
+                        Debug.Log($"[PNJ] Commande pour {pnjState.id}: recipeName='{pnjState.recipeName}', found={recipe != null}");
                         if (recipe != null)
                         {
                             GameObject displayObject = new GameObject("OrderDisplay");
