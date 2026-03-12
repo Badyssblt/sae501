@@ -140,6 +140,9 @@ public class PNJSpawner : MonoBehaviour
 
         if (client != null)
         {
+            // Générer le networkId immédiatement (avant Start() qui s'exécute au frame suivant)
+            client.networkId = $"pnj_{System.Guid.NewGuid().ToString().Substring(0, 8)}";
+
             // Assigner le chemin et la position
             client.chemin = cheminPoints;
             client.positionIndex = positionIndex;
