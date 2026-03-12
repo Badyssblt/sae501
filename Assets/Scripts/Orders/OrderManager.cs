@@ -330,7 +330,7 @@ public class OrderManager : MonoBehaviour
     /// <summary>
     /// Trouve une recette par le nom de son résultat
     /// </summary>
-    private RecipeData FindRecipeByResultName(string resultName)
+    public RecipeData FindRecipeByResultName(string resultName)
     {
         if (recipes == null || string.IsNullOrEmpty(resultName)) return null;
 

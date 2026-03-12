@@ -371,6 +371,11 @@ public class PNJClient : MonoBehaviour, IInteractable
             if (pnjOrder != null && pnjOrder.recipe != null && pnjOrder.recipe.result != null)
             {
                 recipeName = pnjOrder.recipe.result.name;
+                // Fallback: si le champ custom name est vide, utiliser le nom de l'asset
+                if (string.IsNullOrEmpty(recipeName))
+                {
+                    recipeName = ((ScriptableObject)pnjOrder.recipe.result).name;
+                }
             }
         }
 

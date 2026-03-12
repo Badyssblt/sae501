@@ -787,12 +787,20 @@ public class GameManager : MonoBehaviour
                 networkPNJs[pnjId] = newPNJ;
             }
 
-            // Mettre à jour la position (interpolation douce)
+            // Mettre à jour la position (déplacement à vitesse constante pour simuler la marche)
             GameObject pnjObj = networkPNJs[pnjId];
             if (pnjObj != null)
             {
                 Vector3 targetPos = new Vector3(pnjState.x, pnjState.y, 0);
-                pnjObj.transform.position = Vector3.Lerp(pnjObj.transform.position, targetPos, 10f * Time.deltaTime);
+                float pnjSpeed = pnjPrefab.GetComponent<PNJClient>()?.vitesse ?? 2f;
+                // Vitesse légèrement supérieure pour rattraper le serveur si nécessaire
+                float catchUpSpeed = pnjSpeed * 1.2f;
+                float dist = Vector3.Distance(pnjObj.transform.position, targetPos);
+                // Si très proche, snap directement pour éviter le tremblement
+                if (dist < 0.05f)
+                    pnjObj.transform.position = targetPos;
+                else
+                    pnjObj.transform.position = Vector3.MoveTowards(pnjObj.transform.position, targetPos, catchUpSpeed * Time.deltaTime);
 
                 // Mettre à jour les animations
                 var anim = pnjObj.GetComponent<Animator>();
@@ -814,12 +822,14 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Gérer l'affichage de la commande au-dessus du PNJ
-                var orderDisplay = pnjObj.GetComponentInChildren<PNJOrderDisplay>();
-                if (!string.IsNullOrEmpty(pnjState.recipeName) && pnjState.etat == "attendService")
+                var orderDisplay = pnjObj.GetComponentInChildren<PNJOrderDisplay>(true);
+                bool shouldShowOrder = !string.IsNullOrEmpty(pnjState.recipeName) && pnjState.etat == "attendService";
+
+                if (shouldShowOrder)
                 {
                     if (orderDisplay == null)
                     {
-                        Sprite orderSprite = FindOrderSprite(pnjState.recipeName);
+                        Sprite orderSprite = FindOrderSpriteRobust(pnjState.recipeName);
                         if (orderSprite != null)
                         {
                             GameObject displayObject = new GameObject("OrderDisplay");
@@ -837,34 +847,44 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private Sprite FindOrderSprite(string recipeName)
+    private Sprite FindOrderSpriteRobust(string recipeName)
     {
         if (string.IsNullOrEmpty(recipeName)) return null;
 
-        // 1) Chercher dans les recettes du GameManager
+        // 1) Utiliser OrderManager.FindRecipeByResultName (même logique que le HUD qui fonctionne)
+        if (OrderManager.Instance != null)
+        {
+            RecipeData recipe = OrderManager.Instance.FindRecipeByResultName(recipeName);
+            if (recipe?.result?.sprite != null)
+                return recipe.result.sprite;
+        }
+
+        // 2) Chercher dans les recettes du GameManager directement
         if (recipes != null)
         {
             foreach (var recipe in recipes)
             {
-                if (recipe != null && recipe.result != null && recipe.result.name == recipeName && recipe.result.sprite != null)
+                if (recipe?.result != null && recipe.result.sprite != null && recipe.result.name == recipeName)
                     return recipe.result.sprite;
             }
         }
 
-        // 2) Chercher dans ItemDatabase
-        var dbItem = ItemDatabase.Instance?.GetItemByName(recipeName);
-        if (dbItem != null && dbItem.sprite != null)
-            return dbItem.sprite;
+        // 3) Chercher dans ItemDatabase
+        if (ItemDatabase.Instance != null)
+        {
+            var dbItem = ItemDatabase.Instance.GetItemByName(recipeName);
+            if (dbItem != null && dbItem.sprite != null)
+                return dbItem.sprite;
+        }
 
-        // 3) Dernier recours : chercher tous les ItemData en mémoire
+        // 4) Dernier recours : chercher tous les ItemData en mémoire
         var allItems = Resources.FindObjectsOfTypeAll<ItemData>();
         foreach (var item in allItems)
         {
-            if (item != null && item.name == recipeName && item.sprite != null)
+            if (item != null && item.sprite != null && item.name == recipeName)
                 return item.sprite;
         }
 
-        Debug.LogWarning($"[GameManager] Sprite non trouvé pour commande: {recipeName}");
         return null;
     }
 
