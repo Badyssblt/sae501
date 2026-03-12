@@ -535,7 +535,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Synchroniser les PNJ depuis le serveur
-        if (serverState.PNJs != null)
+        if (serverState.PNJs != null && serverState.PNJs.Count > 0)
         {
             ApplyNetworkPNJs(serverState.PNJs);
         }
