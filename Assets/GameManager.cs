@@ -819,26 +819,13 @@ public class GameManager : MonoBehaviour
                 {
                     if (orderDisplay == null)
                     {
-                        // Chercher la recette par nom, sinon fallback sur ItemDatabase pour le sprite
-                        RecipeData recipe = FindRecipeByResultName(pnjState.recipeName);
-                        if (recipe != null)
+                        Sprite orderSprite = FindOrderSprite(pnjState.recipeName);
+                        if (orderSprite != null)
                         {
                             GameObject displayObject = new GameObject("OrderDisplay");
                             displayObject.transform.SetParent(pnjObj.transform);
                             var display = displayObject.AddComponent<PNJOrderDisplay>();
-                            display.Initialize(recipe, pnjObj.transform);
-                        }
-                        else
-                        {
-                            // Fallback: créer l'affichage directement depuis ItemDatabase
-                            var item = ItemDatabase.Instance?.GetItemByName(pnjState.recipeName);
-                            if (item != null && item.sprite != null)
-                            {
-                                GameObject displayObject = new GameObject("OrderDisplay");
-                                displayObject.transform.SetParent(pnjObj.transform);
-                                var display = displayObject.AddComponent<PNJOrderDisplay>();
-                                display.InitializeFromSprite(item.sprite, pnjObj.transform);
-                            }
+                            display.InitializeFromSprite(orderSprite, pnjObj.transform);
                         }
                     }
                 }
@@ -850,15 +837,34 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private RecipeData FindRecipeByResultName(string resultName)
+    private Sprite FindOrderSprite(string recipeName)
     {
-        if (recipes == null || string.IsNullOrEmpty(resultName)) return null;
+        if (string.IsNullOrEmpty(recipeName)) return null;
 
-        foreach (var recipe in recipes)
+        // 1) Chercher dans les recettes du GameManager
+        if (recipes != null)
         {
-            if (recipe.result != null && recipe.result.name == resultName)
-                return recipe;
+            foreach (var recipe in recipes)
+            {
+                if (recipe != null && recipe.result != null && recipe.result.name == recipeName && recipe.result.sprite != null)
+                    return recipe.result.sprite;
+            }
         }
+
+        // 2) Chercher dans ItemDatabase
+        var dbItem = ItemDatabase.Instance?.GetItemByName(recipeName);
+        if (dbItem != null && dbItem.sprite != null)
+            return dbItem.sprite;
+
+        // 3) Dernier recours : chercher tous les ItemData en mémoire
+        var allItems = Resources.FindObjectsOfTypeAll<ItemData>();
+        foreach (var item in allItems)
+        {
+            if (item != null && item.name == recipeName && item.sprite != null)
+                return item.sprite;
+        }
+
+        Debug.LogWarning($"[GameManager] Sprite non trouvé pour commande: {recipeName}");
         return null;
     }
 
