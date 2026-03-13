@@ -58,6 +58,10 @@ MonoBehaviour:
   readySound: {fileID: 8300000, guid: 8fe19e01eaf943b4f89c199fa5108a1f, type: 3}
   bounceHeight: 0.3
   bounceSpeed: 2
+  placeItemSound: {fileID: 0}
+  placeSoundVolume: 1
+  placeSoundPitchMin: 0.9
+  placeSoundPitchMax: 1.1
   networkId: 
 --- !u!212 &3635026045718563842
 SpriteRenderer:

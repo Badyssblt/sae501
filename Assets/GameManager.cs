@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviour
     [Header("Countdown")]
     [SerializeField] private float countdownStepDuration = 0.5f;
 
+    [Header("Mode Solo")]
+    [SerializeField] private GameObject[] soloModeDisabledObjects;
+
     [Header("Game State")]
     private GameState currentState = GameState.Waiting;
     private float timeLeft;
@@ -143,6 +146,16 @@ public class GameManager : MonoBehaviour
             {
                 // Host : spawner les joueurs locaux + distants
                 InitializeGame(pendingLocalPlayerCount);
+
+                // Désactiver les comptoirs non nécessaires en mode solo (1 joueur local, aucun distant)
+                if (pendingLocalPlayerCount == 1 && pendingRemotePlayers.Count == 0)
+                {
+                    ApplySoloMode();
+                }
+
+                // Adapter la difficulté selon le nombre total de joueurs
+                int totalPlayers = pendingLocalPlayerCount + pendingRemotePlayers.Count;
+                PNJSpawner.Instance?.SetMaxPNJ(totalPlayers);
 
                 foreach (var kvp in pendingRemotePlayers)
                 {
@@ -329,6 +342,20 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log($"[GameManager] Joueur distant {slot} est prêt");
         // Optionnel: afficher un indicateur visuel
+    }
+
+    /// <summary>
+    /// Désactive les GameObjects configurés pour le mode solo
+    /// </summary>
+    private void ApplySoloMode()
+    {
+        if (soloModeDisabledObjects == null) return;
+        foreach (var go in soloModeDisabledObjects)
+        {
+            if (go != null)
+                go.SetActive(false);
+        }
+        Debug.Log($"[GameManager] Mode solo : {soloModeDisabledObjects.Length} objet(s) désactivé(s)");
     }
 
     private void InitializeGame(int localPlayerCount)

@@ -80,6 +80,22 @@ public class PNJSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adapte le nombre max de PNJ simultanés selon le nombre de joueurs
+    /// </summary>
+    public void SetMaxPNJ(int playerCount)
+    {
+        maxPNJSimultanes = playerCount switch
+        {
+            1 => 2,
+            2 => 3,
+            3 => 5,
+            _ => 6
+        };
+        positionsOccupees = new bool[maxPNJSimultanes];
+        Debug.Log($"[PNJSpawner] Difficulté adaptée : max {maxPNJSimultanes} PNJ pour {playerCount} joueur(s)");
+    }
+
     // Démarre le spawn des PNJ
     public void StartSpawning()
     {
