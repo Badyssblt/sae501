@@ -159,45 +159,33 @@ public class PlayerController : MonoBehaviour
             // Axes non configurés, on utilise le fallback clavier
         }
 
-        // Fallback clavier (ZQSD/WASD + Espace) - UNIQUEMENT pour les clients web distants
-        // Vérification à l'exécution : seulement si on est en mode Client (pas Host/borne arcade)
+        // Inputs web distants (joystick virtuel + clavier) — clients uniquement
         if (NetworkManager.Instance != null &&
             NetworkManager.Instance.Role == NetworkRole.Client &&
             horizontal == 0f && vertical == 0f && !actionPressed)
         {
-            // ZQSD (FR) et WASD (EN)
-            if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
-            if (Input.GetKey(KeyCode.S)) vertical = -1f;
-            if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A)) horizontal = -1f;
-            if (Input.GetKey(KeyCode.D)) horizontal = 1f;
+            // Joystick virtuel (package Terresquall)
+            if (Terresquall.VirtualJoystick.CountActiveInstances() > 0)
+            {
+                horizontal = Terresquall.VirtualJoystick.GetAxis("Horizontal");
+                vertical   = Terresquall.VirtualJoystick.GetAxis("Vertical");
+            }
 
-            // Aussi les flèches
-            if (Input.GetKey(KeyCode.UpArrow)) vertical = 1f;
-            if (Input.GetKey(KeyCode.DownArrow)) vertical = -1f;
-            if (Input.GetKey(KeyCode.LeftArrow)) horizontal = -1f;
-            if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
-
-            // Espace ou E pour l'action
-            actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
-        }
-
-        // Fallback mobile (joystick virtuel + bouton tactile)
-        if (MobileInputProvider.Instance != null)
-        {
+            // Fallback clavier (ZQSD/WASD + flèches)
             if (horizontal == 0f && vertical == 0f)
             {
-                Vector2 mobileMove = MobileInputProvider.Instance.MoveInput;
-                horizontal = mobileMove.x;
-                vertical = mobileMove.y;
-                if (mobileMove != Vector2.zero && Time.frameCount % 60 == 0)
-                    Debug.Log($"[PlayerController] Input mobile appliqué: {mobileMove}");
+                if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
+                if (Input.GetKey(KeyCode.S)) vertical = -1f;
+                if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A)) horizontal = -1f;
+                if (Input.GetKey(KeyCode.D)) horizontal = 1f;
+                if (Input.GetKey(KeyCode.UpArrow)) vertical = 1f;
+                if (Input.GetKey(KeyCode.DownArrow)) vertical = -1f;
+                if (Input.GetKey(KeyCode.LeftArrow)) horizontal = -1f;
+                if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
             }
+
             if (!actionPressed)
-                actionPressed = MobileInputProvider.Instance.InteractPressed;
-        }
-        else if (Time.frameCount % 300 == 0)
-        {
-            Debug.LogWarning("[PlayerController] MobileInputProvider.Instance est NULL");
+                actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
         }
 
         currentMovement = new Vector2(horizontal, vertical).normalized;
