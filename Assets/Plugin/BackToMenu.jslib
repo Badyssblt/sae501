@@ -1,5 +1,5 @@
 mergeInto(LibraryManager.library, {
   BackToMenu: function() {
-    window.location.href = "https://lobby-cook.wevora.fr";
+    window.location.href = "http://localhost:3000";
   }
 });

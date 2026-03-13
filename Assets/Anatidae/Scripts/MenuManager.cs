@@ -9,6 +9,7 @@ using TMPro;
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] TMP_Text quitText;
+    [SerializeField] GameObject anatidaeInterface;
     const float AfkTime = 60f;
     float afkTimer = 0f;
     const float HeldQuitTime = 1.5f;
@@ -36,9 +37,13 @@ public class MenuManager : MonoBehaviour
             afkTimer += Time.deltaTime;
 
         if (heldQuitTimer != 0 || afkTimer - AfkTime + 6f > 0f) {
+            if (anatidaeInterface != null) anatidaeInterface.SetActive(true);
             quitText.gameObject.SetActive(true);
             quitText.text = MenuMessage + new string('.', (int)Mathf.Min(Mathf.Max(heldQuitTimer * 3f, afkTimer - AfkTime + 10f * 0.4f), 3));
-        } else quitText.gameObject.SetActive(false);
+        } else {
+            quitText.gameObject.SetActive(false);
+            if (anatidaeInterface != null) anatidaeInterface.SetActive(false);
+        }
     }
 
     public void OnApplicationQuit()

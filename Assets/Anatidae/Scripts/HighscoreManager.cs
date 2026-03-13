@@ -12,7 +12,7 @@ namespace Anatidae {
         // Changez cette variable par le nom de votre jeu
         // Ce nom sera le même que le nom du dossier contenant votre build, il ne doit donc pas contenir de caractères spéciaux ni d'espaces
         // Cette variable est utilisée pour stocker les highscores sur le serveur !
-        public static string GameName = "cook-moi-ca";
+        public static string GameName = "Votre_Nom_De_Jeu_v123";
         // Changez cette variable pour définir quand est-ce qu'un score est considéré comme un highscore (top 10 par défaut)
         const int NumHighscores = 10;
 
@@ -101,7 +101,7 @@ namespace Anatidae {
         public static IEnumerator FetchHighscores()
         {
             Debug.Log("HighscoreManager: Fetching highscores...");
-            UnityWebRequest request = AnatidaeProxyWebRequest.Get("https://cook.wevora.fr/api/");
+            UnityWebRequest request = UnityWebRequest.Get("http://localhost:3000/api/?game=" + GameName);
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
@@ -126,7 +126,7 @@ namespace Anatidae {
         {
             Debug.Log(JsonUtility.ToJson(new HighscoreEntry { name = name, score = score }));
 
-            UnityWebRequest request = new UnityWebRequest("https://cook.wevora.fr/api/")
+            UnityWebRequest request = new UnityWebRequest("http://localhost:3000/api/?game=" + GameName)
             {
                 method = UnityWebRequest.kHttpVerbPOST,
                 uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(new HighscoreEntry { name = name, score = score })))
