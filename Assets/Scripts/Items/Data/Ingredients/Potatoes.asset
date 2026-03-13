@@ -15,6 +15,8 @@ MonoBehaviour:
   name: Pomme de terrre
   sprite: {fileID: -953275092127064231, guid: 1b77ac34383360148b88eedbcc4a8cb4, type: 3}
   counterType: 4
-  secondsToTransform: 7
+  secondsToTransform: 3
   itemCrafted: {fileID: 11400000, guid: b0321818c498cd347bef567cdf8c8529, type: 2}
+  soundToTransform: {fileID: 0}
   category: 0
+  scoreCount: 1

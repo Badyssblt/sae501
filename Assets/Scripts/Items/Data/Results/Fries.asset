@@ -19,4 +19,4 @@ MonoBehaviour:
   itemCrafted: {fileID: 0}
   soundToTransform: {fileID: 0}
   category: 0
-  scoreCount: 5
+  scoreCount: 20

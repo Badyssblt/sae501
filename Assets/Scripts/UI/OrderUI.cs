@@ -23,13 +23,18 @@ public class OrderUI : MonoBehaviour
     private void Awake()
     {
         if (timer == null)
-            timer = GetComponent<Slider>();
+            timer = GetComponentInChildren<Slider>();
 
-        if (sliderContainer == null && timer != null)
-            sliderContainer = timer.gameObject;
+        if (timer != null)
+        {
+            timer.interactable = false;
 
-        if (timerFill == null && timer != null && timer.fillRect != null)
-            timerFill = timer.fillRect.GetComponent<Image>();
+            if (sliderContainer == null)
+                sliderContainer = timer.gameObject;
+
+            if (timerFill == null && timer.fillRect != null)
+                timerFill = timer.fillRect.GetComponent<Image>();
+        }
     }
 
     public void UpdateRecipe()
@@ -58,25 +63,8 @@ public class OrderUI : MonoBehaviour
             }
         }
 
-        // Redimensionne le background selon les ingrédients
-        StartCoroutine(FitBackgroundToIngredients());
-
         // Lance le timer de décompte
         StartTimer(maxDelay);
-    }
-
-    private IEnumerator FitBackgroundToIngredients()
-    {
-        yield return null; // attendre que Destroy/Instantiate soient appliqués
-        Canvas.ForceUpdateCanvases();
-
-        RectTransform hbRect = hb.GetComponent<RectTransform>();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(hbRect);
-
-        float preferredWidth = LayoutUtility.GetPreferredWidth(hbRect);
-        LayoutElement le = GetComponent<LayoutElement>();
-        if (le != null)
-            le.preferredWidth = preferredWidth + backgroundPadding;
     }
 
     private RecipeData FindRecipeByResult(ItemData item)

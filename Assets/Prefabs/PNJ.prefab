@@ -138,12 +138,13 @@ MonoBehaviour:
   vitesse: 2
   distanceArret: 0.1
   tempsAttenteCommande: 2
-  tempsPourManger: 15
+  tempsPourManger: 25
   directionAttente: {x: 0, y: -1}
   servedSound: {fileID: 8300000, guid: 23e50c5584ef80245a943d5a2ebef14b, type: 3}
   positionIndex: -1
   offsetEntreClients: 0.5
   directionAlignement: 0
+  networkId: 
 --- !u!61 &999986179839143147
 BoxCollider2D:
   m_ObjectHideFlags: 0

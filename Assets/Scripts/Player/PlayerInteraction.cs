@@ -10,6 +10,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private float interactionDistance = 0.7f;
     [SerializeField] private Vector2 boxCastSize = new Vector2(0.5f, 0.5f);
     [SerializeField] private float proximityRadius = 1.2f;
+    [SerializeField] private Vector2 raycastOffset = new Vector2(0f, -0.3f);
 
     [SerializeField] private LayerMask interactableLayer;
     private Vector2 facingDirection = Vector2.down;
@@ -34,22 +35,20 @@ public class PlayerInteraction : MonoBehaviour
         Vector2 movement = playerController.GetCurrentMovement();
         if (movement.sqrMagnitude > DIRECTION_CHANGE_THRESHOLD * DIRECTION_CHANGE_THRESHOLD)
         {
-            float absDiff = Mathf.Abs(Mathf.Abs(movement.x) - Mathf.Abs(movement.y));
-            if (absDiff > DIRECTION_CHANGE_THRESHOLD)
-            {
-                if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
-                    facingDirection = movement.x > 0 ? Vector2.right : Vector2.left;
-                else
-                    facingDirection = movement.y > 0 ? Vector2.up : Vector2.down;
-            }
+            if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
+                facingDirection = movement.x > 0 ? Vector2.right : Vector2.left;
+            else
+                facingDirection = movement.y > 0 ? Vector2.up : Vector2.down;
         }
     }
 
     private IInteractable FindBestInteractable()
     {
+        Vector2 origin = (Vector2)transform.position + raycastOffset;
+
         // Priorité 1 : Raycast fin (précis)
         RaycastHit2D rayHit = Physics2D.Raycast(
-            transform.position,
+            origin,
             facingDirection,
             interactionDistance,
             interactableLayer
@@ -64,7 +63,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // Priorité 2 : BoxCast dans la direction regardée
         RaycastHit2D boxHit = Physics2D.BoxCast(
-            transform.position,
+            origin,
             boxCastSize,
             0f,
             facingDirection,
@@ -129,7 +128,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Vector2 origin = transform.position;
+        Vector2 origin = (Vector2)transform.position + raycastOffset;
         Vector2 end = origin + facingDirection * interactionDistance;
 
         Gizmos.color = lastDetected != null ? Color.green : Color.red;

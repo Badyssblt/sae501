@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 207251270711824620}
   - component: {fileID: 1531281823132925352}
   - component: {fileID: 9103464386288369206}
-  - component: {fileID: 2220941273287984349}
   - component: {fileID: 7190228627844862486}
   m_Layer: 5
   m_Name: Background
@@ -77,29 +76,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2220941273287984349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124629048348119501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69a1a5571d3e3d64581dd923be4f96f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OrderUI
-  itemResult: {fileID: 0}
-  timer: {fileID: 0}
-  sliderContainer: {fileID: 0}
-  hb: {fileID: 0}
-  ingredientPrefab: {fileID: 1019118792720422740, guid: 454de9ffa48cdaa479225fcc76e442a1, type: 3}
-  backgroundPadding: 60
-  colorGreen: {r: 0, g: 1, b: 0, a: 1}
-  colorOrange: {r: 1, g: 0.65, b: 0, a: 1}
-  colorRed: {r: 1, g: 0, b: 0, a: 1}
-  maxDelay: 10
-  recipe: {fileID: 0}
 --- !u!114 &7190228627844862486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,8 +131,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.651001, y: -13.046783}
-  m_SizeDelta: {x: -19.5325, y: 26.0935}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.00000667572, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4590373080666961508
 MonoBehaviour:
@@ -274,7 +250,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -1334684012, guid: a4479cda38da3b84c9e73c887c6de9c9, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -352,8 +328,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3416855363631620291}
-  - {fileID: 9103903249103170996}
   - {fileID: 207251270711824620}
+  - {fileID: 9103903249103170996}
   - {fileID: 8385002198742049253}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -384,7 +360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OrderUI
   itemResult: {fileID: 8209157755553296941}
   timer: {fileID: 4590373080666961508}
-  sliderContainer: {fileID: 0}
+  sliderContainer: {fileID: 2475774972907742593}
   hb: {fileID: 5989356631941143565}
   ingredientPrefab: {fileID: 1019118792720422740, guid: 454de9ffa48cdaa479225fcc76e442a1, type: 3}
   backgroundPadding: 60
@@ -408,7 +384,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 200
+  m_PreferredWidth: 250
   m_PreferredHeight: 200
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
