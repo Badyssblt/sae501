@@ -15,7 +15,8 @@
       "Bash(git stash:*)",
       "Bash(git push:*)",
       "Bash(git remote:*)",
-      "Bash(git fsck:*)"
+      "Bash(git fsck:*)",
+      "Bash(find ./Assets -type f \\\\\\( -name \"*.cs\" -o -name \"*.ts\" -o -name \"*.js\" \\\\\\) 2>/dev/null | head -30)"
     ],
     "deny": [],
     "ask": []
