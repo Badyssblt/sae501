@@ -869,6 +869,8 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance?.EndGame(score);
         }
 
+        Anatidae.HighscoreManager.ShowHighscores();
+
         if (Anatidae.HighscoreManager.HasFetchedHighscores)
         {
             if (Anatidae.HighscoreManager.IsHighscore(score))

@@ -1,0 +1,14 @@
+{
+  "name": "Cook moi ça",
+  "description": "",
+  "creator": "",
+  "year": 2026,
+  "type": "",
+  "players": "1 à 4",
+  "catchphrase": "Jouez maintenant !",
+  "config": {
+    "scoreType": "score",
+    "scoreUnit": "",
+    "scoreSort": "desc"
+  }
+}

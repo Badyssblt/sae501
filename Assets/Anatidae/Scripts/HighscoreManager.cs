@@ -12,7 +12,7 @@ namespace Anatidae {
         // Changez cette variable par le nom de votre jeu
         // Ce nom sera le même que le nom du dossier contenant votre build, il ne doit donc pas contenir de caractères spéciaux ni d'espaces
         // Cette variable est utilisée pour stocker les highscores sur le serveur !
-        public static string GameName = "Votre_Nom_De_Jeu_v123";
+        public static string GameName = "cookmoica";
         // Changez cette variable pour définir quand est-ce qu'un score est considéré comme un highscore (top 10 par défaut)
         const int NumHighscores = 10;
 

@@ -45,9 +45,6 @@ public class GamePanelUI : MonoBehaviour
             selectedColors.highlightedColor = Color.yellow;
         }
 
-        // Cacher le panneau au démarrage
-        if (restartPanel != null)
-            restartPanel.SetActive(false);
     }
 
     private void Update()
