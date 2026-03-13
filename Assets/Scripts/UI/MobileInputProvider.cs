@@ -51,13 +51,24 @@ public class MobileInputProvider : MonoBehaviour
 
     private void Update()
     {
-        // Log toutes les 2 secondes si un input mobile est détecté
         if (Time.frameCount % 120 == 0)
         {
+            bool uiActive = mobileUI != null && mobileUI.activeInHierarchy;
+            Debug.Log($"[MobileInputProvider] mobileUI activeInHierarchy: {uiActive} | Screen: {Screen.width}x{Screen.height}");
+
+            if (mobileUI != null)
+            {
+                Transform t = mobileUI.transform.parent;
+                while (t != null)
+                {
+                    if (!t.gameObject.activeSelf)
+                        Debug.LogWarning($"[MobileInputProvider] Parent désactivé : {t.name}");
+                    t = t.parent;
+                }
+            }
+
             if (joystick != null && joystick.Direction != Vector2.zero)
                 Debug.Log($"[MobileInputProvider] MoveInput actif: {MoveInput}");
-            if (InteractPressed)
-                Debug.Log("[MobileInputProvider] InteractPressed: true");
         }
     }
 }
