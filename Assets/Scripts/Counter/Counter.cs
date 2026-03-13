@@ -373,12 +373,6 @@ public class Counter : MonoBehaviour, IInteractable
             ingredientsOnCounter.Clear();
             currentItem = null;
             UpdateVisual();
-            // Mettre à jour l'UI pour ce joueur
-            var playerController = player.GetComponent<PlayerController>();
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-            }
             return;
         }
 
@@ -438,12 +432,6 @@ public class Counter : MonoBehaviour, IInteractable
 
             PlayPlaceSound();
             UpdateVisual();
-            // Mettre à jour l'UI pour ce joueur
-            var playerController = player.GetComponent<PlayerController>();
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-            }
         }
 
         return;
@@ -467,11 +455,6 @@ public class Counter : MonoBehaviour, IInteractable
             playerInventory.AddItem(currentItem);
             currentItem = null;
             UpdateVisual();
-            // Mettre à jour l'UI pour ce joueur
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-            }
             wasItemCrafted = false;
             UpdateReadyIcon(); // Masquer l'icône "prêt"
             return;
@@ -492,8 +475,6 @@ public class Counter : MonoBehaviour, IInteractable
 
         currentItem = itemToTransform;
         playerInventory.RemoveItem(itemToTransform);
-        if (InventoryUI.Instance != null)
-            InventoryUI.Instance.UpdatePlayerInventory(playerId, playerInventory);
         PlayPlaceSound();
         UpdateVisual();
 

@@ -422,10 +422,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Joueur {playerId} spawné (Local: {isLocal})");
 
-        if (InventoryUI.Instance != null)
-        {
-            InventoryUI.Instance.ActivatePlayerSlot(playerId);
-        }
     }
 
     // Joueurs distants en attente de spawn (rejoints pendant le lobby)
@@ -464,11 +460,6 @@ public class GameManager : MonoBehaviour
     {
         if (activePlayers.TryGetValue(slot, out GameObject player))
         {
-            if (InventoryUI.Instance != null)
-            {
-                InventoryUI.Instance.DeactivatePlayerSlot(slot);
-            }
-
             Destroy(player);
             activePlayers.Remove(slot);
             playerControllers.Remove(slot);
@@ -515,12 +506,6 @@ public class GameManager : MonoBehaviour
                     if (currentCarry != playerState.carry)
                     {
                         inventory.SetItemByName(playerState.carry);
-
-                        // Mettre à jour l'UI d'inventaire
-                        if (InventoryUI.Instance != null)
-                        {
-                            InventoryUI.Instance.UpdatePlayerInventory(playerId, inventory);
-                        }
                     }
                 }
             }
@@ -614,10 +599,6 @@ public class GameManager : MonoBehaviour
             if (inventory != null)
             {
                 inventory.SetItemByName(serverPlayer.carry);
-                if (InventoryUI.Instance != null)
-                {
-                    InventoryUI.Instance.UpdatePlayerInventory(localPlayerId, inventory);
-                }
             }
         }
     }

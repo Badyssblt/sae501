@@ -108,10 +108,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             target.Interact(this);
 
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
-            }
         }
     }
 

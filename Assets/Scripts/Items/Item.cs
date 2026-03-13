@@ -47,11 +47,6 @@ public class Item : MonoBehaviour, IInteractable
         if (inventory != null && inventory.currentItem == null)
         {
             inventory.AddItem(item);
-            var playerController = player.GetComponent<PlayerController>();
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
-            }
             Destroy(gameObject);
         }
     }

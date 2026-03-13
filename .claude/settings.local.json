@@ -16,7 +16,9 @@
       "Bash(git push:*)",
       "Bash(git remote:*)",
       "Bash(git fsck:*)",
-      "Bash(find ./Assets -type f \\\\\\( -name \"*.cs\" -o -name \"*.ts\" -o -name \"*.js\" \\\\\\) 2>/dev/null | head -30)"
+      "Bash(find ./Assets -type f \\\\\\( -name \"*.cs\" -o -name \"*.ts\" -o -name \"*.js\" \\\\\\) 2>/dev/null | head -30)",
+      "Bash(ls -d \"C:/Users/badys/OneDrive/Documents/Cours/S5/Overcooked/Build\"* 2>/dev/null && ls \"C:/Users/badys/OneDrive/Documents/Cours/S5/Overcooked/Build/\" 2>/dev/null || echo \"No Build folder found\")",
+      "Bash(chmod +x \"C:/Users/badys/OneDrive/Documents/Cours/S5/Overcooked/release.sh\")"
     ],
     "deny": [],
     "ask": []

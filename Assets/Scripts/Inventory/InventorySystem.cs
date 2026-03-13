@@ -7,11 +7,12 @@ public class InventorySystem : MonoBehaviour
     public bool itemIsFromGiver { get; private set; }
     [SerializeField] private AudioClip pickupSound;
     private AudioSource audioSource;
+    private ItemHolder itemHolder;
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-
+        itemHolder = GetComponent<ItemHolder>();
     }
 
     public void AddItem(ItemData item, bool fromGiver = false)
@@ -22,6 +23,7 @@ public class InventorySystem : MonoBehaviour
         {
             audioSource.PlayOneShot(pickupSound);
         }
+        itemHolder?.ShowItem(currentItem);
     }
 
     public bool HasItem(ItemData item) => currentItem == item;
@@ -29,6 +31,7 @@ public class InventorySystem : MonoBehaviour
     public void RemoveItem(ItemData item)
     {
         currentItem = null;
+        itemHolder?.Clear();
     }
 
     /// <summary>
@@ -39,12 +42,14 @@ public class InventorySystem : MonoBehaviour
         if (string.IsNullOrEmpty(itemName))
         {
             currentItem = null;
+            itemHolder?.Clear();
             return;
         }
 
         if (ItemDatabase.Instance != null)
         {
             currentItem = ItemDatabase.Instance.GetItemByName(itemName);
+            itemHolder?.ShowItem(currentItem);
         }
     }
 }

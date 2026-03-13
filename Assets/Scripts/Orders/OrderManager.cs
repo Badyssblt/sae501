@@ -94,12 +94,6 @@ public class OrderManager : MonoBehaviour
                 Destroy(child.gameObject);
                 GameManager.Instance.AddScore(playerInventory.currentItem.scoreCount);
                 playerInventory.RemoveItem(playerInventory.currentItem);
-                // Mettre à jour l'UI pour ce joueur
-                var playerController = player.GetComponent<PlayerController>();
-                if (InventoryUI.Instance != null && playerController != null)
-                {
-                    InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-                }
                 break;
             }
         }
@@ -158,13 +152,6 @@ public class OrderManager : MonoBehaviour
             // Ajouter le score
             GameManager.Instance.AddScore(playerInventory.currentItem.scoreCount);
             playerInventory.RemoveItem(playerInventory.currentItem);
-
-            // Mettre à jour l'UI pour ce joueur
-            var playerController = player.GetComponent<PlayerController>();
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-            }
 
             // Notifier l'EffectManager du succès
             EffectManager.Instance?.NotifierSucces();

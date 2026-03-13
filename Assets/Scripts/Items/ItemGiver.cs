@@ -23,14 +23,7 @@ public class ItemGiver : MonoBehaviour, IInteractable
 
             inventory.AddItem(itemToGive, fromGiver: true);
 
-            // Mettre à jour l'UI pour CE joueur spécifiquement
-            var playerController = player.GetComponent<PlayerController>();
-            if (playerController != null && InventoryUI.Instance != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, inventory);
-            }
-
-            Debug.Log($"Joueur {playerController?.playerId} a ramassé {itemToGive.name}");
+            Debug.Log($"Joueur a ramassé {itemToGive.name}");
         }
     }
 }

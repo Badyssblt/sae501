@@ -30,7 +30,9 @@ public class PlayerController : MonoBehaviour
 
     // Interpolation pour joueurs distants (côté client)
     private Vector2 interpolatedPosition;
+    private Vector2 targetPosition;
     private bool useInterpolation = false;
+    private const float INTERPOLATION_SPEED = 15f;
 
     // Throttle des inputs envoyés au serveur (client)
     private Vector2 lastSentMovement = Vector2.zero;
@@ -235,20 +237,24 @@ public class PlayerController : MonoBehaviour
 
         if (interpolatedPos.HasValue)
         {
-            // Déplacer directement vers la position interpolée
-            transform.position = interpolatedPos.Value;
+            targetPosition = interpolatedPos.Value;
+        }
 
-            // Calculer le mouvement apparent pour l'animation
-            Vector2 movement = interpolatedPos.Value - interpolatedPosition;
-            currentMovement = movement.normalized;
-            interpolatedPosition = interpolatedPos.Value;
+        // Lerp vers la position cible pour lisser le mouvement
+        Vector2 currentPos = transform.position;
+        Vector2 newPos = Vector2.Lerp(currentPos, targetPosition, Time.deltaTime * INTERPOLATION_SPEED);
+        transform.position = newPos;
 
-            // Mettre à jour l'animation
-            if (animator != null)
-            {
-                animator.SetFloat("MoveX", currentMovement.x);
-                animator.SetFloat("MoveY", currentMovement.y);
-            }
+        // Calculer le mouvement apparent pour l'animation
+        Vector2 movement = newPos - interpolatedPosition;
+        currentMovement = movement.magnitude > 0.001f ? movement.normalized : Vector2.zero;
+        interpolatedPosition = newPos;
+
+        // Mettre à jour l'animation
+        if (animator != null)
+        {
+            animator.SetFloat("MoveX", currentMovement.x);
+            animator.SetFloat("MoveY", currentMovement.y);
         }
     }
 
@@ -374,5 +380,6 @@ public class PlayerController : MonoBehaviour
     {
         transform.position = position;
         interpolatedPosition = position;
+        targetPosition = position;
     }
 }

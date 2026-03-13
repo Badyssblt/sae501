@@ -32,13 +32,6 @@ public class TrashBin : MonoBehaviour, IInteractable
                 AudioSource.PlayClipAtPoint(trashSound, transform.position);
             }
 
-            // Mettre à jour l'UI pour ce joueur
-            PlayerController playerController = player.GetComponent<PlayerController>();
-            if (InventoryUI.Instance != null && playerController != null)
-            {
-                InventoryUI.Instance.UpdatePlayerInventory(playerController.playerId, playerInventory);
-            }
-
             Debug.Log("Item jeté à la poubelle : " + itemToTrash.name);
         }
     }
