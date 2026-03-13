@@ -8,6 +8,7 @@ using CookMoiCa.Network;
 public class MobileJoystickController : MonoBehaviour
 {
     [SerializeField] private GameObject mobileHUD;
+    [SerializeField] private GameObject interactButton;
 
     private void Start()
     {
@@ -16,5 +17,7 @@ public class MobileJoystickController : MonoBehaviour
 
         if (mobileHUD != null)
             mobileHUD.SetActive(isClient);
+        if (interactButton != null)
+            interactButton.SetActive(isClient);
     }
 }
