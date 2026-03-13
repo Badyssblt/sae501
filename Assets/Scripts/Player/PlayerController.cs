@@ -181,6 +181,19 @@ public class PlayerController : MonoBehaviour
             actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
         }
 
+        // Fallback mobile (joystick virtuel + bouton tactile)
+        if (MobileInputProvider.Instance != null)
+        {
+            if (horizontal == 0f && vertical == 0f)
+            {
+                Vector2 mobileMove = MobileInputProvider.Instance.MoveInput;
+                horizontal = mobileMove.x;
+                vertical = mobileMove.y;
+            }
+            if (!actionPressed)
+                actionPressed = MobileInputProvider.Instance.InteractPressed;
+        }
+
         currentMovement = new Vector2(horizontal, vertical).normalized;
 
         // Déterminer l'action
