@@ -1,21 +1,16 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-/// <summary>
-/// Fournit les inputs mobiles (joystick + bouton) au PlayerController.
-/// S'affiche automatiquement uniquement sur mobile / WebGL tactile.
-/// </summary>
 public class MobileInputProvider : MonoBehaviour
 {
     public static MobileInputProvider Instance { get; private set; }
 
     [SerializeField] private VirtualJoystick joystick;
     [SerializeField] private MobileInteractButton interactButton;
-    [SerializeField] private GameObject mobileUI; // Parent contenant tout le HUD mobile
+    [SerializeField] private GameObject mobileUI;
 
-    /// <summary>Direction du joystick (normalisée, magnitude 0-1)</summary>
     public Vector2 MoveInput => joystick != null ? joystick.Direction : Vector2.zero;
-
-    /// <summary>Vrai tant que le bouton d'interaction est maintenu</summary>
     public bool InteractPressed => interactButton != null && interactButton.IsPressed;
 
     private void Awake()
@@ -27,21 +22,42 @@ public class MobileInputProvider : MonoBehaviour
         }
         Instance = this;
 
-        // Afficher le HUD mobile uniquement sur les plateformes tactiles
+        // Créer l'EventSystem s'il est absent (nécessaire pour tous les événements UI)
+        if (EventSystem.current == null)
+        {
+            GameObject esGO = new GameObject("EventSystem");
+            esGO.AddComponent<EventSystem>();
+            esGO.AddComponent<StandaloneInputModule>();
+            Debug.Log("[MobileInputProvider] EventSystem créé automatiquement");
+        }
+
+        bool isMobile = WebGLHelper.IsMobileDevice();
+        Debug.Log($"[MobileInputProvider] isMobile: {isMobile} | platform: {Application.platform} | deviceType: {SystemInfo.deviceType} | isMobilePlatform: {Application.isMobilePlatform}");
+        Debug.Log($"[MobileInputProvider] joystick: {(joystick != null ? joystick.name : "NULL")} | interactButton: {(interactButton != null ? interactButton.name : "NULL")} | mobileUI: {(mobileUI != null ? mobileUI.name : "NULL")}");
+
         if (mobileUI != null)
-            mobileUI.SetActive(IsTouchPlatform());
+        {
+            mobileUI.SetActive(isMobile);
+            Debug.Log($"[MobileInputProvider] mobileUI SetActive({isMobile})");
+        }
+        else
+        {
+            Debug.LogWarning("[MobileInputProvider] mobileUI n'est pas assigné dans l'Inspector !");
+        }
+
+        if (isMobile)
+            WebGLHelper.SetupMobileViewport();
     }
 
-    private bool IsTouchPlatform()
+    private void Update()
     {
-        // Mobile natif
-        if (Application.isMobilePlatform) return true;
-
-        // WebGL sur mobile (détection via type d'appareil Unity)
-        if (Application.platform == RuntimePlatform.WebGLPlayer
-            && SystemInfo.deviceType == DeviceType.Handheld)
-            return true;
-
-        return false;
+        // Log toutes les 2 secondes si un input mobile est détecté
+        if (Time.frameCount % 120 == 0)
+        {
+            if (joystick != null && joystick.Direction != Vector2.zero)
+                Debug.Log($"[MobileInputProvider] MoveInput actif: {MoveInput}");
+            if (InteractPressed)
+                Debug.Log("[MobileInputProvider] InteractPressed: true");
+        }
     }
 }

@@ -189,9 +189,15 @@ public class PlayerController : MonoBehaviour
                 Vector2 mobileMove = MobileInputProvider.Instance.MoveInput;
                 horizontal = mobileMove.x;
                 vertical = mobileMove.y;
+                if (mobileMove != Vector2.zero && Time.frameCount % 60 == 0)
+                    Debug.Log($"[PlayerController] Input mobile appliqué: {mobileMove}");
             }
             if (!actionPressed)
                 actionPressed = MobileInputProvider.Instance.InteractPressed;
+        }
+        else if (Time.frameCount % 300 == 0)
+        {
+            Debug.LogWarning("[PlayerController] MobileInputProvider.Instance est NULL");
         }
 
         currentMovement = new Vector2(horizontal, vertical).normalized;
