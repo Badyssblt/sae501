@@ -244,14 +244,11 @@ public class PlayerController : MonoBehaviour
     {
         Vector2? interpolatedPos = NetworkManager.Instance.GetInterpolatedPosition(playerId);
 
-        if (interpolatedPos.HasValue)
-        {
-            targetPosition = interpolatedPos.Value;
-        }
+        // L'InterpolationBuffer fait déjà l'interpolation lisse entre snapshots
+        // On applique directement sans lerp supplémentaire pour éviter le double lissage
+        if (!interpolatedPos.HasValue) return;
 
-        // Lerp vers la position cible pour lisser le mouvement
-        Vector2 currentPos = transform.position;
-        Vector2 newPos = Vector2.Lerp(currentPos, targetPosition, Time.deltaTime * INTERPOLATION_SPEED);
+        Vector2 newPos = interpolatedPos.Value;
         transform.position = newPos;
 
         // Calculer le mouvement apparent pour l'animation
