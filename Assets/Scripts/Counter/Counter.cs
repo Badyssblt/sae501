@@ -185,15 +185,7 @@ public class Counter : MonoBehaviour, IInteractable
 
     private void SimulateCookingProgress()
     {
-        // Côté client : avancer la progression localement entre les updates serveur
-        if (isNetworkControlled && cookingState == "cooking" && cookingDuration > 0f)
-        {
-            cookingProgress += Time.deltaTime / cookingDuration;
-            cookingProgress = Mathf.Clamp01(cookingProgress);
-
-            SliderTime sliderTime = GetComponent<SliderTime>();
-            sliderTime?.SetProgress(cookingProgress);
-        }
+        // Plus de simulation locale — le slider est piloté par StartTimer côté client
     }
 
     public void ApplyNetworkState(CounterState state)
@@ -224,35 +216,24 @@ public class Counter : MonoBehaviour, IInteractable
         // Mettre à jour l'état de cuisson
         string previousCookingState = cookingState;
         cookingState = state.cookingState ?? "idle";
+        cookingProgress = state.cookingProgress;
 
-        // Synchroniser la progression depuis le serveur
-        // Si on commence à cuisiner, enregistrer le point de départ pour la simulation locale
-        if (cookingState == "cooking")
-        {
-            if (state.cookingDuration > 0f)
-                cookingDuration = state.cookingDuration;
-
-            // Accepter la progression serveur seulement si elle est en avance sur notre simulation
-            if (state.cookingProgress > cookingProgress || previousCookingState != "cooking")
-                cookingProgress = state.cookingProgress;
-        }
-        else
-        {
-            cookingProgress = state.cookingProgress;
-        }
+        if (state.cookingDuration > 0f)
+            cookingDuration = state.cookingDuration;
 
         // Mettre à jour le visuel (animation seulement si l'item a changé)
         UpdateVisual(itemChanged);
 
-        // Mettre à jour le slider depuis le serveur
+        // Slider : lancer le même timer que le host quand la cuisson commence
         SliderTime sliderTime = GetComponent<SliderTime>();
         if (sliderTime != null)
         {
-            if (cookingState == "cooking")
+            if (cookingState == "cooking" && previousCookingState != "cooking" && cookingDuration > 0f)
             {
-                sliderTime.SetProgress(cookingProgress);
+                // Début de cuisson — lancer le timer identique au host
+                sliderTime.StartTimer(cookingDuration);
             }
-            else
+            else if (cookingState != "cooking")
             {
                 sliderTime.HideSlider();
             }
