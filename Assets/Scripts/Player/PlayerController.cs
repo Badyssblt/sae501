@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
         float horizontal = 0f;
         float vertical = 0f;
 
-        // Essayer les axes arcade d'abord
+        // Axes arcade : P{id}_Horizontal / P{id}_Vertical
         try
         {
             horizontal = Input.GetAxisRaw(horizontalAxis);
@@ -160,13 +160,12 @@ public class PlayerController : MonoBehaviour
         }
         catch (System.Exception)
         {
-            // Axes non configurés, on utilise le fallback clavier
+            // Axes non configurés
         }
 
-        // Inputs web (joystick + bouton tactile) — seulement pour P1
-        if (playerId == 1)
+        // Fallback web (joystick virtuel + clavier) — seulement pour les clients web
+        if (NetworkManager.Instance?.Role == NetworkRole.Client)
         {
-            // Mouvement : joystick virtuel (package Terresquall)
             if (horizontal == 0f && vertical == 0f &&
                 Terresquall.VirtualJoystick.CountActiveInstances() > 0)
             {
@@ -174,16 +173,18 @@ public class PlayerController : MonoBehaviour
                 vertical   = Terresquall.VirtualJoystick.GetAxis("Vertical");
             }
 
-            // Mouvement : fallback clavier P1 = ZQSD/WASD (flèches réservées à P2)
             if (horizontal == 0f && vertical == 0f)
             {
                 if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
                 if (Input.GetKey(KeyCode.S)) vertical = -1f;
                 if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A)) horizontal = -1f;
                 if (Input.GetKey(KeyCode.D)) horizontal = 1f;
+                if (Input.GetKey(KeyCode.UpArrow)) vertical = 1f;
+                if (Input.GetKey(KeyCode.DownArrow)) vertical = -1f;
+                if (Input.GetKey(KeyCode.LeftArrow)) horizontal = -1f;
+                if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
             }
 
-            // Action : bouton mobile ou clavier fallback
             if (!actionPressed && mobileInteractPending)
                 actionPressed = true;
             if (!actionPressed)
