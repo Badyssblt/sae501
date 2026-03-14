@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 interpolatedPosition;
     private Vector2 targetPosition;
     private bool useInterpolation = false;
-    private const float INTERPOLATION_SPEED = 15f;
+    private Rigidbody2D rb;
 
     // Throttle des inputs envoyés au serveur (client)
     private Vector2 lastSentMovement = Vector2.zero;
@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         playerInteraction = GetComponent<PlayerInteraction>();
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
@@ -74,11 +75,33 @@ public class PlayerController : MonoBehaviour
         if (NetworkManager.Instance.Role == NetworkRole.Client)
         {
             useInterpolation = !isLocalPlayer;
+
+            if (useInterpolation)
+            {
+                // Désactiver la physique pour les joueurs distants
+                if (rb != null)
+                {
+                    rb.bodyType = RigidbodyType2D.Kinematic;
+                    rb.linearVelocity = Vector2.zero;
+                }
+
+                // Désactiver PlayerMovement (inutile pour un joueur interpolé)
+                if (playerMovement != null)
+                    playerMovement.enabled = false;
+            }
         }
         else
         {
             // En mode host, les joueurs distants (slots 3-4) sont contrôlés par les inputs réseau
             useInterpolation = false;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (useInterpolation)
+        {
+            ApplyInterpolationPosition();
         }
     }
 
@@ -238,21 +261,33 @@ public class PlayerController : MonoBehaviour
         {
             if (useInterpolation)
             {
-                ApplyInterpolation();
+                ApplyInterpolationAnimation();
             }
         }
     }
 
-    private void ApplyInterpolation()
+    // Position interpolée stockée pour FixedUpdate
+    private Vector2? pendingInterpolatedPos;
+
+    private void ApplyInterpolationPosition()
     {
-        Vector2? interpolatedPos = NetworkManager.Instance.GetInterpolatedPosition(playerId);
-        if (!interpolatedPos.HasValue) return;
+        // Appelé dans FixedUpdate — déplace via le moteur physique
+        if (!pendingInterpolatedPos.HasValue) return;
 
-        Vector2 newPos = interpolatedPos.Value;
-        transform.position = newPos;
+        Vector2 newPos = pendingInterpolatedPos.Value;
+        if (rb != null)
+            rb.MovePosition(newPos);
+        else
+            transform.position = newPos;
+
         interpolatedPosition = newPos;
+    }
 
-        // Récupérer la direction réelle depuis le dernier snapshot
+    private void ApplyInterpolationAnimation()
+    {
+        // Appelé dans Update — met à jour l'animation
+        pendingInterpolatedPos = NetworkManager.Instance.GetInterpolatedPosition(playerId);
+
         var snapshot = NetworkManager.Instance.InterpolationBuffer.GetLatestSnapshot();
         if (snapshot != null && snapshot.Players.TryGetValue(playerId, out var playerState) && animator != null)
         {
