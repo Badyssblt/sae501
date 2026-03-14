@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private bool actionPressed = false;
     private bool actionPreviousFrame = false;
     private ActionType currentAction = ActionType.None;
+    private bool mobileInteractPending = false;
 
     [Header("Components")]
     private PlayerMovement playerMovement;
@@ -182,9 +183,13 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
             }
 
-            // Action : clavier fallback
+            // Action : bouton mobile ou clavier fallback
+            if (!actionPressed && mobileInteractPending)
+                actionPressed = true;
             if (!actionPressed)
                 actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
+
+            mobileInteractPending = false;
         }
 
         currentMovement = new Vector2(horizontal, vertical).normalized;
@@ -351,10 +356,10 @@ public class PlayerController : MonoBehaviour
         actionPreviousFrame = actionPressed;
     }
 
-    /// <summary>Appelé par le bouton d'interaction mobile (OnClick du Button UI)</summary>
+    /// <summary>Appelé par le bouton d'interaction mobile — passe par le pipeline normal pour envoyer au serveur</summary>
     public void MobileInteract()
     {
-        playerInteraction?.OnInteract();
+        mobileInteractPending = true;
     }
 
     public Vector2 GetCurrentMovement()
