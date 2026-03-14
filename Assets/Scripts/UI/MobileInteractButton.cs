@@ -22,10 +22,19 @@ public class MobileInteractButton : MonoBehaviour
             pressed = true;
             inputPos = Input.mousePosition;
         }
-        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        else
         {
-            pressed = true;
-            inputPos = Input.GetTouch(0).position;
+            // Vérifier tous les doigts, pas seulement le premier
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    pressed = true;
+                    inputPos = t.position;
+                    break;
+                }
+            }
         }
 
         if (!pressed) return;
