@@ -159,9 +159,7 @@ public class PlayerController : MonoBehaviour
             // Axes non configurés, on utilise le fallback clavier
         }
 
-        // Inputs web distants — clients uniquement
-        if (NetworkManager.Instance != null &&
-            NetworkManager.Instance.Role == NetworkRole.Client)
+        // Inputs web (joystick + bouton tactile)
         {
             // Mouvement : joystick virtuel (package Terresquall)
             if (horizontal == 0f && vertical == 0f &&
@@ -184,17 +182,7 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
             }
 
-            // Action : bouton tactile ou clavier (indépendant du mouvement)
-            if (MobileInteractButton.Instance == null)
-            {
-                if (Time.frameCount % 300 == 0)
-                    Debug.LogWarning("[PlayerController] MobileInteractButton.Instance est NULL");
-            }
-            else if (MobileInteractButton.Instance.WasPressed)
-            {
-                Debug.Log("[PlayerController] WasPressed détecté → actionPressed = true");
-                actionPressed = true;
-            }
+            // Action : clavier fallback
             if (!actionPressed)
                 actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
         }
@@ -357,11 +345,16 @@ public class PlayerController : MonoBehaviour
     {
         if (actionPressed && !actionPreviousFrame)
         {
-            Debug.Log($"[PlayerController] HandleAction → OnInteract() (player {playerId})");
             playerInteraction?.OnInteract();
         }
 
         actionPreviousFrame = actionPressed;
+    }
+
+    /// <summary>Appelé par le bouton d'interaction mobile (OnClick du Button UI)</summary>
+    public void MobileInteract()
+    {
+        playerInteraction?.OnInteract();
     }
 
     public Vector2 GetCurrentMovement()

@@ -1,42 +1,51 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class MobileInteractButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class MobileInteractButton : MonoBehaviour
 {
-    public static MobileInteractButton Instance { get; private set; }
-
-    public bool IsPressed { get; private set; }
-
-    // Vrai pendant exactement une frame après l'appui (équivalent GetButtonDown)
-    public bool WasPressed { get; private set; }
-    private bool pendingPress = false;
+    private RectTransform rectTransform;
+    private Canvas canvas;
 
     private void Awake()
     {
-        Instance = this;
+        rectTransform = GetComponent<RectTransform>();
+        canvas = GetComponentInParent<Canvas>();
     }
 
     private void Update()
     {
-        WasPressed = pendingPress;
+        // Vérifier clic souris ou touch
+        bool pressed = false;
+        Vector2 inputPos = Vector2.zero;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            pressed = true;
+            inputPos = Input.mousePosition;
+        }
+        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            pressed = true;
+            inputPos = Input.GetTouch(0).position;
+        }
+
+        if (!pressed) return;
+
+        // Vérifier si le clic est dans les bounds du bouton
+        if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, inputPos, canvas?.worldCamera))
+            TriggerInteract();
     }
 
-    private void LateUpdate()
+    private void TriggerInteract()
     {
-        // Remis à false après que tous les Update() aient pu le lire
-        pendingPress = false;
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        IsPressed = true;
-        pendingPress = true;
-        Debug.Log("[MobileInteractButton] OnPointerDown");
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        IsPressed = false;
-        Debug.Log("[MobileInteractButton] OnPointerUp");
+        var allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (var pc in allPlayers)
+        {
+            if (pc.isLocalPlayer)
+            {
+                pc.MobileInteract();
+                return;
+            }
+        }
+        Debug.LogWarning("[MobileInteractButton] Aucun joueur local trouvé");
     }
 }
