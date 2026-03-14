@@ -576,6 +576,15 @@ public class GameManager : MonoBehaviour
     private const float TICK_RATE = 1f / 30f;
     private const float RECONCILIATION_THRESHOLD = 0.5f;
 
+    // Cooldown pour éviter que le serveur écrase l'inventaire local après une interaction
+    private float inventoryReconcileCooldown = 0f;
+    private const float INVENTORY_COOLDOWN_TIME = 0.5f;
+
+    public void MarkLocalInteraction()
+    {
+        inventoryReconcileCooldown = INVENTORY_COOLDOWN_TIME;
+    }
+
     private void ReconcileLocalPlayer(StateSnapshot serverState, int localPlayerId, GameObject player)
     {
         if (!serverState.Players.TryGetValue(localPlayerId, out PlayerState serverPlayer))
@@ -618,16 +627,19 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Synchroniser l'inventaire
-        string localCarry = GetPlayerCarry(localPlayerId);
-        string normalizedLocal = string.IsNullOrEmpty(localCarry) ? null : localCarry;
-        string normalizedServer = string.IsNullOrEmpty(serverPlayer.carry) ? null : serverPlayer.carry;
-        if (normalizedLocal != normalizedServer)
+        // Synchroniser l'inventaire (sauf si interaction locale récente)
+        if (inventoryReconcileCooldown <= 0f)
         {
-            var inventory = player.GetComponent<InventorySystem>();
-            if (inventory != null)
+            string localCarry = GetPlayerCarry(localPlayerId);
+            string normalizedLocal = string.IsNullOrEmpty(localCarry) ? null : localCarry;
+            string normalizedServer = string.IsNullOrEmpty(serverPlayer.carry) ? null : serverPlayer.carry;
+            if (normalizedLocal != normalizedServer)
             {
-                inventory.SetItemByName(serverPlayer.carry);
+                var inventory = player.GetComponent<InventorySystem>();
+                if (inventory != null)
+                {
+                    inventory.SetItemByName(serverPlayer.carry);
+                }
             }
         }
     }
@@ -753,6 +765,9 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (inventoryReconcileCooldown > 0f)
+            inventoryReconcileCooldown -= Time.deltaTime;
+
         if (currentState == GameState.Playing)
         {
             // Host: décrémenter le timer

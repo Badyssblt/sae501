@@ -108,6 +108,9 @@ public class PlayerInteraction : MonoBehaviour
         {
             target.Interact(this);
 
+            // Bloquer la réconciliation inventaire pendant le temps de latence
+            if (GameManager.Instance != null)
+                GameManager.Instance.MarkLocalInteraction();
         }
     }
 
