@@ -174,17 +174,13 @@ public class PlayerController : MonoBehaviour
                 vertical   = Terresquall.VirtualJoystick.GetAxis("Vertical");
             }
 
-            // Mouvement : fallback clavier (ZQSD/WASD + flèches)
+            // Mouvement : fallback clavier P1 = ZQSD/WASD (flèches réservées à P2)
             if (horizontal == 0f && vertical == 0f)
             {
                 if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
                 if (Input.GetKey(KeyCode.S)) vertical = -1f;
                 if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A)) horizontal = -1f;
                 if (Input.GetKey(KeyCode.D)) horizontal = 1f;
-                if (Input.GetKey(KeyCode.UpArrow)) vertical = 1f;
-                if (Input.GetKey(KeyCode.DownArrow)) vertical = -1f;
-                if (Input.GetKey(KeyCode.LeftArrow)) horizontal = -1f;
-                if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
             }
 
             // Action : bouton mobile ou clavier fallback
