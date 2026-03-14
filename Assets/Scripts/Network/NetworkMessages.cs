@@ -361,7 +361,11 @@ namespace CookMoiCa.Network
                     x = kvp.Value.x,
                     y = kvp.Value.y,
                     carry = kvp.Value.carry,
-                    isFrozen = kvp.Value.isFrozen
+                    isFrozen = kvp.Value.isFrozen,
+                    moveX = kvp.Value.moveX,
+                    moveY = kvp.Value.moveY,
+                    lastMoveX = kvp.Value.lastMoveX,
+                    lastMoveY = kvp.Value.lastMoveY
                 };
             }
 

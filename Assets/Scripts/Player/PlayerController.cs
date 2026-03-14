@@ -163,7 +163,8 @@ public class PlayerController : MonoBehaviour
             // Axes non configurés, on utilise le fallback clavier
         }
 
-        // Inputs web (joystick + bouton tactile)
+        // Inputs web (joystick + bouton tactile) — seulement pour P1
+        if (playerId == 1)
         {
             // Mouvement : joystick virtuel (package Terresquall)
             if (horizontal == 0f && vertical == 0f &&
