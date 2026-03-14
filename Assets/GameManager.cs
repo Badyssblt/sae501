@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
     private GameObject gameUI;
     [SerializeField] private GameObject highscoreUI;
     [SerializeField] private GamePanelUI gamePanelUI;
+    [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private GameObject gamePanel;
 
     [Header("Network")]
     private float lastDeltaSent = 0f;
@@ -902,6 +904,12 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance?.EndGame(score);
         }
 
+        if (Anatidae.HighscoreManager.Instance == null)
+        {
+            ShowRestartPanelAfterHighscore();
+            return;
+        }
+
         Anatidae.HighscoreManager.ShowHighscores();
 
         if (Anatidae.HighscoreManager.HasFetchedHighscores)
@@ -937,10 +945,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowRestartPanelAfterHighscore()
     {
-        if (gamePanelUI != null)
-        {
-            gamePanelUI.ShowRestartPanel(score);
-        }
+        RestartGame();
     }
 
     private void DisableAllPlayerControls()

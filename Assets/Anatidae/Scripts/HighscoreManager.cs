@@ -140,6 +140,8 @@ namespace Anatidae {
                 Debug.LogError(request.error);
 
             yield return FetchHighscores();
+            Debug.Log($"[HighscoreManager] GameManager.Instance = {GameManager.Instance}");
+            GameManager.Instance?.ShowRestartPanelAfterHighscore();
         }
 
         public static bool IsHighscore(int score)

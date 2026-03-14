@@ -12,9 +12,10 @@ public class MobileJoystickController : MonoBehaviour
 
     private void Start()
     {
+        bool isClient = NetworkManager.Instance?.Role == NetworkRole.Client;
         if (mobileHUD != null)
-            mobileHUD.SetActive(true);
+            mobileHUD.SetActive(isClient);
         if (interactButton != null)
-            interactButton.SetActive(true);
+            interactButton.SetActive(isClient);
     }
 }
