@@ -809,6 +809,7 @@ public class GameManager : MonoBehaviour
 
             var movement = playerObj.GetComponent<PlayerMovement>();
             var inventory = playerObj.GetComponent<InventorySystem>();
+            var controller = playerObj.GetComponent<PlayerController>();
 
             state.players.Add(new PlayerState
             {
@@ -816,7 +817,11 @@ public class GameManager : MonoBehaviour
                 x = playerObj.transform.position.x,
                 y = playerObj.transform.position.y,
                 carry = inventory?.currentItem?.name,
-                isFrozen = movement != null && movement.isFrozen
+                isFrozen = movement != null && movement.isFrozen,
+                moveX = controller != null ? controller.currentMovement.x : 0f,
+                moveY = controller != null ? controller.currentMovement.y : 0f,
+                lastMoveX = controller?.animator != null ? controller.animator.GetFloat("LastMoveX") : 0f,
+                lastMoveY = controller?.animator != null ? controller.animator.GetFloat("LastMoveY") : -1f,
             });
         }
 
@@ -834,6 +839,7 @@ public class GameManager : MonoBehaviour
                     currentItem = counter.GetCurrentItemName(),
                     cookingState = counter.GetCookingState(),
                     cookingProgress = counter.GetCookingProgress(),
+                    cookingDuration = counter.GetCookingDuration(),
                     lockedBy = counter.GetLockedByPlayer() ?? -1
                 });
             }

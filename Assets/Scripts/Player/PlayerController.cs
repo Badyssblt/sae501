@@ -245,24 +245,21 @@ public class PlayerController : MonoBehaviour
     private void ApplyInterpolation()
     {
         Vector2? interpolatedPos = NetworkManager.Instance.GetInterpolatedPosition(playerId);
-
-        // L'InterpolationBuffer fait déjà l'interpolation lisse entre snapshots
-        // On applique directement sans lerp supplémentaire pour éviter le double lissage
         if (!interpolatedPos.HasValue) return;
 
         Vector2 newPos = interpolatedPos.Value;
         transform.position = newPos;
-
-        // Calculer le mouvement apparent pour l'animation
-        Vector2 movement = newPos - interpolatedPosition;
-        currentMovement = movement.magnitude > 0.001f ? movement.normalized : Vector2.zero;
         interpolatedPosition = newPos;
 
-        // Mettre à jour l'animation
-        if (animator != null)
+        // Récupérer la direction réelle depuis le dernier snapshot
+        var snapshot = NetworkManager.Instance.InterpolationBuffer.GetLatestSnapshot();
+        if (snapshot != null && snapshot.Players.TryGetValue(playerId, out var playerState) && animator != null)
         {
-            animator.SetFloat("MoveX", currentMovement.x);
-            animator.SetFloat("MoveY", currentMovement.y);
+            animator.SetFloat("MoveX", playerState.moveX);
+            animator.SetFloat("MoveY", playerState.moveY);
+            animator.SetBool("IsMoving", playerState.moveX != 0f || playerState.moveY != 0f);
+            animator.SetFloat("LastMoveX", playerState.lastMoveX);
+            animator.SetFloat("LastMoveY", playerState.lastMoveY);
         }
     }
 

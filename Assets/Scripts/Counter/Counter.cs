@@ -171,6 +171,8 @@ public class Counter : MonoBehaviour, IInteractable
     {
         if (localInteractionCooldown > 0f)
             localInteractionCooldown -= Time.deltaTime;
+
+        SimulateCookingProgress();
     }
 
     /// <summary>
@@ -179,6 +181,19 @@ public class Counter : MonoBehaviour, IInteractable
     public void MarkLocalInteraction()
     {
         localInteractionCooldown = LOCAL_INTERACTION_COOLDOWN_TIME;
+    }
+
+    private void SimulateCookingProgress()
+    {
+        // Côté client : avancer la progression localement pour éviter les sauts
+        if (isNetworkControlled && cookingState == "cooking" && cookingDuration > 0f)
+        {
+            cookingProgress += Time.deltaTime / cookingDuration;
+            cookingProgress = Mathf.Clamp01(cookingProgress);
+
+            SliderTime sliderTime = GetComponent<SliderTime>();
+            sliderTime?.SetProgress(cookingProgress);
+        }
     }
 
     public void ApplyNetworkState(CounterState state)
@@ -207,8 +222,24 @@ public class Counter : MonoBehaviour, IInteractable
         }
 
         // Mettre à jour l'état de cuisson
+        string previousCookingState = cookingState;
         cookingState = state.cookingState ?? "idle";
-        cookingProgress = state.cookingProgress;
+
+        // Synchroniser la progression depuis le serveur
+        // Si on commence à cuisiner, enregistrer le point de départ pour la simulation locale
+        if (cookingState == "cooking")
+        {
+            if (state.cookingDuration > 0f)
+                cookingDuration = state.cookingDuration;
+
+            // Accepter la progression serveur seulement si elle est en avance sur notre simulation
+            if (state.cookingProgress > cookingProgress || previousCookingState != "cooking")
+                cookingProgress = state.cookingProgress;
+        }
+        else
+        {
+            cookingProgress = state.cookingProgress;
+        }
 
         // Mettre à jour le visuel (animation seulement si l'item a changé)
         UpdateVisual(itemChanged);
@@ -611,6 +642,11 @@ public class Counter : MonoBehaviour, IInteractable
     public float GetCookingProgress()
     {
         return cookingProgress;
+    }
+
+    public float GetCookingDuration()
+    {
+        return cookingDuration;
     }
 
     public int? GetLockedByPlayer()

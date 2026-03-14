@@ -62,6 +62,10 @@ namespace CookMoiCa.Network
         public float y;
         public string carry; // Nom de l'item porté ou null
         public bool isFrozen;
+        public float moveX;
+        public float moveY;
+        public float lastMoveX;
+        public float lastMoveY;
 
         public PlayerState() { }
 
@@ -83,6 +87,7 @@ namespace CookMoiCa.Network
         public string currentItem; // Nom de l'item ou null
         public string cookingState; // "idle", "cooking", "done"
         public float cookingProgress; // 0.0 à 1.0
+        public float cookingDuration; // durée totale en secondes (pour simulation locale côté client)
         public int lockedBy = -1; // playerId qui utilise ce counter (-1 = aucun)
 
         public CounterState() { }
