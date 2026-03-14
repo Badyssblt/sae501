@@ -107,6 +107,9 @@ public class PlayerController : MonoBehaviour
             ProcessRemoteInput();
         }
 
+        // Les joueurs interpolés (distants côté client) sont gérés entièrement par ApplyInterpolation
+        if (useInterpolation) return;
+
         // Gestion du freeze
         if (playerMovement.isFrozen)
         {
