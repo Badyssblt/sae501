@@ -1,29 +1,42 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-/// <summary>
-/// Bouton d'interaction tactile pour mobile.
-/// À attacher sur le bouton d'interaction (Image circulaire bas droite).
-/// </summary>
 public class MobileInteractButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public static MobileInteractButton Instance { get; private set; }
 
-    /// <summary>Vrai tant que le doigt est appuyé sur le bouton</summary>
     public bool IsPressed { get; private set; }
+
+    // Vrai pendant exactement une frame après l'appui (équivalent GetButtonDown)
+    public bool WasPressed { get; private set; }
+    private bool pendingPress = false;
 
     private void Awake()
     {
         Instance = this;
     }
 
+    private void Update()
+    {
+        WasPressed = pendingPress;
+    }
+
+    private void LateUpdate()
+    {
+        // Remis à false après que tous les Update() aient pu le lire
+        pendingPress = false;
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         IsPressed = true;
+        pendingPress = true;
+        Debug.Log("[MobileInteractButton] OnPointerDown");
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         IsPressed = false;
+        Debug.Log("[MobileInteractButton] OnPointerUp");
     }
 }

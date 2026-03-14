@@ -159,19 +159,19 @@ public class PlayerController : MonoBehaviour
             // Axes non configurés, on utilise le fallback clavier
         }
 
-        // Inputs web distants (joystick virtuel + clavier) — clients uniquement
+        // Inputs web distants — clients uniquement
         if (NetworkManager.Instance != null &&
-            NetworkManager.Instance.Role == NetworkRole.Client &&
-            horizontal == 0f && vertical == 0f && !actionPressed)
+            NetworkManager.Instance.Role == NetworkRole.Client)
         {
-            // Joystick virtuel (package Terresquall)
-            if (Terresquall.VirtualJoystick.CountActiveInstances() > 0)
+            // Mouvement : joystick virtuel (package Terresquall)
+            if (horizontal == 0f && vertical == 0f &&
+                Terresquall.VirtualJoystick.CountActiveInstances() > 0)
             {
                 horizontal = Terresquall.VirtualJoystick.GetAxis("Horizontal");
                 vertical   = Terresquall.VirtualJoystick.GetAxis("Vertical");
             }
 
-            // Fallback clavier (ZQSD/WASD + flèches)
+            // Mouvement : fallback clavier (ZQSD/WASD + flèches)
             if (horizontal == 0f && vertical == 0f)
             {
                 if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W)) vertical = 1f;
@@ -184,8 +184,17 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKey(KeyCode.RightArrow)) horizontal = 1f;
             }
 
-            if (!actionPressed && MobileInteractButton.Instance != null)
-                actionPressed = MobileInteractButton.Instance.IsPressed;
+            // Action : bouton tactile ou clavier (indépendant du mouvement)
+            if (MobileInteractButton.Instance == null)
+            {
+                if (Time.frameCount % 300 == 0)
+                    Debug.LogWarning("[PlayerController] MobileInteractButton.Instance est NULL");
+            }
+            else if (MobileInteractButton.Instance.WasPressed)
+            {
+                Debug.Log("[PlayerController] WasPressed détecté → actionPressed = true");
+                actionPressed = true;
+            }
             if (!actionPressed)
                 actionPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.E);
         }
@@ -348,6 +357,7 @@ public class PlayerController : MonoBehaviour
     {
         if (actionPressed && !actionPreviousFrame)
         {
+            Debug.Log($"[PlayerController] HandleAction → OnInteract() (player {playerId})");
             playerInteraction?.OnInteract();
         }
 
