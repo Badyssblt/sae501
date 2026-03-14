@@ -709,7 +709,10 @@ public class NetworkManager : MonoBehaviour
                         new Vector2(lastPlayer.x, lastPlayer.y)
                     );
 
-                    if (posDiff > 0.01f || player.carry != lastPlayer.carry || player.isFrozen != lastPlayer.isFrozen)
+                    bool directionChanged = player.moveX != lastPlayer.moveX || player.moveY != lastPlayer.moveY
+                        || player.lastMoveX != lastPlayer.lastMoveX || player.lastMoveY != lastPlayer.lastMoveY;
+
+                    if (posDiff > 0.01f || player.carry != lastPlayer.carry || player.isFrozen != lastPlayer.isFrozen || directionChanged)
                     {
                         delta.players.Add(player);
                         hasChanges = true;
