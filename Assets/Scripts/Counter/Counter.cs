@@ -468,6 +468,8 @@ public class Counter : MonoBehaviour, IInteractable
             currentItem = null;
             UpdateVisual();
             wasItemCrafted = false;
+            cookingState = "idle";
+            cookingProgress = 0f;
             UpdateReadyIcon(); // Masquer l'icône "prêt"
             return;
         }
