@@ -185,7 +185,7 @@ public class Counter : MonoBehaviour, IInteractable
 
     private void SimulateCookingProgress()
     {
-        // Côté client : avancer la progression localement pour éviter les sauts
+        // Côté client : avancer la progression localement entre les updates serveur
         if (isNetworkControlled && cookingState == "cooking" && cookingDuration > 0f)
         {
             cookingProgress += Time.deltaTime / cookingDuration;
@@ -244,15 +244,15 @@ public class Counter : MonoBehaviour, IInteractable
         // Mettre à jour le visuel (animation seulement si l'item a changé)
         UpdateVisual(itemChanged);
 
-        // Mettre à jour le slider si en cours de cuisson
+        // Mettre à jour le slider depuis le serveur
         SliderTime sliderTime = GetComponent<SliderTime>();
         if (sliderTime != null)
         {
-            if (cookingState == "cooking" && cookingProgress > 0 && cookingProgress < 1)
+            if (cookingState == "cooking")
             {
                 sliderTime.SetProgress(cookingProgress);
             }
-            else if (cookingState == "idle" || cookingState == "done")
+            else
             {
                 sliderTime.HideSlider();
             }
