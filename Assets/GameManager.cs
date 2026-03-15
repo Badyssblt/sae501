@@ -578,7 +578,7 @@ public class GameManager : MonoBehaviour
 
     // Cooldown pour éviter que le serveur écrase l'inventaire local après une interaction
     private float inventoryReconcileCooldown = 0f;
-    private const float INVENTORY_COOLDOWN_TIME = 0.5f;
+    private const float INVENTORY_COOLDOWN_TIME = 0.3f;
 
     public void MarkLocalInteraction()
     {

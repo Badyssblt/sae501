@@ -63,7 +63,7 @@ public class Counter : MonoBehaviour, IInteractable
 
     // Cooldown après interaction locale (client) pour éviter que le réseau écrase l'état
     private float localInteractionCooldown = 0f;
-    private const float LOCAL_INTERACTION_COOLDOWN_TIME = 1.0f;
+    private const float LOCAL_INTERACTION_COOLDOWN_TIME = 0.3f;
 
     /// <summary>
     /// ID unique pour la synchronisation réseau
