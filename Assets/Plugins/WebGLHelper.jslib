@@ -52,15 +52,29 @@ mergeInto(LibraryManager.library, {
         ].join("\n");
         document.head.appendChild(style);
 
-        // Au premier toucher, tenter le plein écran pour cacher la barre d'adresse
+        // Forcer l'orientation paysage
+        function lockLandscape() {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock("landscape").catch(function () {});
+            } else if (screen.lockOrientation) {
+                screen.lockOrientation("landscape");
+            } else if (screen.mozLockOrientation) {
+                screen.mozLockOrientation("landscape");
+            } else if (screen.msLockOrientation) {
+                screen.msLockOrientation("landscape");
+            }
+        }
+
+        // Au premier toucher, plein écran + verrouillage paysage
         document.addEventListener("touchstart", function onFirstTouch() {
             document.removeEventListener("touchstart", onFirstTouch);
             var canvas = document.getElementById("unity-canvas") || document.querySelector("canvas");
             var el = canvas || document.documentElement;
             if (el.requestFullscreen) {
-                el.requestFullscreen().catch(function () {});
+                el.requestFullscreen().then(lockLandscape).catch(function () {});
             } else if (el.webkitRequestFullscreen) {
                 el.webkitRequestFullscreen();
+                lockLandscape();
             }
         }, { once: true });
     }
