@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     [Header("Player Spawning")]
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform[] spawnPoints = new Transform[4];
+    [SerializeField] private RuntimeAnimatorController[] playerAnimators = new RuntimeAnimatorController[4];
 
     [Header("Countdown")]
     [SerializeField] private float countdownStepDuration = 0.5f;
@@ -446,6 +447,16 @@ public class GameManager : MonoBehaviour
             {
                 movement.horizontalAxis = $"P{playerId}_Horizontal";
                 movement.verticalAxis = $"P{playerId}_Vertical";
+            }
+        }
+
+        // Assigner l'animator spécifique au joueur
+        if (playerAnimators != null && playerId - 1 < playerAnimators.Length && playerAnimators[playerId - 1] != null)
+        {
+            Animator animator = player.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.runtimeAnimatorController = playerAnimators[playerId - 1];
             }
         }
 
