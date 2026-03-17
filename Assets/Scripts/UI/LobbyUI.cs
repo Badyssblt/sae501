@@ -144,14 +144,14 @@ public class LobbyUI : MonoBehaviour
             {
                 if (joined[i])
                 {
-                    slotText.text = $"Joueur {i + 1} - Prêt";
+                    slotText.text = $"Joueur {i + 1} - Pret";
                     slotText.color = Color.green;
                 }
                 else
                 {
                     slotText.text = i < 2
                         ? $"Slot {i + 1} - Appuyez sur P{i + 1}"
-                        : $"Slot {i + 1} - En attente (réseau)";
+                        : $"Slot {i + 1} - En attente (reseau)";
                     slotText.color = Color.gray;
                 }
             }
@@ -166,7 +166,7 @@ public class LobbyUI : MonoBehaviour
         // Mettre à jour le texte de statut
         if (gameStatusText != null)
         {
-            gameStatusText.text = $"{localPlayerCount} joueur(s) connecté(s)";
+            gameStatusText.text = $"{localPlayerCount} joueur(s) connecte(s)";
         }
     }
 
@@ -211,7 +211,7 @@ public class LobbyUI : MonoBehaviour
         }
 
         if (gameStatusText != null)
-            gameStatusText.text = $"Joueur {slot} a quitté la partie";
+            gameStatusText.text = $"Joueur {slot} a quitte la partie";
     }
 
     private void Update()

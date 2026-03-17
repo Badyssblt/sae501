@@ -25,6 +25,13 @@ public class DecorativeNPC : MonoBehaviour
     [Tooltip("Temps de pause à chaque point d'arrivée (0 = sans pause)")]
     public float tempsPause = 0f;
 
+    [Header("Randomisation")]
+    [Tooltip("Delai max avant le premier deplacement (random entre 0 et cette valeur)")]
+    public float delaiDepartMax = 3f;
+    [Tooltip("Variation aleatoire de la vitesse (ex: 0.5 = vitesse entre 50% et 150%)")]
+    [Range(0f, 0.5f)]
+    public float variationVitesse = 0.2f;
+
     private Rigidbody2D rb;
     private Animator anim;
 
@@ -45,10 +52,26 @@ public class DecorativeNPC : MonoBehaviour
             return;
         }
 
+        // Varier la vitesse pour chaque NPC
+        vitesse *= 1f + Random.Range(-variationVitesse, variationVitesse);
+
         // Placer le NPC directement sur le premier point
         transform.position = points[0].position;
 
         InitAnimation();
+
+        // Delai aleatoire avant de commencer a bouger
+        if (delaiDepartMax > 0f)
+        {
+            enPause = true;
+            StartCoroutine(DelaiDepart());
+        }
+    }
+
+    IEnumerator DelaiDepart()
+    {
+        yield return new WaitForSeconds(Random.Range(0f, delaiDepartMax));
+        enPause = false;
     }
 
     void Update()

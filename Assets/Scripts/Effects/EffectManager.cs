@@ -168,7 +168,7 @@ public class EffectManager : MonoBehaviour
         string message = type switch
         {
             EffectType.SolGlissant          => "MALUS : Sol glissant !",
-            EffectType.VitesseReduite       => "MALUS : Vitesse réduite !",
+            EffectType.VitesseReduite       => "MALUS : Vitesse reduite !",
             EffectType.SprintBoost           => "BONUS : Sprint x2 !",
             EffectType.MultiplicateurPoints  => "BONUS : Score x2 !",
             EffectType.LivraisonInstantanee  => "BONUS : Livraison instantanee !",
