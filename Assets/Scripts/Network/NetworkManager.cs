@@ -584,12 +584,12 @@ public class NetworkManager : MonoBehaviour
                     snapshot.PNJs[pnj.id] = pnj;
             }
             InterpolationBuffer.AddSnapshot(snapshot);
-            OnStateReceived?.Invoke(snapshot);
         }
-        else
-        {
-            OnStateReceived?.Invoke(latest);
-        }
+
+        // Notifier avec le snapshot le plus récent
+        var current = InterpolationBuffer.GetLatestSnapshot();
+        if (current != null)
+            OnStateReceived?.Invoke(current);
     }
 
     private void HandleGameEvent(string data)
