@@ -156,9 +156,9 @@ public class NetworkManager : MonoBehaviour
         if (Role == NetworkRole.Client)
         {
             _cleanTimer += Time.deltaTime;
-            if (_cleanTimer >= 1f)
+            if (_cleanTimer >= 0.5f)
             {
-                InterpolationBuffer.CleanOldSnapshots(Time.time);
+                InterpolationBuffer.CleanOldSnapshots(Time.time, 0.5f);
                 PredictionSystem.CleanOldInputs(CurrentTick);
                 _cleanTimer = 0f;
             }
@@ -365,12 +365,11 @@ public class NetworkManager : MonoBehaviour
 
                 case "gameStatusUpdate":
                 case "lobbyUpdate":
-                    // Ces messages sont gérés par le lobby UI
-                    Debug.Log($"[Network] {eventName}: {data}");
+                case "registeredAsPlayer":
+                    // Ces messages sont gérés par le lobby UI, pas de log
                     break;
 
                 default:
-                    Debug.Log($"[Network] Message inconnu: {eventName}");
                     break;
             }
         }
@@ -523,53 +522,69 @@ public class NetworkManager : MonoBehaviour
             CurrentTick = delta.tick + 3;
         }
 
-        // Récupérer le dernier snapshot et le mettre à jour
+        // Mettre à jour le dernier snapshot en place au lieu de cloner
         var latest = InterpolationBuffer.GetLatestSnapshot();
-        var snapshot = latest?.Clone() ?? new StateSnapshot();
-        snapshot.Tick = delta.tick;
-        snapshot.Timestamp = Time.time;
-
-        if (delta.hasTimeLeft)
-            snapshot.TimeLeft = delta.timeLeft;
-
-        if (delta.hasScore)
-            snapshot.Score = delta.score;
-
-        if (delta.players != null)
+        if (latest != null && latest.Tick == delta.tick)
         {
-            foreach (var player in delta.players)
+            // Même tick : mettre à jour en place
+            if (delta.hasTimeLeft) latest.TimeLeft = delta.timeLeft;
+            if (delta.hasScore) latest.Score = delta.score;
+            if (delta.players != null)
+                foreach (var player in delta.players)
+                    latest.Players[player.id] = player;
+            if (delta.counters != null)
+                foreach (var counter in delta.counters)
+                    latest.Counters[counter.id] = counter;
+            if (delta.orders != null)
             {
-                snapshot.Players[player.id] = player;
+                latest.Orders.Clear();
+                foreach (var order in delta.orders)
+                    latest.Orders[order.id] = order;
             }
+            if (delta.pnjs != null)
+            {
+                latest.PNJs.Clear();
+                foreach (var pnj in delta.pnjs)
+                    latest.PNJs[pnj.id] = pnj;
+            }
+            // Pas besoin d'AddSnapshot, on a modifié en place
         }
-
-        if (delta.counters != null)
+        else
         {
-            foreach (var counter in delta.counters)
+            // Nouveau tick : créer un snapshot minimal (pas de Clone)
+            var snapshot = new StateSnapshot(delta.tick, Time.time);
+            if (latest != null)
             {
-                snapshot.Counters[counter.id] = counter;
+                snapshot.TimeLeft = latest.TimeLeft;
+                snapshot.Score = latest.Score;
+                // Copier les refs existantes (pas de deep copy)
+                foreach (var kvp in latest.Players) snapshot.Players[kvp.Key] = kvp.Value;
+                foreach (var kvp in latest.Counters) snapshot.Counters[kvp.Key] = kvp.Value;
+                foreach (var kvp in latest.Orders) snapshot.Orders[kvp.Key] = kvp.Value;
+                foreach (var kvp in latest.PNJs) snapshot.PNJs[kvp.Key] = kvp.Value;
             }
-        }
-
-        if (delta.orders != null)
-        {
-            snapshot.Orders.Clear();
-            foreach (var order in delta.orders)
+            if (delta.hasTimeLeft) snapshot.TimeLeft = delta.timeLeft;
+            if (delta.hasScore) snapshot.Score = delta.score;
+            if (delta.players != null)
+                foreach (var player in delta.players)
+                    snapshot.Players[player.id] = player;
+            if (delta.counters != null)
+                foreach (var counter in delta.counters)
+                    snapshot.Counters[counter.id] = counter;
+            if (delta.orders != null)
             {
-                snapshot.Orders[order.id] = order;
+                snapshot.Orders.Clear();
+                foreach (var order in delta.orders)
+                    snapshot.Orders[order.id] = order;
             }
-        }
-
-        if (delta.pnjs != null)
-        {
-            snapshot.PNJs.Clear();
-            foreach (var pnj in delta.pnjs)
+            if (delta.pnjs != null)
             {
-                snapshot.PNJs[pnj.id] = pnj;
+                snapshot.PNJs.Clear();
+                foreach (var pnj in delta.pnjs)
+                    snapshot.PNJs[pnj.id] = pnj;
             }
+            InterpolationBuffer.AddSnapshot(snapshot);
         }
-
-        InterpolationBuffer.AddSnapshot(snapshot);
         OnStateReceived?.Invoke(snapshot);
     }
 

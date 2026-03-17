@@ -14,7 +14,7 @@ namespace CookMoiCa.Network
         private readonly float interpolationDelay;
         private readonly int maxSnapshots;
 
-        public InterpolationBuffer(float interpolationDelaySeconds = 0.1f, int maxSnapshotsCount = 30)
+        public InterpolationBuffer(float interpolationDelaySeconds = 0.1f, int maxSnapshotsCount = 15)
         {
             interpolationDelay = interpolationDelaySeconds;
             maxSnapshots = maxSnapshotsCount;
