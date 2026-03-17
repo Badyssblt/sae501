@@ -585,7 +585,7 @@ public class GameManager : MonoBehaviour
     /// APRÈS replay des inputs pendants (évite les faux positifs dus à la latence)
     /// </summary>
     private const float TICK_RATE = 1f / 30f;
-    private const float RECONCILIATION_THRESHOLD = 0.5f;
+    private const float RECONCILIATION_THRESHOLD = 2.0f;
 
     // Cooldown pour éviter que le serveur écrase l'inventaire local après une interaction
     private float inventoryReconcileCooldown = 0f;
@@ -609,32 +609,21 @@ public class GameManager : MonoBehaviour
         Vector2 serverPos = new Vector2(serverPlayer.x, serverPlayer.y);
         Vector2 localPos = player.transform.position;
 
-        // Récupérer la vitesse du joueur
-        var movement = player.GetComponent<PlayerMovement>();
-        float moveSpeed = movement != null ? movement.moveSpeed : 5f;
-
-        // Rejouer les inputs non confirmés depuis la position serveur
-        // C'est la position où le client DEVRAIT être si tout est synchronisé
-        var inputsToReplay = prediction.GetInputsToReplay();
-        Vector2 expectedPos = RollbackHelper.ReplayMovementInputs(
-            serverPos, inputsToReplay, moveSpeed, TICK_RATE
-        );
-
-        // Comparer la position locale avec la position attendue (pas la position serveur brute)
-        float desyncDist = Vector2.Distance(localPos, expectedPos);
+        // Comparer directement avec la position serveur
+        // Le replay sans physique cause trop de faux positifs (murs, collisions)
+        float desyncDist = Vector2.Distance(localPos, serverPos);
 
         if (desyncDist > RECONCILIATION_THRESHOLD)
         {
-            // Vraie desync détectée après compensation de la latence
-            if (desyncDist > 3f)
+            if (desyncDist > 5f)
             {
                 // Trop loin → snap direct
-                player.transform.position = (Vector3)expectedPos;
+                player.transform.position = (Vector3)serverPos;
             }
             else
             {
-                // Correction douce
-                player.transform.position = Vector2.Lerp(localPos, expectedPos, 0.3f);
+                // Correction très douce pour éviter les TP visibles
+                player.transform.position = Vector2.Lerp(localPos, serverPos, 0.08f);
             }
         }
 
