@@ -108,7 +108,7 @@ public class GamePanelUI : MonoBehaviour
     public void ShowRestartPanel(int finalScore)
     {
         // Le panel restart n'est affiché que sur le host
-        if (CookMoiCa.Network.NetworkManager.Instance?.Role == CookMoiCa.Network.NetworkRole.Client)
+        if (NetworkManager.Instance?.Role == CookMoiCa.Network.NetworkRole.Client)
             return;
 
         if (restartPanel != null)
