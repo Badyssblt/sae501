@@ -49,6 +49,10 @@ public class ArcadeManager : MonoBehaviour
         if (!enableArcadeFeatures)
             return;
 
+        // Désactiver les fonctions arcade sur les clients web
+        if (NetworkManager.Instance?.Role == CookMoiCa.Network.NetworkRole.Client)
+            return;
+
         // Vérifier l'inactivité
         CheckInactivity();
 
