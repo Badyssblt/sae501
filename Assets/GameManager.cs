@@ -913,34 +913,34 @@ public class GameManager : MonoBehaviour
 
         DisableAllPlayerControls();
 
-        // Seul le host envoie endGame
+        // Seul le host envoie endGame et gère les highscores
         if (NetworkManager.Instance?.Role == NetworkRole.Host)
         {
             NetworkManager.Instance?.EndGame(score);
-        }
 
-        if (Anatidae.HighscoreManager.Instance == null)
-        {
-            ShowRestartPanelAfterHighscore();
-            return;
-        }
-
-        Anatidae.HighscoreManager.ShowHighscores();
-
-        if (Anatidae.HighscoreManager.HasFetchedHighscores)
-        {
-            if (Anatidae.HighscoreManager.IsHighscore(score))
+            if (Anatidae.HighscoreManager.Instance == null)
             {
-                Anatidae.HighscoreManager.ShowHighscoreInput(score);
+                ShowRestartPanelAfterHighscore();
+                return;
+            }
+
+            Anatidae.HighscoreManager.ShowHighscores();
+
+            if (Anatidae.HighscoreManager.HasFetchedHighscores)
+            {
+                if (Anatidae.HighscoreManager.IsHighscore(score))
+                {
+                    Anatidae.HighscoreManager.ShowHighscoreInput(score);
+                }
+                else
+                {
+                    ShowRestartPanelAfterHighscore();
+                }
             }
             else
             {
-                ShowRestartPanelAfterHighscore();
+                StartCoroutine(CheckHighscoreAfterFetch());
             }
-        }
-        else
-        {
-            StartCoroutine(CheckHighscoreAfterFetch());
         }
     }
 
