@@ -122,22 +122,35 @@ namespace Anatidae {
             }
         }
 
+        // URL externe vers laquelle envoyer le score via le proxy Anatidae
+        public static string ExternalScoreUrl = "https://cook.wevora.fr/api/";
+
         public static IEnumerator SetHighscore(string name, int score)
         {
-            Debug.Log(JsonUtility.ToJson(new HighscoreEntry { name = name, score = score }));
+            string json = JsonUtility.ToJson(new HighscoreEntry { name = name, score = score });
+            Debug.Log(json);
 
+            // Envoi local (comportement existant)
             UnityWebRequest request = new UnityWebRequest("http://localhost:3000/api/?game=" + GameName)
             {
                 method = UnityWebRequest.kHttpVerbPOST,
-                uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(new HighscoreEntry { name = name, score = score })))
+                uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json))
                 {
                     contentType = "application/json"
                 }
             };
-            
+
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
                 Debug.LogError(request.error);
+
+            // Envoi vers l'URL externe via le proxy Anatidae
+            UnityWebRequest proxyRequest = AnatidaeProxyWebRequest.Post(ExternalScoreUrl, json, "application/json");
+            yield return proxyRequest.SendWebRequest();
+            if (proxyRequest.result == UnityWebRequest.Result.ConnectionError || proxyRequest.result == UnityWebRequest.Result.ProtocolError)
+                Debug.LogError("[HighscoreManager] Erreur envoi proxy: " + proxyRequest.error);
+            else
+                Debug.Log("[HighscoreManager] Score envoyé via proxy Anatidae !");
 
             yield return FetchHighscores();
             Debug.Log($"[HighscoreManager] GameManager.Instance = {GameManager.Instance}");
