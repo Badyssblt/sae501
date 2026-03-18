@@ -87,10 +87,10 @@ public class PNJSpawner : MonoBehaviour
     {
         maxPNJSimultanes = playerCount switch
         {
-            1 => 2,
-            2 => 3,
-            3 => 5,
-            _ => 6
+            1 => 3,
+            2 => 4,
+            3 => 6,
+            _ => 7
         };
         positionsOccupees = new bool[maxPNJSimultanes];
         Debug.Log($"[PNJSpawner] Difficulté adaptée : max {maxPNJSimultanes} PNJ pour {playerCount} joueur(s)");

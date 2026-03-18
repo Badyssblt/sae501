@@ -169,9 +169,21 @@ namespace Anatidae {
                 return false;
             }
 
+            // Pas de highscore si le score est 0 ou négatif
+            if (score <= 0)
+                return false;
+
+            // Si les highscores n'ont pas pu être récupérés, on ne peut pas déterminer
+            if (Highscores == null)
+                return false;
+
             if (name == null)
             {
-                if (Highscores == null || Highscores.Count < NumHighscores || score > Highscores[NumHighscores - 1].score)
+                // S'il y a moins de 10 scores, le nouveau score entre dans le top 10
+                if (Highscores.Count < NumHighscores)
+                    return true;
+                // Sinon, vérifier si le score bat le dernier du classement
+                if (score > Highscores[NumHighscores - 1].score)
                     return true;
             } else {
                 HighscoreEntry? entry = Highscores.Find(entry => entry.name == name);

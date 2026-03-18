@@ -5,6 +5,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Anatidae {
     public class HighscoreUI : MonoBehaviour
@@ -16,8 +18,47 @@ namespace Anatidae {
         [SerializeField][Tooltip("Rendre le premier score plus gros")] bool makeFirstBigger = true;
         [SerializeField][Tooltip("Défiler les scores de haut en bas automatiquement")] bool autoscroll = false;
 
+        [Header("Bouton Restart")]
+        [SerializeField] private Button restartButton;
+        [SerializeField] private ColorBlock selectedColors;
+        [SerializeField] private ColorBlock normalColors;
+
+        private bool isButtonSelected = false;
+        private bool initialized = false;
+        private float inputDelay = 0.2f;
+        private float lastInputTime = 0f;
+
+        private void InitIfNeeded()
+        {
+            if (initialized) return;
+            initialized = true;
+
+            if (normalColors.normalColor == Color.clear)
+            {
+                normalColors = ColorBlock.defaultColorBlock;
+            }
+            if (selectedColors.normalColor == Color.clear)
+            {
+                selectedColors = ColorBlock.defaultColorBlock;
+                selectedColors.normalColor = Color.yellow;
+                selectedColors.highlightedColor = Color.yellow;
+            }
+
+            if (restartButton != null)
+            {
+                restartButton.onClick.AddListener(OnRestart);
+            }
+        }
+
         public void OnEnable()
         {
+            InitIfNeeded();
+            isButtonSelected = false;
+            if (restartButton != null)
+            {
+                restartButton.gameObject.SetActive(true);
+                restartButton.colors = normalColors;
+            }
             StartCoroutine(Init());
         }
 
@@ -30,16 +71,41 @@ namespace Anatidae {
 
         void Update()
         {
-            if (autoscroll)
+            HandleJoystickInput();
+        }
+
+        private void HandleJoystickInput()
+        {
+            if (restartButton == null) return;
+            if (Time.time - lastInputTime < inputDelay) return;
+
+            float vertical = Input.GetAxisRaw("P1_Vertical");
+
+            // Bas → sélectionner le bouton
+            if (vertical < -0.5f && !isButtonSelected)
             {
-                Vector3 scrollPosition = highscoreEntryContainer.localPosition;
-                scrollPosition.y = Mathf.Lerp(
-                    0,
-                    highscoreEntryContainer.sizeDelta.y - viewport.sizeDelta.y,
-                    Mathf.Clamp01(Mathf.PingPong(Time.time/5f, 1.5f)-0.25f)
-                );
-                highscoreEntryContainer.localPosition = scrollPosition;
+                isButtonSelected = true;
+                restartButton.colors = selectedColors;
+                lastInputTime = Time.time;
             }
+            // Haut → désélectionner le bouton
+            else if (vertical > 0.5f && isButtonSelected)
+            {
+                isButtonSelected = false;
+                restartButton.colors = normalColors;
+                lastInputTime = Time.time;
+            }
+
+            // Confirmer avec P1_B1
+            if (isButtonSelected && Input.GetButtonDown("P1_B1"))
+            {
+                OnRestart();
+            }
+        }
+
+        private void OnRestart()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         void UpdateHighscoreEntries()
@@ -49,6 +115,8 @@ namespace Anatidae {
             {
                 Destroy(child.gameObject);
             }
+
+            if (HighscoreManager.Highscores == null) return;
 
             int i = 0;
             foreach (HighscoreManager.HighscoreEntry entry in HighscoreManager.Highscores)

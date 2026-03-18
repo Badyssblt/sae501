@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PNJClient
   chemin: []
-  vitesse: 2
+  vitesse: 3
   distanceArret: 0.1
   tempsAttenteCommande: 2
   tempsPourManger: 25

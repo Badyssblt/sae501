@@ -960,7 +960,22 @@ public class GameManager : MonoBehaviour
 
     public void ShowRestartPanelAfterHighscore()
     {
-        RestartGame();
+        // Cacher le panel d'input de nom si affiché
+        if (Anatidae.HighscoreManager.Instance != null)
+        {
+            Anatidae.HighscoreManager.DisableHighscoreInput();
+        }
+
+        // Afficher le panel restart avec le score final
+        if (gamePanelUI != null)
+        {
+            gamePanelUI.ShowRestartPanel(score);
+        }
+        else
+        {
+            // Fallback si pas de panel UI
+            RestartGame();
+        }
     }
 
     private void DisableAllPlayerControls()
