@@ -26,8 +26,11 @@ public class MenuManager : MonoBehaviour
 
     void Update()
     {
-        // Désactiver les fonctions arcade sur les clients web
-        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
+        // Ne rien faire tant que le NetworkManager n'est pas prêt,
+        // et désactiver définitivement sur les clients web
+        if (NetworkManager.Instance == null)
+            return;
+        if (NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
         {
             enabled = false;
             return;
