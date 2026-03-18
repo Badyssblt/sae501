@@ -26,6 +26,13 @@ public class MenuManager : MonoBehaviour
 
     void Update()
     {
+        // Désactiver les fonctions arcade sur les clients web
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
+        {
+            enabled = false;
+            return;
+        }
+
         if (heldQuitTimer >= HeldQuitTime || afkTimer >= AfkTime) {
             enabled = false;
             BackToMenu();
