@@ -181,6 +181,10 @@ public class ArcadeManager : MonoBehaviour
     /// </summary>
     private void ReturnToMenu()
     {
+        // Ne jamais retourner au menu sur un client web
+        if (NetworkManager.Instance?.Role == CookMoiCa.Network.NetworkRole.Client)
+            return;
+
         if (showDebugLogs)
             Debug.Log("ArcadeManager: Appel de BackToMenu()");
 

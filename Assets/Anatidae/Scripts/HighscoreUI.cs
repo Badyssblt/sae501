@@ -106,6 +106,9 @@ namespace Anatidae {
 
         private void OnRestart()
         {
+            // Ne pas restart sur les clients web
+            if (NetworkManager.Instance?.Role == CookMoiCa.Network.NetworkRole.Client)
+                return;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
