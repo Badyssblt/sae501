@@ -14,9 +14,24 @@ public class MenuManager : MonoBehaviour
     const float HeldQuitTime = 1.5f;
     float heldQuitTimer = 0f;
     const string MenuMessage = "Retour au menu";
+    bool isClient = false;
 
     [DllImport("__Internal")]
     public static extern void BackToMenu();
+
+    void Awake()
+    {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        // Détecter directement via l'URL si on est un client
+        isClient = Application.absoluteURL.Contains("slot=");
+        #endif
+
+        if (isClient)
+        {
+            Debug.Log("MenuManager: Client web détecté, désactivation complète.");
+            enabled = false;
+        }
+    }
 
     void OnDisable()
     {
@@ -26,16 +41,6 @@ public class MenuManager : MonoBehaviour
 
     void Update()
     {
-        // Ne rien faire tant que le NetworkManager n'est pas prêt,
-        // et désactiver définitivement sur les clients web
-        if (NetworkManager.Instance == null)
-            return;
-        if (NetworkManager.Instance.Role == CookMoiCa.Network.NetworkRole.Client)
-        {
-            enabled = false;
-            return;
-        }
-
         if (heldQuitTimer >= HeldQuitTime || afkTimer >= AfkTime) {
             enabled = false;
             BackToMenu();
@@ -63,6 +68,7 @@ public class MenuManager : MonoBehaviour
 
     public void OnApplicationQuit()
     {
-        BackToMenu();
+        if (!isClient)
+            BackToMenu();
     }
 }
