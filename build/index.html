@@ -6,7 +6,7 @@
     <title>Unity Web Player | CookMoiCa</title>
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1" style="width: 1920px; height: 1080px; background: #231F20; image-rendering: pixelated; image-rendering: crisp-edges;"></canvas>
+    <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1" style="width: 1920px; height: 1080px; background: #231F20"></canvas>
     <script src="Build/build.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
@@ -32,7 +32,7 @@
         companyName: "DefaultCompany",
         productName: "CookMoiCa",
         productVersion: "1.0",
-        devicePixelRatio: 1,
+        devicePixelRatio: Math.round(window.devicePixelRatio || 1),
       }).then((unityInstance) => {
       }).catch((message) => {
         alert(message);
