@@ -29,6 +29,8 @@ public class MenuManager : MonoBehaviour
         if (isClient)
         {
             Debug.Log("MenuManager: Client web détecté, désactivation complète.");
+            if (quitText != null)
+                quitText.gameObject.SetActive(false);
             enabled = false;
         }
     }
