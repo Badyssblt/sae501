@@ -9929,13 +9929,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 819740774}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1407173221}
-  m_Father: {fileID: 1826297408}
+  m_Father: {fileID: 1789677143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -11475,7 +11475,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 20cabc6128f7b8149bf7dbaf0b5333ad, type: 2}
   - {fileID: 11400000, guid: 9825735b59714ba09c00c278516698df, type: 2}
   - {fileID: 11400000, guid: 92e172bd8d67ec249b6b95a53eeeec6d, type: 2}
-  gameTime: 3
+  gameTime: 120
   maxPlayers: 4
   playerPrefab: {fileID: 4905632694918771176, guid: 32381048c916c7a418fd00328bdb609e, type: 3}
   spawnPoints:
@@ -19361,6 +19361,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1070924291}
+  - {fileID: 819740775}
   m_Father: {fileID: 1826297408}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1789677144
@@ -20002,7 +20003,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1789677143}
-  - {fileID: 819740775}
   m_Father: {fileID: 742951786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -40973,7 +40973,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -9, y: -279}
+  m_AnchoredPosition: {x: -7, y: -196}
   m_SizeDelta: {x: 540.5828, y: 68.028}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7977168599871094315

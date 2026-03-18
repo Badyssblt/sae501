@@ -46,6 +46,7 @@ namespace Anatidae {
 
             if (restartButton != null)
             {
+                restartButton.gameObject.SetActive(false);
                 restartButton.onClick.AddListener(OnRestart);
             }
         }
